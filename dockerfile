@@ -9,8 +9,8 @@ COPY src ./src
 # Compilar y empaquetar el proyecto generando el archivo WAR
 RUN mvn clean package -DskipTests
 
-# Etapa 2: Imagen oficial de Tomcat estándar y garantizada
-FROM tomcat:10.1-jdk21
+# Etapa 2: Imagen oficial de Tomcat para la ejecución en Azure
+FROM tomcat:10.1-jdk21-temurin-alpine
 WORKDIR /usr/local/tomcat
 
 # 1. Eliminar las aplicaciones por defecto de Tomcat para evitar conflictos
