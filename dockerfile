@@ -6,18 +6,24 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-# Compilar y empaquetar el proyecto generando el archivo JAR
+# Compilar y empaquetar el proyecto generando el archivo WAR
 RUN mvn clean package -DskipTests
 
-# Etapa 2: Imagen ligera para la ejecución en Azure
-FROM eclipse-temurin:23-jre-alpine
-WORKDIR /app
+# Etapa 2: Imagen oficial de Tomcat para la ejecución en Azure
+# Usamos Tomcat 10.1 (que coincide con tu pom.xml) y JDK 23
+FROM tomcat:10.1-jdk23-temurin-alpine
+WORKDIR /usr/local/tomcat
 
-# Copiar el JAR explícitamente usando los datos de tu pom.xml (artifactId y version)
-COPY --from=build /app/target/owlshare-1.0-SNAPSHOT.jar app.jar
+# 1. Eliminar las aplicaciones por defecto de Tomcat para evitar conflictos de rutas
+RUN rm -rf webapps/*
 
-# Exponer el puerto por defecto (puedes cambiarlo si tu Main levanta un servidor en otro puerto)
+# 2. Copiar el archivo WAR generado en la etapa anterior.
+# Lo renombramos a 'ROOT.war' para que la aplicación responda directamente en la raíz (/)
+COPY --from=build /app/target/owlshare-1.0-SNAPSHOT.war webapps/ROOT.war
+
+# Tomcat corre por defecto en el puerto 8080 (coincide con tu configuración de Azure)
 EXPOSE 8080
 
-# Comando para ejecutar la aplicación usando tu clase ec.edu.epn.Main definida en el manifiesto
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# El punto de entrada por defecto de la imagen de Tomcat levantará el servidor automáticamente,
+# por lo que no es estrictamente necesario sobreescribir el ENTRYPOINT.
+CMD ["catalina.sh", "run"]

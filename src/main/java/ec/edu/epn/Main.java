@@ -1,17 +1,36 @@
 package ec.edu.epn;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.print("Hello and welcome!");
+import org.apache.catalina.Context;
+import org.apache.catalina.startup.Tomcat;
+import java.io.File;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+public class Main {
+    public static void main(String[] args) throws Exception {
+        Tomcat tomcat = new Tomcat();
+
+        // Azure Web Apps o Docker usarán el puerto 8080 configurado
+        String webPort = System.getenv("PORT");
+        if (webPort == null || webPort.isEmpty()) {
+            webPort = "8080";
         }
+        tomcat.setPort(Integer.parseInt(webPort));
+
+        // Apuntar al directorio de recursos webapp
+        String webappDirLocation = "src/main/webapp/";
+        File webappDir = new File(webappDirLocation);
+
+        // En producción (contenedor), si la ruta cambia, se adapta de forma relativa
+        if (!webappDir.exists()) {
+            webappDirLocation = "webapp/";
+            webappDir = new File(webappDirLocation);
+        }
+
+        Context context = tomcat.addWebapp("/", webappDir.getAbsolutePath());
+        System.out.println("Configurando aplicación web en el directorio: " + webappDir.getAbsolutePath());
+
+        tomcat.getConnector(); // Inicializa el conector HTTP
+        tomcat.start();
+        System.out.println("Servidor Tomcat iniciado en el puerto " + webPort + "...");
+        tomcat.getServer().await(); // Mantiene el contenedor vivo escuchando tráfico
     }
 }
