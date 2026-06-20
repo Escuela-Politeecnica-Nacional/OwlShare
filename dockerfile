@@ -10,7 +10,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Imagen oficial de Tomcat para la ejecución en Azure
-FROM tomcat:10.1-jdk21-temurin-alpine
+FROM tomcat:10.1-jre21-alpine
 WORKDIR /usr/local/tomcat
 
 # 1. Eliminar las aplicaciones por defecto de Tomcat para evitar conflictos
