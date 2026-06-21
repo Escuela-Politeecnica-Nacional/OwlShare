@@ -13,13 +13,13 @@ public final class HibernateUtil {
     private static SessionFactory buildSessionFactory() {
         Configuration configuration = new Configuration().configure();
 
-        String dbUrl = env("DB_URL", "jdbc:postgresql://localhost:5432/owlshare");
-        String dbUser = env("DB_USER", "postgres");
-        String dbPassword = env("DB_PASSWORD", "postgres");
+        String dbUrl = env("DB_URL", "jdbc:sqlite:/home/owlshare.db");
 
         configuration.setProperty("hibernate.connection.url", dbUrl);
-        configuration.setProperty("hibernate.connection.username", dbUser);
-        configuration.setProperty("hibernate.connection.password", dbPassword);
+        configuration.setProperty("hibernate.connection.driver_class", "org.sqlite.JDBC");
+        configuration.setProperty("hibernate.dialect", "org.hibernate.community.dialect.SQLiteDialect");
+        configuration.setProperty("hibernate.hbm2ddl.auto", "update");
+        configuration.setProperty("hibernate.show_sql", "false");
 
         return configuration.buildSessionFactory();
     }
