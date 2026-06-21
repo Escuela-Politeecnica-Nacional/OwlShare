@@ -7,8 +7,8 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-# Etapa 2: Usamos directamente Java 23 base e instalamos Tomcat manualmente
-FROM eclipse-temurin:23-jdk-jammy
+# Etapa 2: Usamos la imagen oficial de Java 23 (Etiqueta genérica corregida)
+FROM eclipse-temurin:23-jdk
 WORKDIR /usr/local
 
 # Definir variables para la descarga limpia de Tomcat 10
