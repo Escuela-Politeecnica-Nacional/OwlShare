@@ -50,6 +50,6 @@ stages:
     - task: AzureWebAppContainer@1
       displayName: Deploy container to App Service
       inputs:
-        azureSubscription: 'owlsharecr'
+        azureSubscription: 'owlshare-azure'
         appName: 'owlshare-app'
         containers: '$(containerRegistry)/$(imageRepository):$(tag)'
