@@ -8,7 +8,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Imagen oficial de Tomcat con Java 23 para evitar conflictos de bytecode
-FROM tomcat:10.1-jdk23-temurin-jammy
+FROM tomcat:10.1-jdk23
 WORKDIR /usr/local/tomcat
 
 RUN rm -rf webapps/*
