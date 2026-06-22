@@ -1,0 +1,9 @@
+# Copia como database.local.properties en la raíz del proyecto (opcional).
+# Por defecto se usa SQLite en owlshare.db sin configuración extra.
+
+db.url=jdbc:sqlite:owlshare.db
+
+# Para PostgreSQL local o Azure, descomenta y ajusta:
+# db.url=jdbc:postgresql://localhost:5432/owlshare
+# db.user=postgres
+# db.password=tu_contraseña
