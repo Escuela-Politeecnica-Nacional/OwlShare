@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Properties;
 
 public final class HibernateUtil {
@@ -60,6 +61,23 @@ public final class HibernateUtil {
                 "jdbc:sqlite:owlshare.db"
         );
 
+        if (isSqlServerUrl(url)) {
+            String username = firstNonBlank(System.getenv("DB_USER"), properties.getProperty("db.user"));
+            String password = firstNonBlank(System.getenv("DB_PASSWORD"), properties.getProperty("db.password"));
+            if (username.isBlank() || password.isBlank()) {
+                throw new IllegalStateException(
+                        "DB_USER y DB_PASSWORD son obligatorios cuando DB_URL apunta a SQL Server."
+                );
+            }
+            return new DbConfig(
+                    url,
+                    "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+                    "org.hibernate.dialect.SQLServerDialect",
+                    username,
+                    password
+            );
+        }
+
         if (url.startsWith("jdbc:postgresql:")) {
             return new DbConfig(
                     url,
@@ -77,6 +95,10 @@ public final class HibernateUtil {
                 null,
                 null
         );
+    }
+
+    private static boolean isSqlServerUrl(String url) {
+        return url != null && url.toLowerCase(Locale.ROOT).startsWith("jdbc:sqlserver:");
     }
 
     private static void loadPropertiesFile(Properties target, String classpathResource) {

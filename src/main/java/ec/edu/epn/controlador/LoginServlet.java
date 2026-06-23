@@ -1,15 +1,21 @@
 package ec.edu.epn.controlador;
 
+import ec.edu.epn.dao.UsuarioDAO;
+import ec.edu.epn.modelo.Rol;
+import ec.edu.epn.modelo.Usuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
+
+    private UsuarioDAO usuarioDAO = new UsuarioDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -20,7 +26,38 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("error", "Inicio de sesión aún no implementado.");
-        request.getRequestDispatcher("/login.jsp").forward(request, response);
+        String email = trim(request.getParameter("email"));
+        String password = request.getParameter("password");
+
+        if (email.isEmpty() || password == null || password.isBlank()) {
+            request.setAttribute("error", "Debes ingresar correo electrónico y contraseña.");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            return;
+        }
+
+        Usuario usuario = usuarioDAO.autenticar(email, password);
+        if (usuario == null) {
+            request.setAttribute("error", "Credenciales inválidas.");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            return;
+        }
+
+        HttpSession session = request.getSession();
+        session.setAttribute("usuario", usuario);
+
+        response.sendRedirect(request.getContextPath() + destinoSegunRol(usuario));
+    }
+
+    private String destinoSegunRol(Usuario usuario) {
+        Rol rol = usuario.getRol();
+        return switch (rol) {
+            case ESTUDIANTE -> "/estudiante/inicio";
+            case TUTOR -> "/tutor/inicio";
+            case ADMIN -> "/admin/inicio";
+        };
+    }
+
+    private String trim(String value) {
+        return value == null ? "" : value.trim();
     }
 }

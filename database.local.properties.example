@@ -1,9 +1,10 @@
 # Copia como database.local.properties en la raíz del proyecto (opcional).
-# Por defecto se usa SQLite en owlshare.db sin configuración extra.
+# La app lee DB_URL, DB_USER y DB_PASSWORD; este archivo sirve como respaldo local.
 
+# Desarrollo local con SQLite:
 db.url=jdbc:sqlite:owlshare.db
 
-# Para PostgreSQL local o Azure, descomenta y ajusta:
-# db.url=jdbc:postgresql://localhost:5432/owlshare
-# db.user=postgres
-# db.password=tu_contraseña
+# Azure SQL Server:
+# db.url=jdbc:sqlserver://owlshare-server.database.windows.net:1433;database=db-owlshare;encrypt=true;trustServerCertificate=false;loginTimeout=30;
+# db.user=sqladmin@owlshare-server
+# db.password=pon_tu_password_aqui

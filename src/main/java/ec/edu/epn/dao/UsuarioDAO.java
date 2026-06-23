@@ -6,6 +6,7 @@ import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.util.CatalogoRegistro;
 import ec.edu.epn.util.HibernateUtil;
 import ec.edu.epn.util.MateriaUtil;
+import ec.edu.epn.util.PasswordUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -29,7 +30,8 @@ public class UsuarioDAO {
                     Long.class
             );
             query.setParameter("email", email.trim());
-            return query.uniqueResult() > 0;
+            Long count = query.uniqueResult();
+            return count != null && count > 0;
         }
     }
 
@@ -48,7 +50,26 @@ public class UsuarioDAO {
     }
 
     public Usuario autenticar(String email, String password) {
-        return null; // implementación pendiente
+        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+            return null;
+        }
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<Usuario> query = session.createQuery(
+                    "from Usuario u where lower(u.email) = lower(:email)",
+                    Usuario.class
+            );
+            query.setParameter("email", email.trim());
+
+            Usuario usuario = query.uniqueResult();
+            if (usuario == null) {
+                return null;
+            }
+
+            return PasswordUtil.hash(password).equals(usuario.getPassword()) ? usuario : null;
+        }
+    }
+
     public List<TutorResumen> buscarTutoresPorMateria(String termino) {
         if (termino == null || termino.isBlank()) {
             return List.of();

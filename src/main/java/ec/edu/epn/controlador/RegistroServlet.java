@@ -190,6 +190,9 @@ public class RegistroServlet extends HttpServlet {
                         || lower.contains("jdbcenvironment")
                         || lower.contains("unable to create requested service")
                         || lower.contains("password authentication failed")
+                        || lower.contains("sqlserver")
+                        || lower.contains("mssql")
+                        || lower.contains("login failed")
                         || lower.contains("sqlite")) {
                     return true;
                 }
@@ -201,8 +204,8 @@ public class RegistroServlet extends HttpServlet {
 
     private String mensajeErrorBaseDatos() {
         return "No se pudo conectar a la base de datos. "
-                + "Verifica que no tengas DB_URL apuntando a PostgreSQL sin servidor activo. "
-                + "Por defecto la app usa SQLite (archivo owlshare.db en la raíz del proyecto).";
+                + "Verifica DB_URL, DB_USER y DB_PASSWORD si usas Azure SQL Server. "
+                + "En local, la app puede usar SQLite con database.local.properties.";
     }
 
     private boolean esViolacionEmailUnico(RuntimeException e) {
