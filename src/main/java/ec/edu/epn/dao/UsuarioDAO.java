@@ -36,4 +36,8 @@ public class UsuarioDAO {
             throw e;
         }
     }
+
+    public Usuario autenticar(String email, String password) {
+        return null; // implementación pendiente
+    }
 }
