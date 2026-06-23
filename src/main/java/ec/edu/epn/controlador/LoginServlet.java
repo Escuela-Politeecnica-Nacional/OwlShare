@@ -44,13 +44,12 @@ public class LoginServlet extends HttpServlet {
         }
 
         HttpSession session = request.getSession();
-        session.setAttribute("usuario", usuario);
+        session.setAttribute("usuarioLogueado", usuario);
 
-        response.sendRedirect(request.getContextPath() + destinoSegunRol(usuario));
+        response.sendRedirect(request.getContextPath() + destinoPorRol(usuario.getRol()));
     }
 
-    private String destinoSegunRol(Usuario usuario) {
-        Rol rol = usuario.getRol();
+    private String destinoPorRol(Rol rol) {
         return switch (rol) {
             case ESTUDIANTE -> "/estudiante/inicio";
             case TUTOR -> "/tutor/inicio";
@@ -60,6 +59,5 @@ public class LoginServlet extends HttpServlet {
 
     private String trim(String value) {
         return value == null ? "" : value.trim();
-
     }
 }

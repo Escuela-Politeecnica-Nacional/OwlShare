@@ -11,5 +11,6 @@
         <property name="hibernate.format_sql">true</property>
 
         <mapping class="ec.edu.epn.modelo.Usuario"/>
+        <mapping class="ec.edu.epn.modelo.Solicitud"/>
     </session-factory>
 </hibernate-configuration>

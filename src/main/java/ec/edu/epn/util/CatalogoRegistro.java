@@ -285,6 +285,33 @@ public final class CatalogoRegistro {
         return materias.stream().map(Materia::getCodigo).toList();
     }
 
+    public static Materia buscarMateriaPorCodigo(String codigo) {
+        if (codigo == null || codigo.isBlank()) {
+            return null;
+        }
+        for (List<Materia> materias : MATERIAS_POR_CARRERA.values()) {
+            for (Materia materia : materias) {
+                if (materia.getCodigo().equalsIgnoreCase(codigo.trim())) {
+                    return materia;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static List<Materia> materiasPorCodigos(Iterable<String> codigos) {
+        List<Materia> resultado = new ArrayList<>();
+        for (String codigo : codigos) {
+            Materia materia = buscarMateriaPorCodigo(codigo);
+            if (materia != null) {
+                resultado.add(materia);
+            } else if (codigo != null && !codigo.isBlank()) {
+                resultado.add(new Materia(codigo.trim(), codigo.trim(), 0));
+            }
+        }
+        return resultado;
+    }
+
     private static boolean coincideMateria(Materia materia, String terminoLimpio, String terminoLower) {
         return materia.getCodigo().equalsIgnoreCase(terminoLimpio)
                 || materia.getCodigo().toLowerCase().contains(terminoLower)

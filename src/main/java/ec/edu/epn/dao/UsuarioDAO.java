@@ -1,12 +1,14 @@
 package ec.edu.epn.dao;
 
 import ec.edu.epn.modelo.Rol;
+import ec.edu.epn.modelo.TutorPerfilDetalle;
 import ec.edu.epn.modelo.TutorResumen;
 import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.util.CatalogoRegistro;
 import ec.edu.epn.util.HibernateUtil;
 import ec.edu.epn.util.MateriaUtil;
 import ec.edu.epn.util.PasswordUtil;
+import ec.edu.epn.util.TutorPerfilBuilder;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -14,6 +16,7 @@ import org.hibernate.query.Query;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,6 +73,21 @@ public class UsuarioDAO {
         }
     }
 
+    public Optional<Usuario> buscarPorId(Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return Optional.ofNullable(session.get(Usuario.class, id));
+        }
+    }
+
+    public Optional<TutorPerfilDetalle> buscarPerfilTutor(Long id) {
+        return buscarPorId(id)
+                .filter(u -> u.getRol() == Rol.TUTOR)
+                .map(TutorPerfilBuilder::construir);
+    }
+
     public List<TutorResumen> buscarTutoresPorMateria(String termino) {
         if (termino == null || termino.isBlank()) {
             return List.of();
@@ -88,7 +106,8 @@ public class UsuarioDAO {
             query.setParameter("rol", Rol.TUTOR);
 
             return query.list().stream()
-                    .filter(u -> MateriaUtil.tutorImparteAlguna(MateriaUtil.parseCodigos(u.getMaterias()), codigosBuscados))
+                    .filter(u -> MateriaUtil.tutorImparteAlguna(
+                            MateriaUtil.parseCodigos(u.getMaterias()), codigosBuscados))
                     .map(this::toTutorResumen)
                     .collect(Collectors.toCollection(ArrayList::new));
         }
