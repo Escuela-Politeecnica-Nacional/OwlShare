@@ -31,7 +31,7 @@ public class RegistroServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         cargarCatalogo(request);
-        request.getRequestDispatcher("/registro.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/auth/registro.jsp").forward(request, response);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class RegistroServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setAttribute("error", error);
         cargarCatalogo(request);
-        request.getRequestDispatcher("/registro.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/auth/registro.jsp").forward(request, response);
     }
 
     private void cargarCatalogo(HttpServletRequest request) {
