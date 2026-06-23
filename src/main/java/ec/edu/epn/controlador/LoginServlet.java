@@ -26,7 +26,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-<<<<<<< HEAD
+
         String email = trim(request.getParameter("email"));
         String password = request.getParameter("password");
 
@@ -60,9 +60,6 @@ public class LoginServlet extends HttpServlet {
 
     private String trim(String value) {
         return value == null ? "" : value.trim();
-=======
-        request.setAttribute("error", "Inicio de sesión aún no implementado.");
-        request.getRequestDispatcher("/WEB-INF/auth/login.jsp").forward(request, response);
->>>>>>> c7bbd45bf6f3b7275ebc6f5f1c8a3926cad1f885
+
     }
 }
