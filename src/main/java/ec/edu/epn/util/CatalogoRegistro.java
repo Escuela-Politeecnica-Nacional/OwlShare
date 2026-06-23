@@ -4,9 +4,12 @@ import ec.edu.epn.modelo.Carrera;
 import ec.edu.epn.modelo.Materia;
 import ec.edu.epn.modelo.Semestre;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Catálogo académico basado en las mallas curriculares publicadas por la FIS-EPN:
@@ -252,6 +255,67 @@ public final class CatalogoRegistro {
 
     public static Carrera[] carreras() {
         return Carrera.values();
+    }
+
+    /**
+     * Busca materias del catálogo por código exacto o por coincidencia parcial en el nombre.
+     */
+    public static List<Materia> buscarMateriasPorNombreOCodigo(String termino) {
+        if (termino == null || termino.isBlank()) {
+            return List.of();
+        }
+
+        String terminoLimpio = termino.trim();
+        String terminoLower = terminoLimpio.toLowerCase();
+        Set<String> vistos = new LinkedHashSet<>();
+        List<Materia> resultados = new ArrayList<>();
+
+        for (List<Materia> materias : MATERIAS_POR_CARRERA.values()) {
+            for (Materia materia : materias) {
+                if (vistos.add(materia.getCodigo()) && coincideMateria(materia, terminoLimpio, terminoLower)) {
+                    resultados.add(materia);
+                }
+            }
+        }
+
+        return resultados;
+    }
+
+    public static List<String> codigosDeMaterias(List<Materia> materias) {
+        return materias.stream().map(Materia::getCodigo).toList();
+    }
+
+    public static Materia buscarMateriaPorCodigo(String codigo) {
+        if (codigo == null || codigo.isBlank()) {
+            return null;
+        }
+        for (List<Materia> materias : MATERIAS_POR_CARRERA.values()) {
+            for (Materia materia : materias) {
+                if (materia.getCodigo().equalsIgnoreCase(codigo.trim())) {
+                    return materia;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static List<Materia> materiasPorCodigos(Iterable<String> codigos) {
+        List<Materia> resultado = new ArrayList<>();
+        for (String codigo : codigos) {
+            Materia materia = buscarMateriaPorCodigo(codigo);
+            if (materia != null) {
+                resultado.add(materia);
+            } else if (codigo != null && !codigo.isBlank()) {
+                resultado.add(new Materia(codigo.trim(), codigo.trim(), 0));
+            }
+        }
+        return resultado;
+    }
+
+    private static boolean coincideMateria(Materia materia, String terminoLimpio, String terminoLower) {
+        return materia.getCodigo().equalsIgnoreCase(terminoLimpio)
+                || materia.getCodigo().toLowerCase().contains(terminoLower)
+                || materia.getNombre().toLowerCase().contains(terminoLower);
     }
 
     public static String materiasPorCarreraJson() {

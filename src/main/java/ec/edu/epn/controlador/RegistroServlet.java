@@ -31,7 +31,7 @@ public class RegistroServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         cargarCatalogo(request);
-        request.getRequestDispatcher("/registro.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/auth/registro.jsp").forward(request, response);
     }
 
     @Override
@@ -56,9 +56,17 @@ public class RegistroServlet extends HttpServlet {
             return;
         }
 
-        if (usuarioDAO.existePorEmail(email)) {
-            mostrarError(request, response, "El correo electrónico ya está registrado.");
-            return;
+        try {
+            if (usuarioDAO.existePorEmail(email)) {
+                mostrarError(request, response, "El correo electrónico ya está registrado.");
+                return;
+            }
+        } catch (RuntimeException e) {
+            if (esErrorBaseDatos(e)) {
+                mostrarError(request, response, mensajeErrorBaseDatos());
+                return;
+            }
+            throw e;
         }
 
         Rol rol = Rol.valueOf(rolParam);
@@ -92,6 +100,10 @@ public class RegistroServlet extends HttpServlet {
                 mostrarError(request, response, "El correo electrónico ya está registrado.");
                 return;
             }
+            if (esErrorBaseDatos(e)) {
+                mostrarError(request, response, mensajeErrorBaseDatos());
+                return;
+            }
             throw e;
         }
 
@@ -99,8 +111,7 @@ public class RegistroServlet extends HttpServlet {
                 + java.net.URLEncoder.encode("Cuenta creada exitosamente. Inicia sesión.", "UTF-8"));
     }
 
-    private String validarCampos(String email, String password, String nombre, String apellido,
-                                 String rolParam, String semestreParam, String carreraParam, String[] materias) {
+    private String validarCampos(String email, String password, String nombre, String apellido, String rolParam, String semestreParam, String carreraParam, String[] materias) {
         if (email.isEmpty()) {
             return "El correo electrónico es obligatorio.";
         }
@@ -159,13 +170,42 @@ public class RegistroServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setAttribute("error", error);
         cargarCatalogo(request);
-        request.getRequestDispatcher("/registro.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/auth/registro.jsp").forward(request, response);
     }
 
     private void cargarCatalogo(HttpServletRequest request) {
         request.setAttribute("semestres", CatalogoRegistro.semestres());
         request.setAttribute("carreras", CatalogoRegistro.carreras());
         request.setAttribute("materiasPorCarreraJson", CatalogoRegistro.materiasPorCarreraJson());
+    }
+
+    private boolean esErrorBaseDatos(RuntimeException e) {
+        Throwable cause = e;
+        while (cause != null) {
+            String message = cause.getMessage();
+            if (message != null) {
+                String lower = message.toLowerCase();
+                if (lower.contains("connection refused")
+                        || lower.contains("jdbcconnectionexception")
+                        || lower.contains("jdbcenvironment")
+                        || lower.contains("unable to create requested service")
+                        || lower.contains("password authentication failed")
+                        || lower.contains("sqlserver")
+                        || lower.contains("mssql")
+                        || lower.contains("login failed")
+                        || lower.contains("sqlite")) {
+                    return true;
+                }
+            }
+            cause = cause.getCause();
+        }
+        return false;
+    }
+
+    private String mensajeErrorBaseDatos() {
+        return "No se pudo conectar a la base de datos. "
+                + "Verifica DB_URL, DB_USER y DB_PASSWORD si usas Azure SQL Server. "
+                + "En local, la app puede usar SQLite con database.local.properties.";
     }
 
     private boolean esViolacionEmailUnico(RuntimeException e) {

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>OlwShare - Login</title>
+    <title>OwlShare - Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -35,7 +35,7 @@
 <header class="bg-white/80 backdrop-blur-xl sticky top-0 z-50 shadow-[0_20px_40px_rgba(25,28,30,0.08)]">
     <div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
         <span class="text-2xl font-extrabold text-indigo-900 tracking-tighter"
-              style="font-family:'Manrope',sans-serif">OlwShare</span>
+              style="font-family:'Manrope',sans-serif">OwlShare</span>
     </div>
 </header>
 
@@ -46,7 +46,7 @@
             <%-- Header de la card --%>
             <div class="bg-surface-container-low p-8 text-center">
                 <h2 class="text-3xl font-extrabold text-primary tracking-tight mb-2">Bienvenido</h2>
-                <p class="text-on-surface-variant text-sm font-medium">Panel de Administración · OlwShare</p>
+                <p class="text-on-surface-variant text-sm font-medium">Panel de Administración · OwlShare</p>
             </div>
 
             <div class="p-8 space-y-6">
@@ -107,11 +107,14 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="material-symbols-outlined text-outline text-sm">lock</span>
                             </div>
-                            <input class="block w-full pl-10 pr-4 py-3 bg-surface-container-highest border-none rounded-lg
+                            <input class="block w-full pl-10 pr-10 py-3 bg-surface-container-highest border-none rounded-lg
                                           focus:ring-2 focus:ring-indigo-300 text-on-surface placeholder:text-outline/60
                                           outline-none transition-all"
                                    id="password" name="password" type="password"
                                    placeholder="••••••••" required/>
+                            <button type="button" id="togglePasswordLogin" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-outline hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
                         </div>
                     </div>
 
@@ -168,7 +171,7 @@
 <%-- Footer --%>
 <footer class="w-full py-8 mt-auto border-t border-slate-100 bg-slate-50">
     <div class="text-center">
-        <span class="text-xs text-slate-400">© 2025 OlwShare. Todos los derechos reservados.</span>
+        <span class="text-xs text-slate-400">© 2025 OwlShare. Todos los derechos reservados.</span>
     </div>
 </footer>
 
@@ -176,5 +179,25 @@
 <div class="fixed top-0 right-0 -z-10 w-1/3 h-full overflow-hidden pointer-events-none opacity-40">
     <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-[100px]"></div>
 </div>
+
+<script>
+    // ── Toggle ver/ocultar contraseña ──
+    (function () {
+        var passwordInput = document.getElementById('password');
+        var togglePasswordBtn = document.getElementById('togglePasswordLogin');
+
+        togglePasswordBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            var icon = this.querySelector('.material-symbols-outlined');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                passwordInput.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        });
+    })();
+</script>
 </body>
 </html>

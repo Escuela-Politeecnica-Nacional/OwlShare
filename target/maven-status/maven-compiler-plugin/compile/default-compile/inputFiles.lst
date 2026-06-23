@@ -1,3 +1,4 @@
+D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\controlador\BuscarTutoresServlet.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\controlador\LoginServlet.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\controlador\RegistroServlet.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\dao\UsuarioDAO.java
@@ -6,7 +7,9 @@ D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\Carrera.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\Materia.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\Rol.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\Semestre.java
+D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\TutorResumen.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\Usuario.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\CatalogoRegistro.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\HibernateUtil.java
+D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\MateriaUtil.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\PasswordUtil.java

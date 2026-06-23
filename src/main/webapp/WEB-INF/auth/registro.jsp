@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Registro - OlwShare</title>
+    <title>Registro - OwlShare</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -30,7 +30,7 @@
             <span class="material-symbols-outlined text-4xl">person_add</span>
         </div>
         <h1 class="text-3xl font-extrabold text-indigo-900 tracking-tight">Crea tu cuenta</h1>
-        <p class="text-slate-500 mt-2">Únete a la comunidad de OlwShare</p>
+        <p class="text-slate-500 mt-2">Únete a la comunidad de OwlShare</p>
     </div>
 
     <c:if test="${not empty error}">
@@ -45,17 +45,43 @@
             <%-- Email --%>
             <div class="md:col-span-2">
                 <label class="block text-sm font-bold text-indigo-900 mb-2">Correo Electrónico *</label>
-                <input type="email" name="email" required
+                <input type="email" id="emailRegistro" name="email" required
                        class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border"
                        placeholder="ejemplo@correo.com">
+                <p id="emailErrorReg" class="hidden mt-1 text-xs text-red-600 font-medium flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">error</span>
+                    <span id="emailErrorMsgReg">Ingresa un correo válido</span>
+                </p>
             </div>
 
             <%-- Password --%>
             <div class="md:col-span-2">
                 <label class="block text-sm font-bold text-indigo-900 mb-2">Contraseña *</label>
-                <input type="password" name="password" required
-                       class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border"
-                       placeholder="••••••••">
+                <div class="relative">
+                    <input type="password" id="passwordRegistro" name="password" required
+                           class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border pr-10"
+                           placeholder="••••••••">
+                    <button type="button" id="togglePasswordReg" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-indigo-600 transition-colors">
+                        <span class="material-symbols-outlined text-sm">visibility</span>
+                    </button>
+                </div>
+            </div>
+
+            <%-- Confirmar Contraseña --%>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-bold text-indigo-900 mb-2">Confirmar Contraseña *</label>
+                <div class="relative">
+                    <input type="password" id="confirmPasswordRegistro" name="confirmPassword" required
+                           class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border pr-10"
+                           placeholder="••••••••">
+                    <button type="button" id="toggleConfirmReg" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-indigo-600 transition-colors">
+                        <span class="material-symbols-outlined text-sm">visibility</span>
+                    </button>
+                </div>
+                <p id="confirmErrorReg" class="hidden mt-1 text-xs text-red-600 font-medium flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">error</span>
+                    <span id="confirmErrorMsgReg">Las contraseñas no coinciden</span>
+                </p>
             </div>
 
             <%-- Nombre --%>
@@ -163,6 +189,89 @@
 </div>
 
 <script type="application/json" id="materiasPorCarreraJsonReg"><c:out value="${materiasPorCarreraJson}" escapeXml="false"/></script>
+
+<script>
+    // ── Validaciones de Email y Contraseña ──
+    (function () {
+        var emailInput = document.getElementById('emailRegistro');
+        var passwordInput = document.getElementById('passwordRegistro');
+        var confirmInput = document.getElementById('confirmPasswordRegistro');
+        var togglePasswordBtn = document.getElementById('togglePasswordReg');
+        var toggleConfirmBtn = document.getElementById('toggleConfirmReg');
+        var emailError = document.getElementById('emailErrorReg');
+        var confirmError = document.getElementById('confirmErrorReg');
+        var form = document.querySelector('form');
+
+        // Validar email en tiempo real
+        function validateEmail(email) {
+            var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        emailInput.addEventListener('blur', function () {
+            if (this.value && !validateEmail(this.value)) {
+                emailError.classList.remove('hidden');
+            } else {
+                emailError.classList.add('hidden');
+            }
+        });
+
+        // Validar coincidencia de contraseñas en tiempo real
+        function validatePasswords() {
+            if (confirmInput.value && passwordInput.value !== confirmInput.value) {
+                confirmError.classList.remove('hidden');
+                return false;
+            } else {
+                confirmError.classList.add('hidden');
+                return true;
+            }
+        }
+
+        passwordInput.addEventListener('input', validatePasswords);
+        confirmInput.addEventListener('input', validatePasswords);
+
+        // Toggle ver/ocultar contraseña
+        togglePasswordBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            var icon = this.querySelector('.material-symbols-outlined');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                passwordInput.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        });
+
+        toggleConfirmBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            var icon = this.querySelector('.material-symbols-outlined');
+            if (confirmInput.type === 'password') {
+                confirmInput.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                confirmInput.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        });
+
+        // Validar al enviar
+        form.addEventListener('submit', function (e) {
+            if (emailInput.value && !validateEmail(emailInput.value)) {
+                e.preventDefault();
+                emailError.classList.remove('hidden');
+                emailInput.focus();
+                return;
+            }
+            if (passwordInput.value !== confirmInput.value) {
+                e.preventDefault();
+                confirmError.classList.remove('hidden');
+                confirmInput.focus();
+                return;
+            }
+        });
+    })();
+</script>
 
 <script>
     (function () {
