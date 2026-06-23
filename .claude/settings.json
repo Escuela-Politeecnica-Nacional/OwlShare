@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"src/main/webapp/WEB-INF/auth\" \"src/main/webapp/WEB-INF/estudiante\" \"src/main/webapp/WEB-INF/tutor\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\aaron\\Escritorio\\ChauquisPro\\MetodologiasAgiles\\SCRUMOWLSHARE\\OwlShare\\src\\main\\webapp\\WEB-INF"
+    ]
+  }
+}
