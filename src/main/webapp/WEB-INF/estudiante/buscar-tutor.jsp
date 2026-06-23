@@ -122,9 +122,10 @@
                                     </div>
                                 </div>
 
-                                <button class="w-full bg-primary text-white font-bold py-2 rounded-lg hover:opacity-90 text-sm">
+                                <a href="${pageContext.request.contextPath}/api/tutores/detalle?id=${tutor.id}"
+                                   class="w-full bg-primary text-white font-bold py-2 rounded-lg hover:opacity-90 text-sm block text-center">
                                     Ver Perfil
-                                </button>
+                                </a>
                             </div>
                         </c:forEach>
                     </div>

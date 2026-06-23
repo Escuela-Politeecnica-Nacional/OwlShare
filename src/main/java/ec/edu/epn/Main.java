@@ -21,6 +21,8 @@ public class Main {
         }
 
         verificarServlet(webapp, "ec/edu/epn/controlador/BuscarTutoresServlet.class");
+        verificarServlet(webapp, "ec/edu/epn/controlador/DetalleTutorServlet.class");
+        verificarServlet(webapp, "ec/edu/epn/controlador/CrearSolicitudServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/RegistroServlet.class");
 
         tomcat.addWebapp("/", webapp.getAbsolutePath());
@@ -30,6 +32,8 @@ public class Main {
         tomcat.start();
         System.out.println("Servidor Tomcat iniciado en http://localhost:" + webPort);
         System.out.println("API tutores: http://localhost:" + webPort + "/api/tutores/buscar?materia=ICCD144");
+        System.out.println("API detalle: http://localhost:" + webPort + "/api/tutores/detalle?id=1");
+        System.out.println("API solicitud: POST http://localhost:" + webPort + "/api/solicitudes");
         tomcat.getServer().await();
     }
 

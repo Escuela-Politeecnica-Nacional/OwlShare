@@ -10,5 +10,6 @@
 
         <!-- La conexión real se inyecta desde HibernateUtil según las variables de entorno. -->
         <mapping class="ec.edu.epn.modelo.Usuario"/>
+        <mapping class="ec.edu.epn.modelo.Solicitud"/>
     </session-factory>
 </hibernate-configuration>

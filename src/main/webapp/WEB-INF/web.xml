@@ -9,8 +9,10 @@
         Rutas MVC (controlador → vista):
           GET|POST /login              → LoginServlet        → login.jsp
           GET|POST /registro           → RegistroServlet     → registro.jsp
-          GET      /api/tutores/buscar → BuscarTutoresServlet → JSON
-          GET  /                       → welcome-file        → login.jsp
+          GET      /api/tutores/buscar  → BuscarTutoresServlet   → JSON
+          GET      /api/tutores/detalle → DetalleTutorServlet    → JSON
+          POST     /api/solicitudes     → CrearSolicitudServlet  → JSON
+          GET  /                       → welcome-file             → login.jsp
     -->
 
     <servlet>
@@ -41,6 +43,26 @@
     <servlet-mapping>
         <servlet-name>BuscarTutoresServlet</servlet-name>
         <url-pattern>/api/tutores/buscar</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DetalleTutorServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.DetalleTutorServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DetalleTutorServlet</servlet-name>
+        <url-pattern>/api/tutores/detalle</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CrearSolicitudServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.CrearSolicitudServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>CrearSolicitudServlet</servlet-name>
+        <url-pattern>/api/solicitudes</url-pattern>
     </servlet-mapping>
 
     <welcome-file-list>
