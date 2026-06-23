@@ -1,0 +1,4 @@
+ec\edu\epn\util\MateriaUtil.class
+ec\edu\epn\controlador\BuscarTutoresServlet.class
+ec\edu\epn\util\HibernateUtil$DbConfig.class
+ec\edu\epn\modelo\TutorResumen.class

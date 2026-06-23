@@ -10,7 +10,7 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '9a8873c2-f08f-41ad-b0e3-30ed1c091200'
+  dockerRegistryServiceConnection: '29d18059-fb10-4f86-b73a-1c8a0550c376'
   imageRepository: 'escuelapoliteecnicanacionalowlshare'
   containerRegistry: 'owlsharecr.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/dockerfile'
@@ -37,3 +37,19 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+
+- stage: Deploy
+  displayName: Deploy to Azure App Service
+  dependsOn: Build
+  jobs:
+  - job: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: AzureWebAppContainer@1
+      displayName: Deploy container to App Service
+      inputs:
+        azureSubscription: 'owlshare-azure'
+        appName: 'owlshare-app'
+        containers: '$(containerRegistry)/$(imageRepository):$(tag)'

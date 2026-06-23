@@ -7,9 +7,10 @@
 
     <!--
         Rutas MVC (controlador → vista):
-          GET|POST /login    → LoginServlet    → login.jsp
-          GET|POST /registro → RegistroServlet → registro.jsp
-          GET  /             → welcome-file    → login.jsp
+          GET|POST /login              → LoginServlet        → login.jsp
+          GET|POST /registro           → RegistroServlet     → registro.jsp
+          GET      /api/tutores/buscar → BuscarTutoresServlet → JSON
+          GET  /                       → welcome-file        → login.jsp
     -->
 
     <servlet>
@@ -30,6 +31,16 @@
     <servlet-mapping>
         <servlet-name>RegistroServlet</servlet-name>
         <url-pattern>/registro</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>BuscarTutoresServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.BuscarTutoresServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>BuscarTutoresServlet</servlet-name>
+        <url-pattern>/api/tutores/buscar</url-pattern>
     </servlet-mapping>
 
     <welcome-file-list>
