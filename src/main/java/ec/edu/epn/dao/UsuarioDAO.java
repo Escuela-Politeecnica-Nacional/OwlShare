@@ -47,6 +47,8 @@ public class UsuarioDAO {
         }
     }
 
+    public Usuario autenticar(String email, String password) {
+        return null; // implementación pendiente
     public List<TutorResumen> buscarTutoresPorMateria(String termino) {
         if (termino == null || termino.isBlank()) {
             return List.of();
