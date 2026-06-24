@@ -193,7 +193,8 @@ public class RegistroServlet extends HttpServlet {
                         || lower.contains("sqlserver")
                         || lower.contains("mssql")
                         || lower.contains("login failed")
-                        || lower.contains("sqlite")) {
+                        || lower.contains("timeout")
+                        || lower.contains("network")) {
                     return true;
                 }
             }
@@ -203,9 +204,8 @@ public class RegistroServlet extends HttpServlet {
     }
 
     private String mensajeErrorBaseDatos() {
-        return "No se pudo conectar a la base de datos. "
-                + "Verifica DB_URL, DB_USER y DB_PASSWORD si usas Azure SQL Server. "
-                + "En local, la app puede usar SQLite con database.local.properties.";
+        return "No se pudo conectar a SQL Server. "
+                + "Verifica DB_URL, DB_USER y DB_PASSWORD o database.local.properties.";
     }
 
     private boolean esViolacionEmailUnico(RuntimeException e) {
