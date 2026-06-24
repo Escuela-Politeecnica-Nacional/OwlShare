@@ -10,6 +10,8 @@
 
         <!-- La conexión real se inyecta desde HibernateUtil con SQL Server. -->
         <mapping class="ec.edu.epn.modelo.Usuario"/>
-        <mapping class="ec.edu.epn.modelo.Solicitud"/>
+        <mapping class="ec.edu.epn.modelo.MateriaCatalogo"/>
+        <mapping class="ec.edu.epn.modelo.Horario"/>
+        <mapping class="ec.edu.epn.modelo.SolicitudTutoria"/>
     </session-factory>
 </hibernate-configuration>

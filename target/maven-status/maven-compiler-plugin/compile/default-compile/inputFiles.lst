@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\controlador\BuscarTutoresServlet.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\controlador\CrearSolicitudServlet.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\controlador\DetalleTutorServlet.java
@@ -24,3 +25,35 @@ D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\JsonUtil.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\MateriaUtil.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\PasswordUtil.java
 D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\TutorPerfilBuilder.java
+=======
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\BuscarTutoresServlet.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\CrearSolicitudServlet.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\DetalleTutorServlet.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\LoginServlet.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\RegistroServlet.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\dao\HorarioDAO.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\dao\MateriaCatalogoDAO.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\dao\SolicitudTutoriaDAO.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\dao\UsuarioDAO.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\Main.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\Carrera.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\EstadoSolicitud.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\Horario.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\Materia.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\MateriaCatalogo.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\MateriaDetalle.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\Rol.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\Semestre.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\SolicitudTutoria.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\TrayectoriaSemestre.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\TutorPerfilDetalle.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\TutorResumen.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\modelo\Usuario.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\CatalogoRegistro.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\HibernateUtil.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\HorarioUtil.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\JsonUtil.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\MateriaUtil.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\PasswordUtil.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\TutorPerfilBuilder.java
+>>>>>>> b883ca00776f7dd0fc63446253532fde400f8987
