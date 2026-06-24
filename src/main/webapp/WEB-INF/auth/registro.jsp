@@ -8,6 +8,7 @@
     <title>Registro - OwlShare</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/styles.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
         tailwind.config = {
@@ -17,10 +18,6 @@
             }}}
         }
     </script>
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        h1, h2 { font-family: 'Manrope', sans-serif; }
-    </style>
 </head>
 <body class="bg-surface text-on-surface min-h-screen flex items-center justify-center p-4">
 
