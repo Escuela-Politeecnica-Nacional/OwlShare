@@ -62,7 +62,7 @@ class LoginServletTest {
         when(request.getMethod()).thenReturn("POST");
         servlet.service(request, response);
 
-        verify(session).setAttribute("usuario", estudiante);
+        verify(session).setAttribute("usuarioLogueado", estudiante);
         verify(response).sendRedirect(contains("/estudiante/inicio"));
     }
 
@@ -81,7 +81,7 @@ class LoginServletTest {
         when(request.getMethod()).thenReturn("POST");
         servlet.service(request, response);
 
-        verify(session).setAttribute("usuario", tutor);
+        verify(session).setAttribute("usuarioLogueado", tutor);
         verify(response).sendRedirect(contains("/tutor/inicio"));
     }
 
@@ -100,7 +100,7 @@ class LoginServletTest {
         when(request.getMethod()).thenReturn("POST");
         servlet.service(request, response);
 
-        verify(session).setAttribute("usuario", admin);
+        verify(session).setAttribute("usuarioLogueado", admin);
         verify(response).sendRedirect(contains("/admin/inicio"));
     }
 
