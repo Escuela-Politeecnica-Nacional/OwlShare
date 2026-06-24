@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
+@WebServlet(name = "LoginServlet", urlPatterns = {"/login", "/"})
 public class LoginServlet extends HttpServlet {
 
     private UsuarioDAO usuarioDAO = new UsuarioDAO();
@@ -32,14 +32,14 @@ public class LoginServlet extends HttpServlet {
 
         if (email.isEmpty() || password == null || password.isBlank()) {
             request.setAttribute("error", "Debes ingresar correo electrónico y contraseña.");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/auth/login.jsp").forward(request, response);
             return;
         }
 
         Usuario usuario = usuarioDAO.autenticar(email, password);
         if (usuario == null) {
             request.setAttribute("error", "Credenciales inválidas.");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/auth/login.jsp").forward(request, response);
             return;
         }
 

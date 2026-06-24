@@ -44,7 +44,7 @@ class LoginServletTest {
     @BeforeEach
     void setUp() {
         when(request.getSession()).thenReturn(session);
-        when(request.getRequestDispatcher("/login.jsp")).thenReturn(dispatcher);
+        when(request.getRequestDispatcher("/WEB-INF/auth/login.jsp")).thenReturn(dispatcher);
     }
 
     @Test
