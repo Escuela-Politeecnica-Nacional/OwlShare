@@ -1,10 +1,14 @@
 package ec.edu.epn.controlador;
 
-import ec.edu.epn.dao.SolicitudDAO;
+import ec.edu.epn.dao.HorarioDAO;
+import ec.edu.epn.dao.MateriaCatalogoDAO;
+import ec.edu.epn.dao.SolicitudTutoriaDAO;
 import ec.edu.epn.dao.UsuarioDAO;
 import ec.edu.epn.modelo.EstadoSolicitud;
+import ec.edu.epn.modelo.Horario;
+import ec.edu.epn.modelo.MateriaCatalogo;
 import ec.edu.epn.modelo.Rol;
-import ec.edu.epn.modelo.Solicitud;
+import ec.edu.epn.modelo.SolicitudTutoria;
 import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.util.CatalogoRegistro;
 import ec.edu.epn.util.HorarioUtil;
@@ -26,7 +30,9 @@ public class CrearSolicitudServlet extends HttpServlet {
     private static final Pattern FECHA_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
 
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
-    private final SolicitudDAO solicitudDAO = new SolicitudDAO();
+    private final MateriaCatalogoDAO materiaCatalogoDAO = new MateriaCatalogoDAO();
+    private final HorarioDAO horarioDAO = new HorarioDAO();
+    private final SolicitudTutoriaDAO solicitudTutoriaDAO = new SolicitudTutoriaDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -35,14 +41,15 @@ public class CrearSolicitudServlet extends HttpServlet {
 
         String estudianteIdParam = trim(request.getParameter("estudianteId"));
         String tutorIdParam = trim(request.getParameter("tutorId"));
+        String horarioIdParam = trim(request.getParameter("horarioId"));
         String codigoMateria = trim(request.getParameter("codigoMateria"));
         String fecha = trim(request.getParameter("fecha"));
         String horaInicio = trim(request.getParameter("horaInicio"));
         String horaFin = trim(request.getParameter("horaFin"));
         String comentario = blankToNull(trim(request.getParameter("comentario")));
 
-        String error = validarCampos(estudianteIdParam, tutorIdParam, codigoMateria,
-                fecha, horaInicio, horaFin);
+        String error = validarCampos(estudianteIdParam, tutorIdParam, horarioIdParam,
+                codigoMateria, fecha, horaInicio, horaFin);
         if (error != null) {
             responderError(response, HttpServletResponse.SC_BAD_REQUEST, error);
             return;
@@ -78,30 +85,79 @@ public class CrearSolicitudServlet extends HttpServlet {
             return;
         }
 
+        MateriaCatalogo materia;
         try {
-            if (solicitudDAO.existeConflictoHorarioTutor(tutorId, fecha, horaInicio, horaFin)) {
-                responderError(response, HttpServletResponse.SC_CONFLICT,
-                        "El tutor no tiene disponibilidad en el horario solicitado.");
-                return;
-            }
+            materia = materiaCatalogoDAO.obtenerOCrear(codigoMateria);
+        } catch (IllegalArgumentException e) {
+            responderError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            return;
         } catch (RuntimeException e) {
             responderError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "No se pudo validar la disponibilidad del horario.");
+                    "No se pudo registrar la materia.");
             return;
         }
 
-        Solicitud solicitud = new Solicitud();
-        solicitud.setEstudianteId(estudianteId);
-        solicitud.setTutorId(tutorId);
-        solicitud.setCodigoMateria(codigoMateria);
-        solicitud.setFecha(fecha);
-        solicitud.setHoraInicio(horaInicio);
-        solicitud.setHoraFin(horaFin);
+        Horario horario;
+        if (!horarioIdParam.isEmpty()) {
+            long horarioId = Long.parseLong(horarioIdParam);
+            Optional<Horario> horarioOpt = horarioDAO.buscarPorId(horarioId);
+            if (horarioOpt.isEmpty()) {
+                responderError(response, HttpServletResponse.SC_BAD_REQUEST,
+                        "El horario indicado no existe.");
+                return;
+            }
+            horario = horarioOpt.get();
+            if (!horario.getTutor().getId().equals(tutorId)) {
+                responderError(response, HttpServletResponse.SC_BAD_REQUEST,
+                        "El horario no pertenece al tutor indicado.");
+                return;
+            }
+            if (!horario.getMateria().getCodigo().equalsIgnoreCase(codigoMateria)) {
+                responderError(response, HttpServletResponse.SC_BAD_REQUEST,
+                        "El horario no corresponde a la materia indicada.");
+                return;
+            }
+            if (!horario.isDisponible()) {
+                responderError(response, HttpServletResponse.SC_CONFLICT,
+                        "El horario ya no está disponible.");
+                return;
+            }
+            try {
+                if (solicitudTutoriaDAO.horarioTieneSolicitudActiva(horarioId)) {
+                    responderError(response, HttpServletResponse.SC_CONFLICT,
+                            "El horario ya tiene una solicitud activa.");
+                    return;
+                }
+            } catch (RuntimeException e) {
+                responderError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "No se pudo validar la disponibilidad del horario.");
+                return;
+            }
+        } else {
+            try {
+                if (solicitudTutoriaDAO.existeConflictoHorarioTutor(tutorId, fecha, horaInicio, horaFin)) {
+                    responderError(response, HttpServletResponse.SC_CONFLICT,
+                            "El tutor no tiene disponibilidad en el horario solicitado.");
+                    return;
+                }
+            } catch (RuntimeException e) {
+                responderError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "No se pudo validar la disponibilidad del horario.");
+                return;
+            }
+
+            horario = horarioDAO.buscarPorTutorFechaYHoras(tutorId, fecha, horaInicio, horaFin)
+                    .orElseGet(() -> horarioDAO.crear(tutor, materia, fecha, horaInicio, horaFin));
+        }
+
+        SolicitudTutoria solicitud = new SolicitudTutoria();
+        solicitud.setEstudiante(estudianteOpt.get());
+        solicitud.setHorario(horario);
+        solicitud.setMateria(materia);
         solicitud.setComentario(comentario);
-        solicitud.setEstado(EstadoSolicitud.PENDIENTE);
 
         try {
-            solicitudDAO.guardar(solicitud);
+            solicitudTutoriaDAO.guardar(solicitud);
         } catch (RuntimeException e) {
             responderError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "No se pudo guardar la solicitud.");
@@ -114,14 +170,16 @@ public class CrearSolicitudServlet extends HttpServlet {
         try (PrintWriter writer = response.getWriter()) {
             writer.write("{");
             writer.write("\"id\":" + solicitud.getId() + ",");
+            writer.write("\"horarioId\":" + horario.getId() + ",");
+            writer.write("\"codigoMateria\":\"" + JsonUtil.escape(materia.getCodigo()) + "\",");
             writer.write("\"mensaje\":\"Solicitud creada exitosamente.\",");
             writer.write("\"estado\":\"" + EstadoSolicitud.PENDIENTE.name() + "\"");
             writer.write("}");
         }
     }
 
-    private String validarCampos(String estudianteId, String tutorId, String codigoMateria,
-                                 String fecha, String horaInicio, String horaFin) {
+    private String validarCampos(String estudianteId, String tutorId, String horarioId,
+                                 String codigoMateria, String fecha, String horaInicio, String horaFin) {
         if (estudianteId.isEmpty()) {
             return "El parámetro 'estudianteId' es obligatorio.";
         }
@@ -131,20 +189,28 @@ public class CrearSolicitudServlet extends HttpServlet {
         if (codigoMateria.isEmpty()) {
             return "El parámetro 'codigoMateria' es obligatorio.";
         }
-        if (fecha.isEmpty()) {
-            return "El parámetro 'fecha' es obligatorio (formato yyyy-MM-dd).";
-        }
-        if (!FECHA_PATTERN.matcher(fecha).matches()) {
-            return "El formato de 'fecha' debe ser yyyy-MM-dd.";
-        }
-        if (!HorarioUtil.esHoraValida(horaInicio)) {
-            return "El parámetro 'horaInicio' debe tener formato HH:mm.";
-        }
-        if (!HorarioUtil.esHoraValida(horaFin)) {
-            return "El parámetro 'horaFin' debe tener formato HH:mm.";
-        }
-        if (!HorarioUtil.esRangoValido(horaInicio, horaFin)) {
-            return "La hora de inicio debe ser anterior a la hora de fin.";
+        if (horarioId.isEmpty()) {
+            if (fecha.isEmpty()) {
+                return "Debe indicar 'horarioId' o 'fecha' con 'horaInicio' y 'horaFin'.";
+            }
+            if (!FECHA_PATTERN.matcher(fecha).matches()) {
+                return "El formato de 'fecha' debe ser yyyy-MM-dd.";
+            }
+            if (!HorarioUtil.esHoraValida(horaInicio)) {
+                return "El parámetro 'horaInicio' debe tener formato HH:mm.";
+            }
+            if (!HorarioUtil.esHoraValida(horaFin)) {
+                return "El parámetro 'horaFin' debe tener formato HH:mm.";
+            }
+            if (!HorarioUtil.esRangoValido(horaInicio, horaFin)) {
+                return "La hora de inicio debe ser anterior a la hora de fin.";
+            }
+        } else {
+            try {
+                Long.parseLong(horarioId);
+            } catch (NumberFormatException e) {
+                return "El parámetro 'horarioId' debe ser numérico.";
+            }
         }
         try {
             Long.parseLong(estudianteId);

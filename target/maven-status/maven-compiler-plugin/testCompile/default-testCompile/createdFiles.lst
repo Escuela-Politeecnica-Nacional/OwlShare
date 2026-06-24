@@ -1,2 +1,4 @@
-controlador\LoginServletTest.class
+controlador\BuscarTutoresServletTest.class
 controlador\RegistroServletTest.class
+controlador\LoginServletTest.class
+util\SolicitudTutoriaTest.class
