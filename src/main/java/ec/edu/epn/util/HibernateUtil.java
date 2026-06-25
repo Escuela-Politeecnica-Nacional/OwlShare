@@ -10,6 +10,12 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Properties;
 
+
+/**
+ * Utility class for managing Hibernate SessionFactory.
+ * <p>  
+ * This class provides a singleton instance of SessionFactory, which is used to create Hibernate sessions for database operations.
+ */
 public final class HibernateUtil {
 
     private static final String DEFAULT_SQLSERVER_URL =
