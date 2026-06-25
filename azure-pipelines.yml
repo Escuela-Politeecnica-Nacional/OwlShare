@@ -6,19 +6,20 @@ trigger:
 - main
 
 resources:
-- repo: self
+  repositories:
+  - repository: self
+    type: github
+    endpoint: 'github.com_Escuela-Politecnica-Nacional'
+    name: Escuela-Politeecnica-Nacional/OwlShare
 
 variables:
-  # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '29d18059-fb10-4f86-b73a-1c8a0550c376'
   imageRepository: 'escuelapoliteecnicanacionalowlshare'
   containerRegistry: 'owlsharecr.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/dockerfile'
   tag: '$(Build.BuildId)'
-
-  # Agent VM image name
   vmImageName: 'ubuntu-latest'
-
+  
 stages:
 - stage: Build
   displayName: Build and push stage
