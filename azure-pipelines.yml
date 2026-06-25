@@ -5,13 +5,6 @@
 trigger:
 - main
 
-resources:
-  repositories:
-  - repository: self
-    type: github
-    endpoint: 'github.com_Escuela-Politecnica-Nacional'
-    name: Escuela-Politeecnica-Nacional/OwlShare
-
 variables:
   dockerRegistryServiceConnection: '29d18059-fb10-4f86-b73a-1c8a0550c376'
   imageRepository: 'escuelapoliteecnicanacionalowlshare'
@@ -19,7 +12,7 @@ variables:
   dockerfilePath: '$(Build.SourcesDirectory)/dockerfile'
   tag: '$(Build.BuildId)'
   vmImageName: 'ubuntu-latest'
-  
+
 stages:
 - stage: Build
   displayName: Build and push stage
