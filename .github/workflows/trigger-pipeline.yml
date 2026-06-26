@@ -13,4 +13,4 @@ jobs:
             -u ":${{ secrets.AZURE_DEVOPS_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d '{"definition": {"id": 4}}' \
-            "https://dev.azure.com/owlshare-mentorias/owlshare/_apis/build/builds?api-version=6.0"
+            "https://dev.azure.com/juan-arroyo/GR07-ISWD622-26A/_apis/build/builds?api-version=6.0"
