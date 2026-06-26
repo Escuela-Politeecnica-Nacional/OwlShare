@@ -249,6 +249,25 @@ public final class CatalogoRegistro {
         return new Materia(codigo, nombre, semestre);
     }
 
+    public static List<Materia> materiasDeCarrera(Carrera carrera) {
+        if (carrera == null) {
+            return List.of();
+        }
+        return MATERIAS_POR_CARRERA.getOrDefault(carrera, List.of());
+    }
+
+    public static Materia buscarMateriaEnCarrera(Carrera carrera, String codigo) {
+        if (codigo == null || codigo.isBlank()) {
+            return null;
+        }
+        for (Materia materia : materiasDeCarrera(carrera)) {
+            if (materia.getCodigo().equalsIgnoreCase(codigo.trim())) {
+                return materia;
+            }
+        }
+        return null;
+    }
+
     public static Semestre[] semestres() {
         return Semestre.values();
     }

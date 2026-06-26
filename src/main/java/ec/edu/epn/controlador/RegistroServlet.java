@@ -6,6 +6,7 @@ import ec.edu.epn.modelo.Rol;
 import ec.edu.epn.modelo.Semestre;
 import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.util.CatalogoRegistro;
+import ec.edu.epn.util.MateriaTutorReglas;
 import ec.edu.epn.util.PasswordUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -148,19 +149,23 @@ public class RegistroServlet extends HttpServlet {
             if (materias == null || materias.length == 0) {
                 return "Debes seleccionar al menos una materia.";
             }
+
+            Semestre semestre;
+            Carrera carrera;
             try {
-                Semestre semestre = Semestre.valueOf(semestreParam);
-                if (semestre.getNumero() <= 1) {
-                    return "En primer semestre no puedes registrarte como tutor con materias.";
-                }
+                semestre = Semestre.valueOf(semestreParam);
             } catch (IllegalArgumentException e) {
                 return "El semestre seleccionado no es válido.";
             }
             try {
-                Carrera.valueOf(carreraParam);
+                carrera = Carrera.valueOf(carreraParam);
             } catch (IllegalArgumentException e) {
                 return "La carrera seleccionada no es válida.";
             }
+
+            return MateriaTutorReglas
+                    .validarCodigosSeleccionados(carrera, semestre, Arrays.asList(materias))
+                    .orElse(null);
         }
 
         return null;
@@ -175,6 +180,7 @@ public class RegistroServlet extends HttpServlet {
 
     private void cargarCatalogo(HttpServletRequest request) {
         request.setAttribute("semestres", CatalogoRegistro.semestres());
+        request.setAttribute("semestresTutor", MateriaTutorReglas.semestresPermitidosParaTutor());
         request.setAttribute("carreras", CatalogoRegistro.carreras());
         request.setAttribute("materiasPorCarreraJson", CatalogoRegistro.materiasPorCarreraJson());
     }

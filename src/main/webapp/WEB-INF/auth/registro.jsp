@@ -126,7 +126,7 @@
                     </c:forEach>
                 </select>
                 <p id="hintSemestreTutor" class="hidden text-xs text-slate-500 mt-1">
-                    Solo podrás elegir materias de semestres <strong>anteriores</strong> al que cursas (ej. 5.º → 1.º a 4.º).
+                    Solo estudiantes del <strong>2.º al 9.º semestre</strong> pueden ser tutores. Solo podrás elegir materias de semestres <strong>anteriores</strong> al que cursas.
                 </p>
             </div>
 
@@ -282,7 +282,35 @@
         var form             = document.querySelector('form');
         var materiasPorCarrera = JSON.parse(document.getElementById('materiasPorCarreraJsonReg').textContent);
 
+        var SEMESTRE_MIN_TUTOR = 2;
+        var SEMESTRE_MAX_TUTOR = 9;
+
         var selectedCodigos = new Set();
+
+        function semestreValidoParaTutor(numero) {
+            return numero >= SEMESTRE_MIN_TUTOR && numero <= SEMESTRE_MAX_TUTOR;
+        }
+
+        function actualizarOpcionesSemestre() {
+            var esTutor = rolSelect.value === 'TUTOR';
+            Array.from(selectSemestre.options).forEach(function (opt, index) {
+                if (index === 0) {
+                    return;
+                }
+                var numero = parseInt(opt.getAttribute('data-num'), 10);
+                var permitido = !esTutor || semestreValidoParaTutor(numero);
+                opt.hidden = !permitido;
+                opt.disabled = !permitido;
+            });
+
+            if (esTutor && selectSemestre.value) {
+                var seleccionado = selectSemestre.options[selectSemestre.selectedIndex];
+                var numeroSeleccionado = parseInt(seleccionado.getAttribute('data-num'), 10);
+                if (!semestreValidoParaTutor(numeroSeleccionado)) {
+                    selectSemestre.value = '';
+                }
+            }
+        }
 
         function topeSemestreTutor() {
             if (rolSelect.value !== 'TUTOR') return null;
@@ -322,8 +350,12 @@
                 appendHintOption('— Primero elige tu semestre arriba —');
                 return;
             }
-            if (tope <= 1) {
-                appendHintOption('— En 1.er semestre no puedes ofrecer materias —');
+            if (!semestreValidoParaTutor(tope)) {
+                if (tope <= 1) {
+                    appendHintOption('— En 1.er semestre no puedes ofrecer materias —');
+                } else {
+                    appendHintOption('— Solo tutores del 2.º al 9.º semestre —');
+                }
                 return;
             }
 
@@ -373,6 +405,7 @@
             selectSemestre.required = esTutor;
             selectCarrera.required = esTutor;
             selectMateria.disabled = !esTutor;
+            actualizarOpcionesSemestre();
         }
 
         rolSelect.addEventListener('change', function () {
@@ -450,10 +483,12 @@
                     return;
                 }
                 var tn = topeSemestreTutor();
-                if (tn !== null && tn <= 1) {
+                if (tn !== null && !semestreValidoParaTutor(tn)) {
                     e.preventDefault();
                     document.getElementById('errorMateriasMsg').textContent =
-                        'En primer semestre no puedes ofrecer materias como tutor; elige otro semestre o regístrate como estudiante.';
+                        tn <= 1
+                            ? 'En primer semestre no puedes ofrecer materias como tutor; elige otro semestre o regístrate como estudiante.'
+                            : 'Solo estudiantes del 2.º al 9.º semestre pueden registrarse como tutores.';
                     errorMaterias.classList.remove('hidden');
                     selectSemestre.focus();
                     return;
