@@ -13,6 +13,7 @@ import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.util.CatalogoRegistro;
 import ec.edu.epn.util.HorarioUtil;
 import ec.edu.epn.util.JsonUtil;
+import ec.edu.epn.util.MateriaTutorReglas;
 import ec.edu.epn.util.MateriaUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -73,9 +74,24 @@ public class CrearSolicitudServlet extends HttpServlet {
         }
 
         Usuario tutor = tutorOpt.get();
+        if (tutor.getCarrera() == null || tutor.getSemestre() == null) {
+            responderError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    "El tutor no tiene carrera o semestre registrados.");
+            return;
+        }
+        if (!MateriaTutorReglas.esSemestreValidoParaTutor(tutor.getSemestre())) {
+            responderError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    "El tutor no tiene un semestre válido para ofrecer tutorías (2.º–9.º).");
+            return;
+        }
         if (!MateriaUtil.contieneCodigo(MateriaUtil.parseCodigos(tutor.getMaterias()), codigoMateria)) {
             responderError(response, HttpServletResponse.SC_BAD_REQUEST,
                     "El tutor no ofrece la materia indicada.");
+            return;
+        }
+        if (!MateriaTutorReglas.esMateriaPermitida(tutor.getCarrera(), tutor.getSemestre(), codigoMateria)) {
+            responderError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    "La materia no está permitida según el semestre y la carrera del tutor.");
             return;
         }
 

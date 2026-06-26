@@ -7,7 +7,9 @@ import ec.edu.epn.controlador.CrearSolicitudServlet;
 import ec.edu.epn.dao.SolicitudTutoriaDAO;
 import ec.edu.epn.dao.UsuarioDAO;
 import ec.edu.epn.modelo.Horario;
+import ec.edu.epn.modelo.Carrera;
 import ec.edu.epn.modelo.Rol;
+import ec.edu.epn.modelo.Semestre;
 import ec.edu.epn.modelo.Usuario;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -96,6 +98,8 @@ class CrearSolicitudServletTest {
         Usuario tutor = new Usuario();
         tutor.setId(2L);
         tutor.setRol(Rol.TUTOR);
+        tutor.setCarrera(Carrera.SOFTWARE);
+        tutor.setSemestre(Semestre.QUINTO);
         tutor.setMaterias("ICCD144");
         when(usuarioDAO.buscarPorId(2L)).thenReturn(Optional.of(tutor));
 
