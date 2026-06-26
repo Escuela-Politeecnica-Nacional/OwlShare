@@ -1,0 +1,16 @@
+name: Trigger Azure Pipeline on merge to main
+on:
+  push:
+    branches:
+      - main
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Azure DevOps Pipeline
+        run: |
+          curl -X POST \
+            -u ":${{ secrets.AZURE_DEVOPS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"definition": {"id": 4}}' \
+            "https://dev.azure.com/owlshare-mentorias/owlshare/_apis/build/builds?api-version=6.0"

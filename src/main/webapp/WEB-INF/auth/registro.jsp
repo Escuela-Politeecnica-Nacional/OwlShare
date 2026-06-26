@@ -159,13 +159,34 @@
         <%-- Sección de materias (solo TUTOR): lista depende de la carrera elegida arriba --%>
         <div id="seccionMaterias" class="hidden space-y-4">
             <div>
-                <label class="block text-sm font-bold text-indigo-900 mb-2">Materias relacionadas *</label>
+                <div class="flex justify-between items-start mb-2">
+                    <label class="block text-sm font-bold text-indigo-900">Materias relacionadas *</label>
+                    <span id="rangeSemestres" class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full font-semibold hidden"></span>
+                </div>
                 <p class="text-xs text-slate-500 mb-2">Misma <strong>carrera</strong> y <strong>semestre</strong> que arriba: solo asignaturas de semestres ya cursados (inferiores al tuyo).</p>
-                <div id="chipsRegistro" class="flex flex-wrap gap-2 mb-3 min-h-[2rem]"></div>
+
+                <%-- Chips de materias seleccionadas --%>
+                <div id="chipsRegistro" class="flex flex-wrap gap-2 mb-3 min-h-[2rem] p-2 bg-slate-50 rounded-lg transition-all" style="border: 2px solid transparent;"></div>
+
+                <%-- Selector de materias --%>
                 <select id="selectMateriaRegistro" disabled
                         class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border">
                     <option value="">— Primero confirma tu carrera arriba —</option>
                 </select>
+
+                <%-- Estado vacío --%>
+                <p id="materiasVacias" class="hidden mt-4 text-center py-6 text-slate-500 bg-slate-50 rounded-lg">
+                    <span class="material-symbols-outlined text-3xl text-slate-300 block mb-2">library_books</span>
+                    <span>No hay materias disponibles con tu configuración actual.</span>
+                </p>
+
+                <%-- Contador de materias seleccionadas --%>
+                <p id="contadorMaterias" class="hidden mt-2 text-xs text-slate-600 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                    <span id="contadorMateriasMsg">0 materias seleccionadas</span>
+                </p>
+
+                <%-- Errores --%>
                 <p id="errorMaterias" class="hidden mt-2 text-sm text-red-600 font-medium flex items-center gap-1">
                     <span class="material-symbols-outlined text-base">error</span>
                     <span id="errorMateriasMsg">Debes seleccionar al menos una materia.</span>
@@ -279,6 +300,9 @@
         var selectMateria    = document.getElementById('selectMateriaRegistro');
         var chipsContainer   = document.getElementById('chipsRegistro');
         var errorMaterias    = document.getElementById('errorMaterias');
+        var rangeSemestres   = document.getElementById('rangeSemestres');
+        var materiasVacias   = document.getElementById('materiasVacias');
+        var contadorMaterias = document.getElementById('contadorMaterias');
         var form             = document.querySelector('form');
         var materiasPorCarrera = JSON.parse(document.getElementById('materiasPorCarreraJsonReg').textContent);
 
@@ -328,6 +352,41 @@
             selectMateria.appendChild(h);
         }
 
+        function validarPrerequisitosMateria(car, tope) {
+            if (!car || !materiasPorCarrera[car]) {
+                return '— Primero elige tu carrera arriba —';
+            }
+            if (tope == null) {
+                return '— Primero elige tu semestre arriba —';
+            }
+            if (!semestreValidoParaTutor(tope)) {
+                if (tope <= 1) {
+                    return '— En 1.er semestre no puedes ofrecer materias —';
+                }
+                return '— Solo tutores del 2.º al 9.º semestre —';
+            }
+            return null;
+        }
+
+        function construirListaMaterias(car, tope) {
+            return materiasPorCarrera[car].slice()
+                .filter(function (m) { return m.semestre < tope; })
+                .sort(function (a, b) {
+                    return a.semestre !== b.semestre
+                        ? a.semestre - b.semestre
+                        : a.nombre.localeCompare(b.nombre);
+                });
+        }
+
+        function updateRangeSemestres(tope) {
+            if (!tope || !semestreValidoParaTutor(tope)) {
+                rangeSemestres.classList.add('hidden');
+                return;
+            }
+            rangeSemestres.textContent = '1.º a ' + (tope - 1) + '.º';
+            rangeSemestres.classList.remove('hidden');
+        }
+
         function refillMaterias() {
             selectMateria.innerHTML = '';
             var def = document.createElement('option');
@@ -336,41 +395,30 @@
             selectMateria.appendChild(def);
 
             if (rolSelect.value !== 'TUTOR') {
+                materiasVacias.classList.add('hidden');
                 return;
             }
 
             var car = selectCarrera.value;
-            if (!car || !materiasPorCarrera[car]) {
-                appendHintOption('— Primero elige tu carrera arriba —');
-                return;
-            }
-
             var tope = topeSemestreTutor();
-            if (tope == null) {
-                appendHintOption('— Primero elige tu semestre arriba —');
-                return;
-            }
-            if (!semestreValidoParaTutor(tope)) {
-                if (tope <= 1) {
-                    appendHintOption('— En 1.er semestre no puedes ofrecer materias —');
-                } else {
-                    appendHintOption('— Solo tutores del 2.º al 9.º semestre —');
-                }
+
+            updateRangeSemestres(tope);
+
+            var error = validarPrerequisitosMateria(car, tope);
+            if (error) {
+                appendHintOption(error);
+                materiasVacias.classList.add('hidden');
                 return;
             }
 
-            var list = materiasPorCarrera[car].slice().filter(function (m) {
-                return m.semestre < tope;
-            }).sort(function (a, b) {
-                if (a.semestre !== b.semestre) return a.semestre - b.semestre;
-                return a.nombre.localeCompare(b.nombre);
-            });
-
+            var list = construirListaMaterias(car, tope);
             if (list.length === 0) {
                 appendHintOption('— No hay materias de semestres anteriores para tu caso —');
+                materiasVacias.classList.remove('hidden');
                 return;
             }
 
+            materiasVacias.classList.add('hidden');
             list.forEach(function (m) {
                 var opt = document.createElement('option');
                 opt.value = m.codigo;
@@ -378,6 +426,16 @@
                 opt.textContent = m.nombre + ' — ' + m.codigo;
                 selectMateria.appendChild(opt);
             });
+        }
+
+        function updateContadorMaterias() {
+            var count = selectedCodigos.size;
+            if (count === 0) {
+                contadorMaterias.classList.add('hidden');
+            } else {
+                document.getElementById('contadorMateriasMsg').textContent = count + ' materia' + (count !== 1 ? 's' : '') + ' seleccionada' + (count !== 1 ? 's' : '');
+                contadorMaterias.classList.remove('hidden');
+            }
         }
 
         function clearMaterias() {
@@ -388,6 +446,8 @@
             selectedCodigos.clear();
             chipsContainer.innerHTML = '';
             errorMaterias.classList.add('hidden');
+            updateContadorMaterias();
+            rangeSemestres.classList.add('hidden');
         }
 
         function syncRolUi() {
@@ -408,6 +468,13 @@
             actualizarOpcionesSemestre();
         }
 
+        function handleMateriaChange() {
+            if (rolSelect.value === 'TUTOR') {
+                clearMaterias();
+                refillMaterias();
+            }
+        }
+
         rolSelect.addEventListener('change', function () {
             if (this.value === 'TUTOR') {
                 seccionMaterias.classList.remove('hidden');
@@ -420,18 +487,8 @@
             }
         });
 
-        selectSemestre.addEventListener('change', function () {
-            if (rolSelect.value === 'TUTOR') {
-                clearMaterias();
-                refillMaterias();
-            }
-        });
-
-        selectCarrera.addEventListener('change', function () {
-            if (rolSelect.value === 'TUTOR') {
-                clearMaterias();
-                refillMaterias();
-            }
+        [selectSemestre, selectCarrera].forEach(function (el) {
+            el.addEventListener('change', handleMateriaChange);
         });
 
         selectMateria.addEventListener('change', function () {
@@ -444,7 +501,7 @@
             errorMaterias.classList.add('hidden');
 
             var chip = document.createElement('span');
-            chip.className = 'inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold text-white';
+            chip.className = 'inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold text-white animate-scale-in';
             chip.style.backgroundColor = '#56C7E6';
 
             var hidden = document.createElement('input');
@@ -458,19 +515,25 @@
 
             var btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'ml-1 text-white/80 hover:text-white font-bold leading-none';
+            btn.className = 'ml-1 text-white/80 hover:text-white font-bold leading-none transition-colors';
             btn.textContent = '×';
             btn.addEventListener('click', function () {
                 selectedCodigos.delete(cod);
                 chip.remove();
                 var h = document.getElementById('hidden_mat_' + cod.replace(/[^a-zA-Z0-9]/g, '_'));
                 if (h) h.remove();
+                updateContadorMaterias();
             });
 
             chip.appendChild(label);
             chip.appendChild(btn);
             chipsContainer.appendChild(chip);
             form.appendChild(hidden);
+            updateContadorMaterias();
+
+            if (chipsContainer.children.length > 0) {
+                chipsContainer.style.borderColor = '#D1D5DB';
+            }
         });
 
         form.addEventListener('submit', function (e) {

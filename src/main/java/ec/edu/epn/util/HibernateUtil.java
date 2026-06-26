@@ -10,7 +10,17 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Properties;
 
+
+/**
+ * Utility class for managing Hibernate SessionFactory.
+ * <p>  
+ * This class provides a singleton instance of SessionFactory, which is used to create Hibernate sessions for database operations.
+ */
 public final class HibernateUtil {
+
+    private static final String DEFAULT_SQLSERVER_URL =
+            "jdbc:sqlserver://owlshare-server.database.windows.net:1433;database=db-owlshare;encrypt=true;trustServerCertificate=false;loginTimeout=30;";
+    private static final String DEFAULT_SQLSERVER_USER = "sqladmin";
 
     private static volatile SessionFactory sessionFactory;
 
@@ -58,42 +68,34 @@ public final class HibernateUtil {
         String url = firstNonBlank(
                 System.getenv("DB_URL"),
                 properties.getProperty("db.url"),
-                "jdbc:sqlite:owlshare.db"
+                DEFAULT_SQLSERVER_URL
         );
 
-        if (isSqlServerUrl(url)) {
-            String username = firstNonBlank(System.getenv("DB_USER"), properties.getProperty("db.user"));
-            String password = firstNonBlank(System.getenv("DB_PASSWORD"), properties.getProperty("db.password"));
-            if (username.isBlank() || password.isBlank()) {
-                throw new IllegalStateException(
-                        "DB_USER y DB_PASSWORD son obligatorios cuando DB_URL apunta a SQL Server."
-                );
-            }
-            return new DbConfig(
-                    url,
-                    "com.microsoft.sqlserver.jdbc.SQLServerDriver",
-                    "org.hibernate.dialect.SQLServerDialect",
-                    username,
-                    password
+        if (!isSqlServerUrl(url)) {
+            throw new IllegalStateException(
+                    "La aplicación está configurada para usar SQL Server. " +
+                            "Define DB_URL con un jdbc:sqlserver://... o deja la configuración por defecto."
             );
         }
 
-        if (url.startsWith("jdbc:postgresql:")) {
-            return new DbConfig(
-                    url,
-                    "org.postgresql.Driver",
-                    "org.hibernate.dialect.PostgreSQLDialect",
-                    firstNonBlank(System.getenv("DB_USER"), properties.getProperty("db.user"), "postgres"),
-                    firstNonBlank(System.getenv("DB_PASSWORD"), properties.getProperty("db.password"), "postgres")
+        String username = firstNonBlank(
+                System.getenv("DB_USER"),
+                properties.getProperty("db.user"),
+                DEFAULT_SQLSERVER_USER
+        );
+        String password = firstNonBlank(System.getenv("DB_PASSWORD"), properties.getProperty("db.password"));
+        if (password.isBlank()) {
+            throw new IllegalStateException(
+                    "Falta DB_PASSWORD. Defínelo como variable de entorno o en database.local.properties."
             );
         }
 
         return new DbConfig(
                 url,
-                "org.sqlite.JDBC",
-                "org.hibernate.community.dialect.SQLiteDialect",
-                null,
-                null
+                "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+                "org.hibernate.dialect.SQLServerDialect",
+                username,
+                password
         );
     }
 

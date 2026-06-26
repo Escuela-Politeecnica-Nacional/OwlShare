@@ -1,4 +1,8 @@
 ec\edu\epn\util\MateriaUtil.class
+<<<<<<< HEAD
+ec\edu\epn\controlador\LoginServlet$1.class
+ec\edu\epn\controlador\BuscarTutoresServlet.class
+=======
 ec\edu\epn\modelo\SolicitudTutoria.class
 ec\edu\epn\modelo\MateriaCatalogo.class
 ec\edu\epn\dao\HorarioDAO.class
@@ -7,5 +11,6 @@ ec\edu\epn\controlador\LoginServlet$1.class
 ec\edu\epn\controlador\BuscarTutoresServlet.class
 ec\edu\epn\modelo\Horario.class
 ec\edu\epn\dao\SolicitudTutoriaDAO.class
+>>>>>>> b883ca00776f7dd0fc63446253532fde400f8987
 ec\edu\epn\util\HibernateUtil$DbConfig.class
 ec\edu\epn\modelo\TutorResumen.class

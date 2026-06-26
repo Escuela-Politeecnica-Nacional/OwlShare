@@ -14,6 +14,9 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * Servlet implementation class BuscarTutoresServlet
+ */ 
 public class BuscarTutoresServlet extends HttpServlet {
 
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();

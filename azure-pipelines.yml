@@ -1,22 +1,12 @@
-# Docker
-# Build and push an image to Azure Container Registry
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
 trigger:
 - main
 
-resources:
-- repo: self
-
 variables:
-  # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '29d18059-fb10-4f86-b73a-1c8a0550c376'
   imageRepository: 'escuelapoliteecnicanacionalowlshare'
   containerRegistry: 'owlsharecr.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/dockerfile'
   tag: '$(Build.BuildId)'
-
-  # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
 stages:
@@ -38,18 +28,17 @@ stages:
         tags: |
           $(tag)
 
-- stage: Deploy
-  displayName: Deploy to Azure App Service
-  dependsOn: Build
-  jobs:
-  - job: Deploy
-    displayName: Deploy
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: AzureWebAppContainer@1
-      displayName: Deploy container to App Service
+    - task: PowerShell@2
+      displayName: Generate artifact manifest
       inputs:
-        azureSubscription: 'owlshare-azure'
-        appName: 'owlshare-app'
-        containers: '$(containerRegistry)/$(imageRepository):$(tag)'
+        targetType: 'inline'
+        script: |
+          New-Item -ItemType Directory -Force -Path "$(Build.ArtifactStagingDirectory)/manifest"
+          "$(containerRegistry)/$(imageRepository):$(tag)" | Out-File "$(Build.ArtifactStagingDirectory)/manifest/image.txt"
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish artifact
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/manifest'
+        ArtifactName: 'manifest'
+        publishLocation: 'Container'
