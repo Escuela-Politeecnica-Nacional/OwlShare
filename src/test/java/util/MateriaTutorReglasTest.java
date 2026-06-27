@@ -12,6 +12,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MateriaTutorReglasTest {
+    // ── REGLA: semestre mínimo para ser tutor ──────────────────
+    // Un estudiante de primer semestre no puede registrarse como
+    // tutor porque no tiene materias anteriores que pueda enseñar.
 
     @Test
     void primerSemestreNoPuedeOfrecerMaterias() {
@@ -24,6 +27,9 @@ class MateriaTutorReglasTest {
         assertTrue(MateriaTutorReglas.puedeOfrecerMaterias(Semestre.QUINTO));
     }
 
+    // ── REGLA: materias visibles según semestre del tutor ─────
+    // Un tutor solo puede ofrecer materias de semestres anteriores
+    // al suyo, nunca del semestre actual ni de semestres superiores.
     @Test
     void tutorQuintoSemestreSoloVeMateriasDePrimerACuarto() {
         List<Materia> permitidas = MateriaTutorReglas.materiasPermitidas(Carrera.SOFTWARE, Semestre.QUINTO);
@@ -42,6 +48,11 @@ class MateriaTutorReglasTest {
         assertTrue(permitidas.stream().allMatch(m -> m.getSemestre() == 1));
     }
 
+
+    // ── REGLA: validación de materia individual ────────────────
+    // Antes de guardar el registro, cada código de materia se
+    // valida individualmente para asegurarse de que el tutor
+    // puede impartirla.
     @Test
     void aceptaMateriaValidaParaSemestreDelTutor() {
         assertTrue(MateriaTutorReglas.esMateriaPermitida(
@@ -60,6 +71,10 @@ class MateriaTutorReglasTest {
                 Carrera.SOFTWARE, Semestre.QUINTO, "IDSD513"));
     }
 
+    // ── REGLA: validación del conjunto de materias seleccionadas
+    // El servlet llama a validarCodigosSeleccionados con todos los
+    // códigos que el usuario marcó en el formulario. Si alguno
+    // es inválido, se retorna un mensaje de error descriptivo.
     @Test
     void validacionAceptaSeleccionCorrecta() {
         Optional<String> error = MateriaTutorReglas.validarCodigosSeleccionados(
@@ -95,6 +110,9 @@ class MateriaTutorReglasTest {
         assertTrue(error.get().contains("no pertenece"));
     }
 
+    // ── REGLA: semestre máximo para ser tutor ─────────────────
+    // El décimo semestre tampoco puede ser tutor (está en tesis/
+    // etapa final). Solo son válidos del 2.º al 9.º semestre.
     @Test
     void decimoSemestreNoPuedeSerTutor() {
         assertFalse(MateriaTutorReglas.esSemestreValidoParaTutor(Semestre.DECIMO));
@@ -117,6 +135,9 @@ class MateriaTutorReglasTest {
         assertFalse(semestres.contains(Semestre.DECIMO));
     }
 
+    // ── REGLA: mensajes de error específicos por semestre ─────
+    // El mensaje que ve el usuario en pantalla debe ser claro
+    // sobre por qué fue rechazado su registro.
     @Test
     void validacionRechazaDecimoSemestreComoTutor() {
         Optional<String> error = MateriaTutorReglas.validarCodigosSeleccionados(
