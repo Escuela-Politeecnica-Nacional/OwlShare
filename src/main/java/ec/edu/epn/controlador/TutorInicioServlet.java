@@ -1,0 +1,50 @@
+package ec.edu.epn.controlador;
+
+import ec.edu.epn.modelo.Rol;
+import ec.edu.epn.modelo.TutorPerfilVista;
+import ec.edu.epn.modelo.Usuario;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
+import java.util.List;
+
+public class TutorInicioServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Usuario usuario = session != null
+                ? (Usuario) session.getAttribute("usuarioLogueado")
+                : null;
+
+        if (usuario == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        if (usuario.getRol() != Rol.TUTOR) {
+            response.sendRedirect(request.getContextPath() + destinoPorRol(usuario.getRol()));
+            return;
+        }
+
+        request.setAttribute("tutorPerfil", TutorPerfilVista.desde(usuario));
+        request.setAttribute("materialesAprobados", 0);
+        request.setAttribute("materialesPendientes", 0);
+        request.setAttribute("sesiones", List.of());
+
+        request.getRequestDispatcher("/WEB-INF/tutor/dashboard-tutor.jsp").forward(request, response);
+    }
+
+    private String destinoPorRol(Rol rol) {
+        return switch (rol) {
+            case ESTUDIANTE -> "/estudiante/inicio";
+            case TUTOR -> "/tutor/inicio";
+            case ADMIN -> "/admin/inicio";
+        };
+    }
+}
