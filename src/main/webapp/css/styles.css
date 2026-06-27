@@ -77,3 +77,26 @@ h1, h2, h3 {
 .animate-scale-in {
     animation: scale-in 0.3s ease-out;
 }
+
+/* Form Validation */
+.field-error {
+    display: none;
+}
+
+.field-error.visible {
+    display: flex;
+}
+
+.invalid-field {
+    border-color: #ba1a1a !important;
+    outline: 2px solid #ba1a1a;
+}
+
+/* Dropzone */
+.dropzone-container {
+    border-color: rgba(51, 65, 85, 0.3);
+}
+
+.dropzone-container:hover {
+    border-color: rgba(51, 65, 85, 0.5);
+}
