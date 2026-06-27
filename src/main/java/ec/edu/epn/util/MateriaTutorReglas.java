@@ -1,5 +1,6 @@
 package ec.edu.epn.util;
 
+import ec.edu.epn.catalogo.MateriasCatalogo;
 import ec.edu.epn.modelo.Carrera;
 import ec.edu.epn.modelo.Materia;
 import ec.edu.epn.modelo.Semestre;
@@ -12,9 +13,13 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Reglas de negocio para tutores (estudiantes activos, 2.º–9.º semestre):
- * solo pueden ofrecer materias de su carrera cuyo semestre curricular sea
- * estrictamente anterior al semestre que cursan.
+ * Reglas de tutoría:
+ * <ul>
+ *   <li>Tutor: estudiante del 2.º al 9.º semestre.</li>
+ *   <li>Materias: de su carrera, semestre curricular estrictamente anterior al que cursa
+ *       (un tutor de 9.º solo puede ofrecer materias del 1.º al 8.º).</li>
+ *   <li>Excluidas: prácticas, titulación e integración curricular.</li>
+ * </ul>
  */
 public final class MateriaTutorReglas {
 
@@ -66,8 +71,8 @@ public final class MateriaTutorReglas {
 
         int semestreActual = semestreTutor.getNumero();
         List<Materia> permitidas = new ArrayList<>();
-        for (Materia materia : CatalogoRegistro.materiasDeCarrera(carrera)) {
-            if (materia.getSemestre() < semestreActual) {
+        for (Materia materia : MateriasCatalogo.materiasDeCarrera(carrera)) {
+            if (cumpleReglasTutoria(materia, semestreActual)) {
                 permitidas.add(materia);
             }
         }
@@ -86,8 +91,8 @@ public final class MateriaTutorReglas {
             return false;
         }
 
-        Materia materia = CatalogoRegistro.buscarMateriaEnCarrera(carrera, codigoMateria);
-        return materia != null && materia.getSemestre() < semestreTutor.getNumero();
+        Materia materia = MateriasCatalogo.buscarEnCarrera(carrera, codigoMateria);
+        return materia != null && cumpleReglasTutoria(materia, semestreTutor.getNumero());
     }
 
     public static Optional<String> validarCodigosSeleccionados(Carrera carrera, Semestre semestreTutor,
@@ -112,9 +117,13 @@ public final class MateriaTutorReglas {
         }
 
         for (String codigo : codigos) {
-            Materia materia = CatalogoRegistro.buscarMateriaEnCarrera(carrera, codigo);
+            Materia materia = MateriasCatalogo.buscarEnCarrera(carrera, codigo);
             if (materia == null) {
                 return Optional.of("La materia " + codigo + " no pertenece a la carrera seleccionada.");
+            }
+            if (!MateriasCatalogo.esMateriaTutorable(materia)) {
+                return Optional.of("La materia " + codigo + " (" + materia.getNombre()
+                        + ") no está habilitada para tutorías (prácticas o titulación).");
             }
             if (materia.getSemestre() >= semestreTutor.getNumero()) {
                 return Optional.of("La materia " + codigo + " (" + materia.getNombre() + ") es del "
@@ -124,5 +133,10 @@ public final class MateriaTutorReglas {
         }
 
         return Optional.empty();
+    }
+
+    private static boolean cumpleReglasTutoria(Materia materia, int semestreTutor) {
+        return MateriasCatalogo.esMateriaTutorable(materia)
+                && materia.getSemestre() < semestreTutor;
     }
 }

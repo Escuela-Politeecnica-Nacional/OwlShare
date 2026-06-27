@@ -1,11 +1,8 @@
-<<<<<<< HEAD
-D:\Software\Projects\EPN_6\OwlShare\src\test\java\controlador\LoginServletTest.java
-D:\Software\Projects\EPN_6\OwlShare\src\test\java\controlador\RegistroServletTest.java
-D:\Software\Projects\EPN_6\OwlShare\src\test\java\util\TutorPerfilYHorarioTest.java
-=======
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\test\java\controlador\BuscarTutoresServletTest.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\test\java\controlador\CrearSolicitudServletTest.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\test\java\controlador\DetalleTutorServletTest.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\test\java\controlador\LoginServletTest.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\test\java\controlador\RegistroServletTest.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\test\java\util\MateriaTutorReglasTest.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\test\java\util\SolicitudTutoriaTest.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\test\java\util\TutorPerfilYHorarioTest.java
->>>>>>> b883ca00776f7dd0fc63446253532fde400f8987

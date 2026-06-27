@@ -19,6 +19,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_usuarios_email ON usuarios (LOWER(email));
 
 CREATE TABLE IF NOT EXISTS materias_catalogo (
     codigo   VARCHAR(20) PRIMARY KEY,
+    carrera  VARCHAR(50) NOT NULL,
     nombre   VARCHAR(200) NOT NULL,
     semestre INTEGER NOT NULL
 );

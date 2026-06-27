@@ -2,6 +2,8 @@ package ec.edu.epn.modelo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -13,6 +15,10 @@ public class MateriaCatalogo {
     @Column(length = 20)
     private String codigo;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private Carrera carrera;
+
     @Column(nullable = false, length = 200)
     private String nombre;
 
@@ -22,10 +28,20 @@ public class MateriaCatalogo {
     public MateriaCatalogo() {
     }
 
-    public MateriaCatalogo(String codigo, String nombre, int semestre) {
+    public MateriaCatalogo(String codigo, Carrera carrera, String nombre, int semestre) {
         this.codigo = codigo;
+        this.carrera = carrera;
         this.nombre = nombre;
         this.semestre = semestre;
+    }
+
+    public static MateriaCatalogo desde(Materia materia, Carrera carrera) {
+        return new MateriaCatalogo(
+                materia.getCodigo(),
+                carrera,
+                materia.getNombre(),
+                materia.getSemestre()
+        );
     }
 
     public String getCodigo() {
@@ -34,6 +50,14 @@ public class MateriaCatalogo {
 
     public void setCodigo(String codigo) {
         this.codigo = codigo;
+    }
+
+    public Carrera getCarrera() {
+        return carrera;
+    }
+
+    public void setCarrera(Carrera carrera) {
+        this.carrera = carrera;
     }
 
     public String getNombre() {

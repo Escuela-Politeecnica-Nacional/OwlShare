@@ -1,8 +1,9 @@
 package ec.edu.epn.dao;
 
+import ec.edu.epn.modelo.Carrera;
 import ec.edu.epn.modelo.Materia;
 import ec.edu.epn.modelo.MateriaCatalogo;
-import ec.edu.epn.util.CatalogoRegistro;
+import ec.edu.epn.catalogo.MateriasCatalogo;
 import ec.edu.epn.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -20,23 +21,23 @@ public class MateriaCatalogoDAO {
         }
     }
 
-    public MateriaCatalogo obtenerOCrear(String codigo) {
+    public MateriaCatalogo obtenerOCrear(String codigo, Carrera carrera) {
+        if (carrera == null) {
+            throw new IllegalArgumentException("La carrera es obligatoria.");
+        }
+
         String codigoNormalizado = codigo.trim();
         Optional<MateriaCatalogo> existente = buscarPorCodigo(codigoNormalizado);
         if (existente.isPresent()) {
             return existente.get();
         }
 
-        Materia materiaCatalogo = CatalogoRegistro.buscarMateriaPorCodigo(codigoNormalizado);
+        Materia materiaCatalogo = MateriasCatalogo.buscarEnCarrera(carrera, codigoNormalizado);
         if (materiaCatalogo == null) {
-            throw new IllegalArgumentException("La materia no existe en el catálogo.");
+            throw new IllegalArgumentException("La materia no existe en el catálogo de la carrera indicada.");
         }
 
-        MateriaCatalogo materia = new MateriaCatalogo(
-                materiaCatalogo.getCodigo(),
-                materiaCatalogo.getNombre(),
-                materiaCatalogo.getSemestre()
-        );
+        MateriaCatalogo materia = MateriaCatalogo.desde(materiaCatalogo, carrera);
 
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

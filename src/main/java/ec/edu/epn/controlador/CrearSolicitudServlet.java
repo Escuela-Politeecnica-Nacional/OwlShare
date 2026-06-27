@@ -10,7 +10,7 @@ import ec.edu.epn.modelo.MateriaCatalogo;
 import ec.edu.epn.modelo.Rol;
 import ec.edu.epn.modelo.SolicitudTutoria;
 import ec.edu.epn.modelo.Usuario;
-import ec.edu.epn.util.CatalogoRegistro;
+import ec.edu.epn.catalogo.MateriasCatalogo;
 import ec.edu.epn.util.HorarioUtil;
 import ec.edu.epn.util.JsonUtil;
 import ec.edu.epn.util.MateriaTutorReglas;
@@ -95,15 +95,15 @@ public class CrearSolicitudServlet extends HttpServlet {
             return;
         }
 
-        if (CatalogoRegistro.buscarMateriaPorCodigo(codigoMateria) == null) {
+        if (MateriasCatalogo.buscarEnCarrera(tutor.getCarrera(), codigoMateria) == null) {
             responderError(response, HttpServletResponse.SC_BAD_REQUEST,
-                    "La materia indicada no existe en el catálogo.");
+                    "La materia indicada no existe en el catálogo de la carrera del tutor.");
             return;
         }
 
         MateriaCatalogo materia;
         try {
-            materia = materiaCatalogoDAO.obtenerOCrear(codigoMateria);
+            materia = materiaCatalogoDAO.obtenerOCrear(codigoMateria, tutor.getCarrera());
         } catch (IllegalArgumentException e) {
             responderError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             return;
