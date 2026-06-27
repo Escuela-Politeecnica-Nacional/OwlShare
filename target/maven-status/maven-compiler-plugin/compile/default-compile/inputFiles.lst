@@ -1,31 +1,4 @@
-<<<<<<< HEAD
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\controlador\BuscarTutoresServlet.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\controlador\CrearSolicitudServlet.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\controlador\DetalleTutorServlet.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\controlador\LoginServlet.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\controlador\RegistroServlet.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\dao\SolicitudDAO.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\dao\UsuarioDAO.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\Main.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\Carrera.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\EstadoSolicitud.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\Materia.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\MateriaDetalle.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\Rol.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\Semestre.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\Solicitud.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\TrayectoriaSemestre.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\TutorPerfilDetalle.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\TutorResumen.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\modelo\Usuario.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\CatalogoRegistro.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\HibernateUtil.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\HorarioUtil.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\JsonUtil.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\MateriaUtil.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\PasswordUtil.java
-D:\Software\Projects\EPN_6\OwlShare\src\main\java\ec\edu\epn\util\TutorPerfilBuilder.java
-=======
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\catalogo\MateriasCatalogo.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\BuscarTutoresServlet.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\CrearSolicitudServlet.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\DetalleTutorServlet.java
@@ -53,7 +26,7 @@ C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\ep
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\HibernateUtil.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\HorarioUtil.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\JsonUtil.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\MateriaTutorReglas.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\MateriaUtil.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\PasswordUtil.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\TutorPerfilBuilder.java
->>>>>>> b883ca00776f7dd0fc63446253532fde400f8987

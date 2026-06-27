@@ -27,4 +27,22 @@ public enum Semestre {
     public String getNombre() {
         return nombre;
     }
+
+    public static Semestre porNumero(int numero) {
+        for (Semestre semestre : values()) {
+            if (semestre.numero == numero) {
+                return semestre;
+            }
+        }
+        throw new IllegalArgumentException("No existe semestre con número: " + numero);
+    }
+
+    public static Semestre porNumeroOpcional(int numero) {
+        for (Semestre semestre : values()) {
+            if (semestre.numero == numero) {
+                return semestre;
+            }
+        }
+        return null;
+    }
 }

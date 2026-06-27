@@ -104,10 +104,10 @@ class CrearSolicitudServletTest {
         when(usuarioDAO.buscarPorId(2L)).thenReturn(Optional.of(tutor));
 
         // Materia válida en el catálogo
-        MateriaCatalogo materiaCatalogo = new MateriaCatalogo("ICCD144", "Programación", 2);
+        MateriaCatalogo materiaCatalogo = new MateriaCatalogo("ICCD144", Carrera.SOFTWARE, "Programación", 2);
         when(materiaCatalogoDAO.buscarPorCodigo("ICCD144"))
                 .thenReturn(Optional.of(materiaCatalogo));
-        when(materiaCatalogoDAO.obtenerOCrear("ICCD144"))
+        when(materiaCatalogoDAO.obtenerOCrear("ICCD144", Carrera.SOFTWARE))
                 .thenReturn(materiaCatalogo);
 
         // Por defecto no existe horario previo → el servlet creará uno nuevo
