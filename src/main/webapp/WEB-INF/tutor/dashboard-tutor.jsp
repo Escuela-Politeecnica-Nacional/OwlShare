@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Panel del Tutor - OwlShare</title>
+    <title>Dashboard del Tutor - OwlShare</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/css/styles.css" rel="stylesheet">
@@ -59,6 +59,61 @@
                     <c:out value="${materialesPendientes != null ? materialesPendientes : 0}"/>
                 </p>
             </div>
+        </div>
+
+        <%-- Accesos Rápidos --%>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            <a href="${pageContext.request.contextPath}/tutor/materiales"
+               class="bg-white rounded-xl shadow p-6 hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                        <span class="material-symbols-outlined">folder_open</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-on-surface group-hover:text-primary transition-colors">Gestionar Materiales</h4>
+                        <p class="text-xs text-slate-500">Ver y administrar tus materiales</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="${pageContext.request.contextPath}/tutor/subir"
+               class="bg-white rounded-xl shadow p-6 hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center group-hover:bg-green-600 group-hover:text-white transition-all">
+                        <span class="material-symbols-outlined">upload_file</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-on-surface group-hover:text-green-600 transition-colors">Publicar Material</h4>
+                        <p class="text-xs text-slate-500">Subir un nuevo material</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="${pageContext.request.contextPath}/tutor/horarios"
+               class="bg-white rounded-xl shadow p-6 hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <span class="material-symbols-outlined">calendar_month</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-on-surface group-hover:text-blue-600 transition-colors">Gestionar Horarios</h4>
+                        <p class="text-xs text-slate-500">Administra tus disponibilidades</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="${pageContext.request.contextPath}/tutor/solicitudes"
+               class="bg-white rounded-xl shadow p-6 hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition-all">
+                        <span class="material-symbols-outlined">mail_outline</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-on-surface group-hover:text-purple-600 transition-colors">Solicitudes de Tutoría</h4>
+                        <p class="text-xs text-slate-500">Revisa las solicitudes de estudiantes</p>
+                    </div>
+                </div>
+            </a>
         </div>
 
         <%-- Próximas Tutorías --%>
