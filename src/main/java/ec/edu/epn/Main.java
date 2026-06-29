@@ -30,6 +30,8 @@ public class Main {
         verificarServlet(webapp, "ec/edu/epn/controlador/SolicitarMentoriaServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/LogoutServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/TutorInicioServlet.class");
+        verificarServlet(webapp, "ec/edu/epn/controlador/SolicitudesTutorServlet.class");
+        verificarServlet(webapp, "ec/edu/epn/controlador/GestionSolicitudServlet.class");
 
         tomcat.addWebapp("/", webapp.getAbsolutePath());
         System.out.println("Desplegando: " + webapp.getAbsolutePath());
