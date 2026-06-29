@@ -27,11 +27,20 @@ CREATE TABLE IF NOT EXISTS materias_catalogo (
 CREATE TABLE IF NOT EXISTS horarios (
     id            BIGSERIAL PRIMARY KEY,
     tutor_id      BIGINT NOT NULL REFERENCES usuarios (id),
-    codigo_materia VARCHAR(20) NOT NULL REFERENCES materias_catalogo (codigo),
+    codigo_materia VARCHAR(20) REFERENCES materias_catalogo (codigo),
     fecha         VARCHAR(10) NOT NULL,
     hora_inicio   VARCHAR(5) NOT NULL,
     hora_fin      VARCHAR(5) NOT NULL,
     disponible    BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE IF NOT EXISTS disponibilidad_tutor (
+    id            BIGSERIAL PRIMARY KEY,
+    tutor_id      BIGINT NOT NULL REFERENCES usuarios (id),
+    dia_semana    VARCHAR(15) NOT NULL,
+    hora_inicio   VARCHAR(5) NOT NULL,
+    hora_fin      VARCHAR(5) NOT NULL,
+    activo        BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS solicitudes_tutoria (
