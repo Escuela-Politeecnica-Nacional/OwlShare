@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Gestión de Materiales - OwlShare</title>
+    <title>Mis Materiales - OwlShare</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/css/styles.css" rel="stylesheet">
@@ -47,7 +47,7 @@
         <div class="flex justify-between items-center mb-8">
             <div>
                 <h2 class="text-4xl font-extrabold text-on-surface mb-2">Mis Materiales</h2>
-                <p class="text-slate-600">Organiza y revisa el estado de tus contribuciones académicas.</p>
+                <p class="text-slate-600">Visualiza y gestiona tus materiales académicos publicados.</p>
             </div>
             <a href="${pageContext.request.contextPath}/tutor/subir"
                class="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-bold shadow-lg hover:bg-primary-container transition-all">
@@ -93,8 +93,8 @@
         <%-- Tabla de Materiales --%>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="px-8 py-6 border-b border-slate-200">
-                <h3 class="text-xl font-bold text-on-surface mb-1">Gestión de Archivos</h3>
-                <p class="text-sm text-slate-600">Revisa y administra tus materiales publicados.</p>
+                <h3 class="text-xl font-bold text-on-surface mb-1">Catálogo de Archivos</h3>
+                <p class="text-sm text-slate-600">Visualiza el estado y detalles de tus materiales publicados.</p>
             </div>
 
             <div class="overflow-x-auto">
@@ -144,17 +144,11 @@
                                             <span class="text-sm font-semibold text-on-surface">$<c:out value="${material.costo}"/></span>
                                         </td>
                                         <td class="px-8 py-5">
-                                            <div class="flex gap-2">
-                                                <button class="p-2 text-slate-600 hover:bg-indigo-50 hover:text-primary rounded-lg transition-colors" title="Ver detalles">
-                                                    <span class="material-symbols-outlined text-sm">visibility</span>
-                                                </button>
-                                                <button class="p-2 text-slate-600 hover:bg-indigo-50 hover:text-primary rounded-lg transition-colors" title="Editar">
-                                                    <span class="material-symbols-outlined text-sm">edit</span>
-                                                </button>
-                                                <button class="p-2 text-slate-600 hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors" title="Eliminar">
-                                                    <span class="material-symbols-outlined text-sm">delete</span>
-                                                </button>
-                                            </div>
+                                            <a href="${pageContext.request.contextPath}/tutor/material/${material.id}"
+                                               class="flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-container transition-colors">
+                                                <span class="material-symbols-outlined text-sm">visibility</span>
+                                                Ver detalles
+                                            </a>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -178,51 +172,7 @@
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 border-b border-slate-200">
-                                <tr>
-                                    <th class="px-8 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Material</th>
-                                    <th class="px-8 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Publicación</th>
-                                    <th class="px-8 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Estado</th>
-                                    <th class="px-8 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="px-8 py-5">
-                                        <div class="flex items-center gap-4">
-                                            <div class="w-10 h-10 bg-red-100 text-red-600 flex items-center justify-center rounded-lg flex-shrink-0">
-                                                <span class="material-symbols-outlined">picture_as_pdf</span>
-                                            </div>
-                                            <div>
-                                                <p class="font-semibold text-on-surface">Guía de Macroeconomía Avanzada</p>
-                                                <p class="text-xs text-slate-500">Macroeconomía I</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="text-sm text-slate-600">12 Oct, 2023</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="badge-rechazada text-xs font-bold px-3 py-1 rounded-full inline-block">Rechazado</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <div class="flex gap-2">
-                                            <button class="p-2 text-slate-600 hover:bg-indigo-50 hover:text-primary rounded-lg transition-colors">
-                                                <span class="material-symbols-outlined text-sm">visibility</span>
-                                            </button>
-                                            <button class="p-2 text-slate-600 hover:bg-indigo-50 hover:text-primary rounded-lg transition-colors">
-                                                <span class="material-symbols-outlined text-sm">edit</span>
-                                            </button>
-                                            <button class="p-2 text-slate-600 hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors">
-                                                <span class="material-symbols-outlined text-sm">delete</span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="px-8 py-8 border-t border-slate-200 text-center">
+                        <div class="px-8 py-16 border-t border-slate-200 text-center">
                             <span class="material-symbols-outlined text-5xl text-slate-300 block mb-4">folder_open</span>
                             <h3 class="text-xl font-bold text-slate-600 mb-2">No hay materiales publicados</h3>
                             <p class="text-slate-500 mb-6">Aún no has publicado ningún material académico. Comienza compartiendo tu conocimiento.</p>

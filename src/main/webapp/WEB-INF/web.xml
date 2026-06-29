@@ -10,6 +10,9 @@
           GET|POST /login, GET /        → LoginServlet        → WEB-INF/auth/login.jsp
           GET|POST /registro           → RegistroServlet     → WEB-INF/auth/registro.jsp
           GET      /tutor/inicio       → TutorInicioServlet  → dashboard-tutor.jsp
+          GET      /tutor/perfil       → PerfilTutorServlet  → perfil-tutor.jsp
+          GET      /tutor/horarios     → HorariosTutorServlet    → gestion-horarios-tutor.jsp
+          GET      /tutor/solicitudes  → SolicitudesTutorServlet → bandeja-solicitudes-tutor.jsp
           GET      /api/tutores/buscar  → BuscarTutoresServlet   → JSON
           GET      /api/tutores/detalle → DetalleTutorServlet    → JSON
           POST     /api/solicitudes     → CrearSolicitudServlet  → JSON
@@ -48,6 +51,36 @@
     <servlet-mapping>
         <servlet-name>TutorInicioServlet</servlet-name>
         <url-pattern>/tutor/inicio</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>PerfilTutorServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.PerfilTutorServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>PerfilTutorServlet</servlet-name>
+        <url-pattern>/tutor/perfil</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>HorariosTutorServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.HorariosTutorServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>HorariosTutorServlet</servlet-name>
+        <url-pattern>/tutor/horarios</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SolicitudesTutorServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.SolicitudesTutorServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SolicitudesTutorServlet</servlet-name>
+        <url-pattern>/tutor/solicitudes</url-pattern>
     </servlet-mapping>
 
     <servlet>
