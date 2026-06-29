@@ -1,5 +1,9 @@
+util\TutorPerfilYHorarioTest.class
 controlador\BuscarTutoresServletTest.class
 controlador\RegistroServletTest.class
+util\MateriaTutorReglasTest.class
 util\SolicitudTutoriaTest.class
 controlador\CatalogoRegistroTest.class
+controlador\CrearSolicitudServletTest.class
 controlador\LoginServletTest.class
+controlador\DetalleTutorServletTest.class

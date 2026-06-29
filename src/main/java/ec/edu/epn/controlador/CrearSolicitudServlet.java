@@ -69,8 +69,10 @@ public class CrearSolicitudServlet extends HttpServlet {
         }
 
         comentario = comentario.trim();
-        horaInicio = HorarioUtil.normalizarHora(horaInicio);
-        horaFin = HorarioUtil.normalizarHora(horaFin);
+        final String horaInicioNorm = HorarioUtil.normalizarHora(horaInicio);
+        final String horaFinNorm = HorarioUtil.normalizarHora(horaFin);
+        horaInicio = horaInicioNorm;
+        horaFin = horaFinNorm;
 
         long estudianteId = Long.parseLong(estudianteIdParam);
         long tutorId = Long.parseLong(tutorIdParam);
@@ -178,8 +180,8 @@ public class CrearSolicitudServlet extends HttpServlet {
                 return;
             }
 
-            horario = horarioDAO.buscarPorTutorFechaYHoras(tutorId, fecha, horaInicio, horaFin)
-                    .orElseGet(() -> horarioDAO.crear(tutorId, fecha, horaInicio, horaFin));
+            horario = horarioDAO.buscarPorTutorFechaYHoras(tutorId, fecha, horaInicioNorm, horaFinNorm)
+                    .orElseGet(() -> horarioDAO.crear(tutorId, fecha, horaInicioNorm, horaFinNorm));
         }
 
         Long solicitudId;
