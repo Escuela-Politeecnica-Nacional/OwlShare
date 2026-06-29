@@ -4,6 +4,7 @@ import ec.edu.epn.modelo.Horario;
 import ec.edu.epn.modelo.MateriaCatalogo;
 import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.util.HibernateUtil;
+import ec.edu.epn.util.HorarioUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
