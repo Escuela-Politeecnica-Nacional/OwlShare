@@ -6,6 +6,7 @@ import ec.edu.epn.modelo.Rol;
 import ec.edu.epn.modelo.Semestre;
 import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.util.CatalogoRegistro;
+import ec.edu.epn.util.InputValidacion;
 import ec.edu.epn.util.MateriaTutorReglas;
 import ec.edu.epn.util.PasswordUtil;
 import jakarta.servlet.ServletException;
@@ -16,15 +17,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @WebServlet(name = "RegistroServlet", urlPatterns = {"/registro"})
 public class RegistroServlet extends HttpServlet {
-
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
-    );
 
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
 
@@ -51,7 +47,8 @@ public class RegistroServlet extends HttpServlet {
         String carreraParam = trim(request.getParameter("carrera"));
         String[] materias = request.getParameterValues("materias");
 
-        String error = validarCampos(email, password, nombre, apellido, rolParam, semestreParam, carreraParam, materias);
+        String error = validarCampos(email, password, nombre, segundoNombre, apellido, segundoApellido,
+                rolParam, semestreParam, carreraParam, materias);
         if (error != null) {
             mostrarError(request, response, error);
             return;
@@ -112,21 +109,32 @@ public class RegistroServlet extends HttpServlet {
                 + java.net.URLEncoder.encode("Cuenta creada exitosamente. Inicia sesión.", "UTF-8"));
     }
 
-    private String validarCampos(String email, String password, String nombre, String apellido, String rolParam, String semestreParam, String carreraParam, String[] materias) {
-        if (email.isEmpty()) {
-            return "El correo electrónico es obligatorio.";
+    private String validarCampos(String email, String password, String nombre, String segundoNombre,
+                                 String apellido, String segundoApellido, String rolParam,
+                                 String semestreParam, String carreraParam, String[] materias) {
+        String errorEmail = InputValidacion.validarEmail(email).orElse(null);
+        if (errorEmail != null) {
+            return errorEmail;
         }
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            return "El formato del correo electrónico no es válido.";
+        String errorPassword = InputValidacion.validarPassword(password).orElse(null);
+        if (errorPassword != null) {
+            return errorPassword;
         }
-        if (password == null || password.isBlank()) {
-            return "La contraseña es obligatoria.";
+        String errorNombre = InputValidacion.validarNombre(nombre, "primer nombre", true).orElse(null);
+        if (errorNombre != null) {
+            return errorNombre;
         }
-        if (nombre.isEmpty()) {
-            return "El primer nombre es obligatorio.";
+        String errorSegundoNombre = InputValidacion.validarNombre(segundoNombre, "segundo nombre", false).orElse(null);
+        if (errorSegundoNombre != null) {
+            return errorSegundoNombre;
         }
-        if (apellido.isEmpty()) {
-            return "El primer apellido es obligatorio.";
+        String errorApellido = InputValidacion.validarNombre(apellido, "primer apellido", true).orElse(null);
+        if (errorApellido != null) {
+            return errorApellido;
+        }
+        String errorSegundoApellido = InputValidacion.validarNombre(segundoApellido, "segundo apellido", false).orElse(null);
+        if (errorSegundoApellido != null) {
+            return errorSegundoApellido;
         }
         if (rolParam.isEmpty()) {
             return "Debes seleccionar un rol.";

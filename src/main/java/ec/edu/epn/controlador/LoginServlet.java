@@ -3,6 +3,7 @@ package ec.edu.epn.controlador;
 import ec.edu.epn.dao.UsuarioDAO;
 import ec.edu.epn.modelo.Rol;
 import ec.edu.epn.modelo.Usuario;
+import ec.edu.epn.util.InputValidacion;
 import ec.edu.epn.util.SesionUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -32,6 +33,13 @@ public class LoginServlet extends HttpServlet {
 
         if (email.isEmpty() || password == null || password.isBlank()) {
             request.setAttribute("error", "Debes ingresar correo electrónico y contraseña.");
+            request.getRequestDispatcher("/WEB-INF/auth/login.jsp").forward(request, response);
+            return;
+        }
+
+        String errorEmail = InputValidacion.validarEmail(email).orElse(null);
+        if (errorEmail != null) {
+            request.setAttribute("error", errorEmail);
             request.getRequestDispatcher("/WEB-INF/auth/login.jsp").forward(request, response);
             return;
         }

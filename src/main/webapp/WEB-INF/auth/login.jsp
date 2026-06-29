@@ -64,13 +64,18 @@
                 </div>
                 <% } %>
 
+                <div id="errorValidacionLogin" class="hidden flex items-center gap-3 bg-red-50 text-red-700 text-sm font-medium px-4 py-3 rounded-lg">
+                    <span class="material-symbols-outlined text-base">error</span>
+                    <span id="errorValidacionLoginMsg"></span>
+                </div>
+
                 <%-- ── Formulario de Login ──
                      POST /login  (LoginServlet, urlPattern = "/login")
                      Parámetros: email, password
                      Si OK  → session.setAttribute("adminLogueado", admin) + redirect /usuarios
                      Si KO  → request.setAttribute("error", "...") + forward /login.jsp
                 --%>
-                <form action="${pageContext.request.contextPath}/login" method="post" class="space-y-5">
+                <form action="${pageContext.request.contextPath}/login" method="post" id="formLogin" class="space-y-5" novalidate>
 
                     <%-- Email --%>
                     <div class="space-y-1.5">
@@ -86,6 +91,7 @@
                                           outline-none transition-all"
                                    id="email" name="email" type="email"
                                    placeholder="admin@olwshare.com"
+                                   maxlength="254"
                                    value="<%= request.getParameter("email") != null ? request.getParameter("email") : "" %>"
                                    required/>
                         </div>
@@ -173,11 +179,15 @@
     <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-[100px]"></div>
 </div>
 
+<script src="${pageContext.request.contextPath}/js/validacion-campos.js"></script>
 <script>
     // ── Toggle ver/ocultar contraseña ──
     (function () {
         var passwordInput = document.getElementById('password');
         var togglePasswordBtn = document.getElementById('togglePasswordLogin');
+        var form = document.getElementById('formLogin');
+        var errorBox = document.getElementById('errorValidacionLogin');
+        var errorMsg = document.getElementById('errorValidacionLoginMsg');
 
         togglePasswordBtn.addEventListener('click', function (e) {
             e.preventDefault();
@@ -189,6 +199,23 @@
                 passwordInput.type = 'password';
                 icon.textContent = 'visibility';
             }
+        });
+
+        form.addEventListener('submit', function (e) {
+            var emailError = OwlValidacion.validarEmail(document.getElementById('email').value);
+            var mensaje = emailError;
+
+            if (!passwordInput.value) {
+                mensaje = mensaje || 'La contraseña es obligatoria.';
+            }
+
+            if (mensaje) {
+                e.preventDefault();
+                errorMsg.textContent = mensaje;
+                errorBox.classList.remove('hidden');
+                return;
+            }
+            errorBox.classList.add('hidden');
         });
     })();
 </script>
