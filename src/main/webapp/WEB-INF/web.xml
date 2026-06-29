@@ -9,6 +9,9 @@
         Rutas MVC (controlador → vista):
           GET|POST /login, GET /        → LoginServlet        → WEB-INF/auth/login.jsp
           GET|POST /registro           → RegistroServlet     → WEB-INF/auth/registro.jsp
+          GET      /logout             → LogoutServlet       → redirect /login
+          GET      /estudiante/inicio  → EstudianteInicioServlet → dashboard-estudiante.jsp
+          GET      /estudiante/dashboard → EstudianteInicioServlet (alias)
           GET      /tutor/inicio       → TutorInicioServlet  → dashboard-tutor.jsp
           GET      /tutor/perfil       → PerfilTutorServlet  → perfil-tutor.jsp
           GET      /tutor/horarios     → HorariosTutorServlet    → gestion-horarios-tutor.jsp
@@ -41,6 +44,31 @@
     <servlet-mapping>
         <servlet-name>RegistroServlet</servlet-name>
         <url-pattern>/registro</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.LogoutServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>EstudianteInicioServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.EstudianteInicioServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>EstudianteInicioServlet</servlet-name>
+        <url-pattern>/estudiante/inicio</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>EstudianteInicioServlet</servlet-name>
+        <url-pattern>/estudiante/dashboard</url-pattern>
     </servlet-mapping>
 
     <servlet>
