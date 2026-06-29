@@ -4,9 +4,11 @@ ec\edu\epn\modelo\Material.class
 ec\edu\epn\modelo\EstadoMaterial.class
 ec\edu\epn\controlador\TutorInicioServlet.class
 ec\edu\epn\modelo\MateriaCatalogo.class
+ec\edu\epn\controlador\PerfilTutorServlet$1.class
 ec\edu\epn\catalogo\MateriasCatalogo.class
 ec\edu\epn\dao\HorarioDAO.class
 ec\edu\epn\dao\MateriaCatalogoDAO.class
+ec\edu\epn\controlador\SolicitudesTutorServlet$1.class
 ec\edu\epn\controlador\LoginServlet$1.class
 ec\edu\epn\controlador\BuscarTutoresServlet.class
 ec\edu\epn\modelo\Horario.class
@@ -15,3 +17,4 @@ ec\edu\epn\modelo\TutorPerfilVista.class
 ec\edu\epn\util\HibernateUtil$DbConfig.class
 ec\edu\epn\controlador\TutorInicioServlet$1.class
 ec\edu\epn\modelo\TutorResumen.class
+ec\edu\epn\controlador\HorariosTutorServlet$1.class

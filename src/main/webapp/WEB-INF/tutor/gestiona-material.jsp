@@ -30,7 +30,7 @@
     <h1 class="text-2xl font-extrabold text-indigo-900">OwlShare</h1>
     <div class="flex items-center gap-4">
         <span class="text-sm text-slate-600">Hola, <strong><c:out value="${requestScope.tutorPerfil.nombre}"/></strong></span>
-        <a href="${pageContext.request.contextPath}/tutor/dashboard" class="text-slate-600 hover:text-indigo-600">
+        <a href="${pageContext.request.contextPath}/tutor/inicio" class="text-slate-600 hover:text-indigo-600">
             <span class="material-symbols-outlined">home</span>
         </a>
         <a href="${pageContext.request.contextPath}/logout" class="text-slate-600 hover:text-red-500">
