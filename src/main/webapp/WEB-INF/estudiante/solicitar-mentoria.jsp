@@ -21,11 +21,6 @@
 </head>
 <body class="bg-surface text-on-surface min-h-screen flex flex-col">
 
-<c:if test="${empty sessionScope.usuarioLogueado}">
-    <c:redirect url="/login"/>
-</c:if>
-
-<%-- Header --%>
 <header class="bg-white shadow-sm h-16 flex justify-between items-center px-8 sticky top-0 z-40">
     <div class="flex items-center gap-3">
         <h1 class="text-2xl font-extrabold text-indigo-900">OwlShare</h1>
@@ -41,107 +36,108 @@
     </div>
 </header>
 
-<%-- Main Content --%>
 <main class="flex-1 p-10">
     <div class="max-w-4xl mx-auto">
-        <a href="${pageContext.request.contextPath}/estudiante/buscar-tutor" class="text-primary font-semibold text-sm mb-4 inline-flex items-center gap-1">
+        <a href="${pageContext.request.contextPath}/estudiante/tutor/detalle?id=${requestScope.tutorPerfil.id}"
+           class="text-primary font-semibold text-sm mb-4 inline-flex items-center gap-1">
             <span class="material-symbols-outlined text-sm">arrow_back</span>
-            Volver a tutores
+            Volver al perfil del tutor
         </a>
 
         <h2 class="text-4xl font-extrabold text-on-surface mb-2">Solicitar Mentoría</h2>
-        <p class="text-slate-600 mb-8">Selecciona un horario disponible y envía tu solicitud.</p>
+        <p class="text-slate-600 mb-8">
+            Con <strong><c:out value="${requestScope.tutorPerfil.nombreCompleto}"/></strong>.
+            Elige la materia y el horario que prefieres.
+        </p>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <%-- Columna izquierda: Horarios disponibles --%>
-            <div class="lg:col-span-2">
-                <div class="bg-white rounded-xl shadow p-8">
-                    <h3 class="text-2xl font-bold text-on-surface mb-6">Horarios Disponibles</h3>
+            <div class="lg:col-span-2 bg-white rounded-xl shadow p-8 space-y-6">
+                <h3 class="text-2xl font-bold text-on-surface">Datos de la solicitud</h3>
 
-                    <div id="horariosContainer" class="space-y-4">
-                        <div class="horario-card" onclick="seleccionarHorario(this, 'calculo-1', '24 Jun 2026', '10:00 - 11:30', 'Cálculo Diferencial')">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="font-bold text-on-surface">Cálculo Diferencial</p>
-                                    <p class="text-sm text-slate-600 mt-1">24 Jun 2026</p>
-                                    <p class="text-sm text-slate-600">10:00 - 11:30</p>
-                                </div>
-                                <span class="material-symbols-outlined text-slate-400">chevron_right</span>
-                            </div>
-                        </div>
-
-                        <div class="horario-card" onclick="seleccionarHorario(this, 'algebra-1', '25 Jun 2026', '09:00 - 10:00', 'Álgebra Lineal')">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="font-bold text-on-surface">Álgebra Lineal</p>
-                                    <p class="text-sm text-slate-600 mt-1">25 Jun 2026</p>
-                                    <p class="text-sm text-slate-600">09:00 - 10:00</p>
-                                </div>
-                                <span class="material-symbols-outlined text-slate-400">chevron_right</span>
-                            </div>
-                        </div>
-
-                        <div class="horario-card" onclick="seleccionarHorario(this, 'calculo-2', '25 Jun 2026', '14:00 - 15:30', 'Cálculo Diferencial')">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="font-bold text-on-surface">Cálculo Diferencial</p>
-                                    <p class="text-sm text-slate-600 mt-1">25 Jun 2026</p>
-                                    <p class="text-sm text-slate-600">14:00 - 15:30</p>
-                                </div>
-                                <span class="material-symbols-outlined text-slate-400">chevron_right</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="sinHorarios" class="hidden text-center py-8 text-slate-600">
-                        <span class="material-symbols-outlined text-4xl text-slate-300 block mb-4">schedule</span>
-                        <p>Este tutor no tiene horarios disponibles en este momento.</p>
-                    </div>
+                <div id="errorSolicitud" class="hidden flex items-center gap-3 bg-red-50 text-red-700 text-sm font-medium px-4 py-3 rounded-lg border border-red-100">
+                    <span class="material-symbols-outlined text-base">error</span>
+                    <span id="errorSolicitudMsg"></span>
                 </div>
+
+                <form id="formSolicitud" class="space-y-6" novalidate>
+                    <input type="hidden" id="estudianteId" value="${requestScope.estudianteId}">
+                    <input type="hidden" id="tutorId" value="${requestScope.tutorPerfil.id}">
+
+                    <div>
+                        <label for="codigoMateria" class="block text-sm font-bold text-indigo-900 mb-2">Materia *</label>
+                        <select id="codigoMateria" name="codigoMateria" required
+                                class="w-full rounded-xl border border-slate-200 p-3 focus:ring-2 focus:ring-primary">
+                            <option value="">-- Selecciona una materia --</option>
+                            <c:forEach var="mat" items="${requestScope.tutorPerfil.materias}">
+                                <option value="${mat.codigo}" <c:if test="${mat.codigo == materiaPreseleccionada}">selected</c:if>>
+                                    <c:out value="${mat.nombre}"/> (<c:out value="${mat.codigo}"/>)
+                                </option>
+                            </c:forEach>
+                        </select>
+                        <p id="errorMateria" class="hidden text-xs text-red-600 mt-1">Selecciona una materia.</p>
+                    </div>
+
+                    <div>
+                        <label for="fecha" class="block text-sm font-bold text-indigo-900 mb-2">Fecha *</label>
+                        <input type="date" id="fecha" name="fecha" required
+                               class="w-full rounded-xl border border-slate-200 p-3 focus:ring-2 focus:ring-primary">
+                        <p id="errorFecha" class="hidden text-xs text-red-600 mt-1">Indica una fecha válida.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="horaInicio" class="block text-sm font-bold text-indigo-900 mb-2">Hora inicio *</label>
+                            <input type="time" id="horaInicio" name="horaInicio" required
+                                   class="w-full rounded-xl border border-slate-200 p-3 focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label for="horaFin" class="block text-sm font-bold text-indigo-900 mb-2">Hora fin *</label>
+                            <input type="time" id="horaFin" name="horaFin" required
+                                   class="w-full rounded-xl border border-slate-200 p-3 focus:ring-2 focus:ring-primary">
+                        </div>
+                    </div>
+                    <p id="errorHorario" class="hidden text-xs text-red-600">La hora de inicio debe ser anterior a la hora de fin.</p>
+
+                    <div>
+                        <label for="comentario" class="block text-sm font-bold text-indigo-900 mb-2">Tu duda o motivo *</label>
+                        <textarea id="comentario" name="comentario" rows="5" required
+                                  placeholder="Describe brevemente qué necesitas repasar o en qué tema necesitas ayuda..."
+                                  class="w-full rounded-xl border border-slate-200 p-3 focus:ring-2 focus:ring-primary text-sm resize-none"></textarea>
+                        <p id="errorMotivo" class="hidden text-xs text-red-600 mt-1">Describe tu motivo o duda.</p>
+                    </div>
+
+                    <button type="submit" id="btnEnviar"
+                            class="w-full bg-primary text-white font-bold py-3 rounded-xl hover:opacity-90 flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">send</span>
+                        Enviar Solicitud
+                    </button>
+                </form>
             </div>
 
-            <%-- Columna derecha: Resumen y formulario --%>
             <div class="lg:col-span-1">
-                <div class="bg-white rounded-xl shadow p-8 sticky top-24">
-                    <h3 class="text-2xl font-bold text-on-surface mb-6">Resumen</h3>
-
-                    <div id="resumenVacio" class="text-center py-12 text-slate-600">
-                        <span class="material-symbols-outlined text-4xl text-slate-300 block mb-4">check_circle</span>
-                        <p>Selecciona un horario para continuar.</p>
-                    </div>
-
-                    <div id="resumenLlenado" class="hidden space-y-6">
-                        <div class="pb-6 border-b">
-                            <p class="text-xs font-bold uppercase text-slate-500 mb-2">Horario Seleccionado</p>
-                            <p class="font-bold text-on-surface"><span id="resumenMateria">Cálculo Diferencial</span></p>
-                            <p class="text-sm text-slate-600 mt-2">
-                                <span id="resumenFecha">24 Jun 2026</span><br>
-                                <span id="resumenHora">10:00 - 11:30</span>
-                            </p>
+                <div class="bg-white rounded-xl shadow p-8 sticky top-24 space-y-4">
+                    <h3 class="text-xl font-bold text-on-surface">Resumen del tutor</h3>
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-primary-container text-white flex items-center justify-center font-bold">
+                            <c:out value="${requestScope.tutorPerfil.nombreCompleto.substring(0,1).toUpperCase()}"/>
                         </div>
-
                         <div>
-                            <label class="block text-sm font-bold text-on-surface mb-2">Tu Duda o Motivo *</label>
-                            <textarea id="motivoInput" placeholder="Describe brevemente qué necesitas ayuda..." rows="5"
-                                      class="w-full rounded-lg border border-slate-200 p-3 focus:ring-2 focus:ring-primary text-sm resize-none"></textarea>
-                            <p id="errorMotivo" class="hidden text-xs text-red-600 mt-1">Describe tu motivo o duda</p>
+                            <p class="font-bold"><c:out value="${requestScope.tutorPerfil.nombreCompleto}"/></p>
+                            <p class="text-xs text-slate-600"><c:out value="${requestScope.tutorPerfil.carrera}"/></p>
                         </div>
-
-                        <button onclick="enviarSolicitud()" class="w-full bg-primary text-white font-bold py-3 rounded-lg hover:opacity-90">
-                            Enviar Solicitud
-                        </button>
-
-                        <button onclick="limpiarSeleccion()" class="w-full border border-slate-200 text-on-surface font-bold py-3 rounded-lg hover:bg-slate-50">
-                            Seleccionar Otro
-                        </button>
                     </div>
+                    <p class="text-sm text-slate-600">
+                        Semestre: <c:out value="${requestScope.tutorPerfil.semestreActual}"/>
+                    </p>
+                    <p class="text-xs text-slate-500 border-t pt-4">
+                        Tu solicitud quedará en estado <strong>pendiente</strong> hasta que el tutor la acepte o rechace.
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 </main>
 
-<%-- Modal: Confirmación --%>
 <div id="modalConfirmacion" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-xl shadow-lg max-w-sm w-full text-center p-8 space-y-6">
         <div class="flex justify-center">
@@ -153,7 +149,8 @@
             <h3 class="text-2xl font-bold text-on-surface mb-2">¡Solicitud Enviada!</h3>
             <p class="text-slate-600">El tutor recibirá tu solicitud y te contactará si la acepta.</p>
         </div>
-        <button onclick="cerrarConfirmacion()" class="w-full bg-primary text-white font-bold py-3 rounded-lg hover:opacity-90">
+        <button type="button" onclick="cerrarConfirmacion()"
+                class="w-full bg-primary text-white font-bold py-3 rounded-lg hover:opacity-90">
             Volver a Buscar Tutores
         </button>
     </div>
@@ -164,46 +161,98 @@
 </footer>
 
 <script>
-    let horarioSeleccionado = null;
+    const contextPath = '${pageContext.request.contextPath}';
 
-    function seleccionarHorario(element, id, fecha, hora, materia) {
-        document.querySelectorAll('.horario-card').forEach(el => el.classList.remove('seleccionado'));
-        element.classList.add('seleccionado');
+    document.getElementById('fecha').min = new Date().toISOString().split('T')[0];
 
-        horarioSeleccionado = { id, fecha, hora, materia };
-
-        document.getElementById('resumenVacio').classList.add('hidden');
-        document.getElementById('resumenLlenado').classList.remove('hidden');
-        document.getElementById('resumenMateria').textContent = materia;
-        document.getElementById('resumenFecha').textContent = fecha;
-        document.getElementById('resumenHora').textContent = hora;
-        document.getElementById('motivoInput').value = '';
-        document.getElementById('errorMotivo').classList.add('hidden');
-    }
-
-    function limpiarSeleccion() {
-        document.querySelectorAll('.horario-card').forEach(el => el.classList.remove('seleccionado'));
-        document.getElementById('resumenVacio').classList.remove('hidden');
-        document.getElementById('resumenLlenado').classList.add('hidden');
-        horarioSeleccionado = null;
-    }
-
-    function enviarSolicitud() {
-        const motivo = document.getElementById('motivoInput').value.trim();
-        const errorMotivo = document.getElementById('errorMotivo');
-
-        if (!motivo) {
-            errorMotivo.classList.remove('hidden');
+    document.getElementById('formSolicitud').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (!validarFormulario()) {
             return;
         }
 
-        errorMotivo.classList.add('hidden');
-        document.getElementById('modalConfirmacion').classList.remove('hidden');
+        const btn = document.getElementById('btnEnviar');
+        btn.disabled = true;
+        ocultarErrorGlobal();
+
+        const params = new URLSearchParams();
+        params.append('estudianteId', document.getElementById('estudianteId').value);
+        params.append('tutorId', document.getElementById('tutorId').value);
+        params.append('codigoMateria', document.getElementById('codigoMateria').value);
+        params.append('fecha', document.getElementById('fecha').value);
+        params.append('horaInicio', document.getElementById('horaInicio').value);
+        params.append('horaFin', document.getElementById('horaFin').value);
+        params.append('comentario', document.getElementById('comentario').value.trim());
+
+        try {
+            const response = await fetch(contextPath + '/api/solicitudes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                body: params.toString()
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (response.ok) {
+                document.getElementById('modalConfirmacion').classList.remove('hidden');
+                return;
+            }
+
+            mostrarErrorGlobal(data.error || 'No se pudo enviar la solicitud. Intenta de nuevo.');
+        } catch (err) {
+            mostrarErrorGlobal('Error de conexión. Verifica tu red e intenta de nuevo.');
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+    function validarFormulario() {
+        let valido = true;
+        ocultarErrores();
+
+        const materia = document.getElementById('codigoMateria').value;
+        const fecha = document.getElementById('fecha').value;
+        const horaInicio = document.getElementById('horaInicio').value;
+        const horaFin = document.getElementById('horaFin').value;
+        const comentario = document.getElementById('comentario').value.trim();
+
+        if (!materia) {
+            document.getElementById('errorMateria').classList.remove('hidden');
+            valido = false;
+        }
+        if (!fecha) {
+            document.getElementById('errorFecha').classList.remove('hidden');
+            valido = false;
+        }
+        if (horaInicio && horaFin && horaInicio >= horaFin) {
+            document.getElementById('errorHorario').classList.remove('hidden');
+            valido = false;
+        }
+        if (!comentario) {
+            document.getElementById('errorMotivo').classList.remove('hidden');
+            valido = false;
+        }
+
+        return valido;
+    }
+
+    function ocultarErrores() {
+        ['errorMateria', 'errorFecha', 'errorHorario', 'errorMotivo'].forEach(id => {
+            document.getElementById(id).classList.add('hidden');
+        });
+    }
+
+    function mostrarErrorGlobal(mensaje) {
+        document.getElementById('errorSolicitudMsg').textContent = mensaje;
+        document.getElementById('errorSolicitud').classList.remove('hidden');
+    }
+
+    function ocultarErrorGlobal() {
+        document.getElementById('errorSolicitud').classList.add('hidden');
     }
 
     function cerrarConfirmacion() {
-        document.getElementById('modalConfirmacion').classList.add('hidden');
-        window.location.href = '${pageContext.request.contextPath}/estudiante/buscar-tutor';
+        window.location.href = contextPath + '/estudiante/buscar-tutor';
     }
 </script>
 

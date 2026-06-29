@@ -15,6 +15,7 @@
           GET      /estudiante/dashboard → EstudianteInicioServlet (alias)
           GET|POST /estudiante/buscar-tutor → BuscarTutorServlet → buscar-tutor.jsp
           GET      /estudiante/tutor/detalle → DetalleTutorEstudianteServlet → detalle-tutor.jsp
+          GET      /estudiante/solicitar-mentoria → SolicitarMentoriaServlet → solicitar-mentoria.jsp
           GET      /tutor/inicio       → TutorInicioServlet  → dashboard-tutor.jsp
           GET      /tutor/perfil       → PerfilTutorServlet  → perfil-tutor.jsp
           GET      /tutor/horarios     → HorariosTutorServlet    → gestion-horarios-tutor.jsp
@@ -91,6 +92,16 @@
     <servlet-mapping>
         <servlet-name>DetalleTutorEstudianteServlet</servlet-name>
         <url-pattern>/estudiante/tutor/detalle</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SolicitarMentoriaServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.SolicitarMentoriaServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SolicitarMentoriaServlet</servlet-name>
+        <url-pattern>/estudiante/solicitar-mentoria</url-pattern>
     </servlet-mapping>
 
     <servlet>

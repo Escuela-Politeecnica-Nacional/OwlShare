@@ -21,6 +21,7 @@ ec\edu\epn\controlador\TutorInicioServlet$1.class
 ec\edu\epn\modelo\TutorResumen.class
 ec\edu\epn\modelo\SolicitudTutoria.class
 ec\edu\epn\modelo\Material.class
+ec\edu\epn\controlador\SolicitarMentoriaServlet.class
 ec\edu\epn\catalogo\MateriasCatalogo.class
 ec\edu\epn\dao\HorarioDAO.class
 ec\edu\epn\dao\MateriaCatalogoDAO.class
