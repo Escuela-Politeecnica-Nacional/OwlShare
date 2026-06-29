@@ -24,6 +24,8 @@ public class Main {
         verificarServlet(webapp, "ec/edu/epn/controlador/DetalleTutorServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/CrearSolicitudServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/RegistroServlet.class");
+        verificarServlet(webapp, "ec/edu/epn/controlador/EstudianteInicioServlet.class");
+        verificarServlet(webapp, "ec/edu/epn/controlador/LogoutServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/TutorInicioServlet.class");
 
         tomcat.addWebapp("/", webapp.getAbsolutePath());
