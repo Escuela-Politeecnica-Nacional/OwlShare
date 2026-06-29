@@ -97,7 +97,7 @@
                     </div>
                     <div>
                         <h4 class="font-bold text-on-surface group-hover:text-blue-600 transition-colors">Gestionar Horarios</h4>
-                        <p class="text-xs text-slate-500">Administra tus disponibilidades</p>
+                        <p class="text-xs text-slate-500">Define tu disponibilidad semanal y revisa tu agenda</p>
                     </div>
                 </div>
             </a>

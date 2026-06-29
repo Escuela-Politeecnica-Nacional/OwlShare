@@ -132,7 +132,7 @@ public class HorarioServlet extends HttpServlet {
         }
 
         try {
-            horarioDAO.crear(tutor.get(), materia, fecha.trim(), horaInicio.trim(), horaFin.trim());
+            horarioDAO.crear(tutor.get(), fecha.trim(), horaInicio.trim(), horaFin.trim());
             request.setAttribute("exito", "Horario creado correctamente.");
         } catch (RuntimeException e) {
             request.setAttribute("error", "Error al guardar el horario: " + e.getMessage());

@@ -1,5 +1,6 @@
 package controlador;
 
+import ec.edu.epn.dao.DisponibilidadTutorDAO;
 import ec.edu.epn.dao.HorarioDAO;
 import ec.edu.epn.modelo.MateriaCatalogo;
 import ec.edu.epn.dao.MateriaCatalogoDAO;
@@ -46,6 +47,9 @@ class CrearSolicitudServletTest {
     private SolicitudTutoriaDAO solicitudDAO;
 
     @Mock
+    private DisponibilidadTutorDAO disponibilidadDAO;
+
+    @Mock
     private HttpServletRequest request;
 
     @Mock
@@ -74,6 +78,10 @@ class CrearSolicitudServletTest {
         Field fieldHorario = CrearSolicitudServlet.class.getDeclaredField("horarioDAO");
         fieldHorario.setAccessible(true);
         fieldHorario.set(servlet, horarioDAO);
+
+        Field fieldDisponibilidad = CrearSolicitudServlet.class.getDeclaredField("disponibilidadDAO");
+        fieldDisponibilidad.setAccessible(true);
+        fieldDisponibilidad.set(servlet, disponibilidadDAO);
 
         responseBody = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(responseBody));
@@ -122,8 +130,11 @@ class CrearSolicitudServletTest {
         horarioNuevo.setHoraInicio("09:00");
         horarioNuevo.setHoraFin("10:00");
         horarioNuevo.setDisponible(true);
-        when(horarioDAO.crear(any(), any(), anyString(), anyString(), anyString()))
+        when(horarioDAO.crear(any(), anyString(), anyString(), anyString()))
                 .thenReturn(horarioNuevo);
+
+        when(disponibilidadDAO.cubreHorario(2L, "2026-07-10", "09:00", "10:00"))
+                .thenReturn(true);
     }
 
     // ── PRUEBA 1 ───────────────────────────────────────────────
