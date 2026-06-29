@@ -7,15 +7,21 @@
 
     <!--
         Rutas MVC (controlador → vista):
-          GET|POST /login, GET /        → LoginServlet        → WEB-INF/auth/login.jsp
+          GET|POST /login             → LoginServlet        → WEB-INF/auth/login.jsp
+          GET      /                  → welcome-file login  → LoginServlet
           GET|POST /registro           → RegistroServlet     → WEB-INF/auth/registro.jsp
           GET      /logout             → LogoutServlet       → redirect /login
           GET      /estudiante/inicio  → EstudianteInicioServlet → dashboard-estudiante.jsp
           GET      /estudiante/dashboard → EstudianteInicioServlet (alias)
+          GET|POST /estudiante/buscar-tutor → BuscarTutorServlet → buscar-tutor.jsp
+          GET      /estudiante/tutor/detalle → DetalleTutorEstudianteServlet → detalle-tutor.jsp
+          GET      /estudiante/solicitar-mentoria → SolicitarMentoriaServlet → solicitar-mentoria.jsp
           GET      /tutor/inicio       → TutorInicioServlet  → dashboard-tutor.jsp
           GET      /tutor/perfil       → PerfilTutorServlet  → perfil-tutor.jsp
           GET      /tutor/horarios     → HorariosTutorServlet    → gestion-horarios-tutor.jsp
+          POST     /tutor/horarios/disponibilidad → GestionDisponibilidadServlet
           GET      /tutor/solicitudes  → SolicitudesTutorServlet → bandeja-solicitudes-tutor.jsp
+          POST     /tutor/solicitudes/responder → GestionSolicitudServlet → redirect bandeja
           GET      /api/tutores/buscar  → BuscarTutoresServlet   → JSON
           GET      /api/tutores/detalle → DetalleTutorServlet    → JSON
           POST     /api/solicitudes     → CrearSolicitudServlet  → JSON
@@ -31,10 +37,9 @@
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
+    <welcome-file-list>
+        <welcome-file>login</welcome-file>
+    </welcome-file-list>
 
     <servlet>
         <servlet-name>RegistroServlet</servlet-name>
@@ -72,6 +77,36 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>BuscarTutorServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.BuscarTutorServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>BuscarTutorServlet</servlet-name>
+        <url-pattern>/estudiante/buscar-tutor</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DetalleTutorEstudianteServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.DetalleTutorEstudianteServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DetalleTutorEstudianteServlet</servlet-name>
+        <url-pattern>/estudiante/tutor/detalle</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SolicitarMentoriaServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.SolicitarMentoriaServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SolicitarMentoriaServlet</servlet-name>
+        <url-pattern>/estudiante/solicitar-mentoria</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>TutorInicioServlet</servlet-name>
         <servlet-class>ec.edu.epn.controlador.TutorInicioServlet</servlet-class>
     </servlet>
@@ -102,6 +137,16 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>GestionDisponibilidadServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.GestionDisponibilidadServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GestionDisponibilidadServlet</servlet-name>
+        <url-pattern>/tutor/horarios/disponibilidad</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>SolicitudesTutorServlet</servlet-name>
         <servlet-class>ec.edu.epn.controlador.SolicitudesTutorServlet</servlet-class>
     </servlet>
@@ -109,6 +154,16 @@
     <servlet-mapping>
         <servlet-name>SolicitudesTutorServlet</servlet-name>
         <url-pattern>/tutor/solicitudes</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GestionSolicitudServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.GestionSolicitudServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GestionSolicitudServlet</servlet-name>
+        <url-pattern>/tutor/solicitudes/responder</url-pattern>
     </servlet-mapping>
 
     <servlet>
