@@ -12,6 +12,7 @@ import ec.edu.epn.modelo.SolicitudTutoria;
 import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.catalogo.MateriasCatalogo;
 import ec.edu.epn.util.HorarioUtil;
+import ec.edu.epn.util.InputValidacion;
 import ec.edu.epn.util.JsonUtil;
 import ec.edu.epn.util.MateriaTutorReglas;
 import ec.edu.epn.util.MateriaUtil;
@@ -47,14 +48,16 @@ public class CrearSolicitudServlet extends HttpServlet {
         String fecha = trim(request.getParameter("fecha"));
         String horaInicio = trim(request.getParameter("horaInicio"));
         String horaFin = trim(request.getParameter("horaFin"));
-        String comentario = blankToNull(trim(request.getParameter("comentario")));
+        String comentario = trim(request.getParameter("comentario"));
 
         String error = validarCampos(estudianteIdParam, tutorIdParam, horarioIdParam,
-                codigoMateria, fecha, horaInicio, horaFin);
+                codigoMateria, fecha, horaInicio, horaFin, comentario);
         if (error != null) {
             responderError(response, HttpServletResponse.SC_BAD_REQUEST, error);
             return;
         }
+
+        comentario = comentario.trim();
 
         long estudianteId = Long.parseLong(estudianteIdParam);
         long tutorId = Long.parseLong(tutorIdParam);
@@ -195,7 +198,12 @@ public class CrearSolicitudServlet extends HttpServlet {
     }
 
     private String validarCampos(String estudianteId, String tutorId, String horarioId,
-                                 String codigoMateria, String fecha, String horaInicio, String horaFin) {
+                                 String codigoMateria, String fecha, String horaInicio,
+                                 String horaFin, String comentario) {
+        String errorComentario = InputValidacion.validarComentarioMentoria(comentario).orElse(null);
+        if (errorComentario != null) {
+            return errorComentario;
+        }
         if (estudianteId.isEmpty()) {
             return "El parámetro 'estudianteId' es obligatorio.";
         }
@@ -248,9 +256,5 @@ public class CrearSolicitudServlet extends HttpServlet {
 
     private String trim(String value) {
         return value == null ? "" : value.trim();
-    }
-
-    private String blankToNull(String value) {
-        return value == null || value.isBlank() ? null : value;
     }
 }

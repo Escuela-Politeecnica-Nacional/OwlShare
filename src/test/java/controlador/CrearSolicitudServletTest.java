@@ -86,7 +86,7 @@ class CrearSolicitudServletTest {
         when(request.getParameter("fecha")).thenReturn("2026-07-10");
         when(request.getParameter("horaInicio")).thenReturn("09:00");
         when(request.getParameter("horaFin")).thenReturn("10:00");
-        when(request.getParameter("comentario")).thenReturn(null);
+        when(request.getParameter("comentario")).thenReturn("Necesito ayuda con derivadas parciales.");
 
         // Estudiante válido con rol ESTUDIANTE
         Usuario estudiante = new Usuario();

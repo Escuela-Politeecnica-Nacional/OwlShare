@@ -37,12 +37,12 @@
         </div>
     </c:if>
 
-    <form action="${pageContext.request.contextPath}/registro" method="POST" class="space-y-6">
+    <form action="${pageContext.request.contextPath}/registro" method="POST" id="formRegistro" class="space-y-6" novalidate>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <%-- Email --%>
             <div class="md:col-span-2">
                 <label class="block text-sm font-bold text-indigo-900 mb-2">Correo Electrónico *</label>
-                <input type="email" id="emailRegistro" name="email" required
+                <input type="email" id="emailRegistro" name="email" required maxlength="254"
                        class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border"
                        placeholder="ejemplo@correo.com">
                 <p id="emailErrorReg" class="hidden mt-1 text-xs text-red-600 font-medium flex items-center gap-1">
@@ -56,6 +56,7 @@
                 <label class="block text-sm font-bold text-indigo-900 mb-2">Contraseña *</label>
                 <div class="relative">
                     <input type="password" id="passwordRegistro" name="password" required
+                           minlength="8" maxlength="72"
                            class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border pr-10"
                            placeholder="••••••••">
                     <button type="button" id="togglePasswordReg" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-indigo-600 transition-colors">
@@ -69,6 +70,7 @@
                 <label class="block text-sm font-bold text-indigo-900 mb-2">Confirmar Contraseña *</label>
                 <div class="relative">
                     <input type="password" id="confirmPasswordRegistro" name="confirmPassword" required
+                           minlength="8" maxlength="72"
                            class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border pr-10"
                            placeholder="••••••••">
                     <button type="button" id="toggleConfirmReg" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-indigo-600 transition-colors">
@@ -84,33 +86,37 @@
             <%-- Nombre --%>
             <div>
                 <label class="block text-sm font-bold text-indigo-900 mb-2">Primer Nombre *</label>
-                <input type="text" name="nombre" required
+                <input type="text" id="nombreRegistro" name="nombre" required maxlength="50"
                        class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border"
                        placeholder="Nombre">
+                <p id="nombreErrorReg" class="hidden mt-1 text-xs text-red-600 font-medium"></p>
             </div>
 
             <%-- Segundo Nombre --%>
             <div>
                 <label class="block text-sm font-bold text-indigo-900 mb-2">Segundo Nombre</label>
-                <input type="text" name="segundoNombre"
+                <input type="text" id="segundoNombreRegistro" name="segundoNombre" maxlength="50"
                        class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border"
                        placeholder="Segundo Nombre">
+                <p id="segundoNombreErrorReg" class="hidden mt-1 text-xs text-red-600 font-medium"></p>
             </div>
 
             <%-- Apellido --%>
             <div>
                 <label class="block text-sm font-bold text-indigo-900 mb-2">Primer Apellido *</label>
-                <input type="text" name="apellido" required
+                <input type="text" id="apellidoRegistro" name="apellido" required maxlength="50"
                        class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border"
                        placeholder="Apellido">
+                <p id="apellidoErrorReg" class="hidden mt-1 text-xs text-red-600 font-medium"></p>
             </div>
 
             <%-- Segundo Apellido --%>
             <div>
                 <label class="block text-sm font-bold text-indigo-900 mb-2">Segundo Apellido</label>
-                <input type="text" name="segundoApellido"
+                <input type="text" id="segundoApellidoRegistro" name="segundoApellido" maxlength="50"
                        class="w-full rounded-xl border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all text-sm outline-none p-3 border"
                        placeholder="Segundo Apellido">
+                <p id="segundoApellidoErrorReg" class="hidden mt-1 text-xs text-red-600 font-medium"></p>
             </div>
 
             <%-- Semestre --%>
@@ -208,6 +214,7 @@
 
 <script type="application/json" id="materiasPorCarreraJsonReg"><c:out value="${materiasPorCarreraJson}" escapeXml="false"/></script>
 
+<script src="${pageContext.request.contextPath}/js/validacion-campos.js"></script>
 <script>
     // ── Validaciones de Email y Contraseña ──
     (function () {
@@ -218,23 +225,23 @@
         var toggleConfirmBtn = document.getElementById('toggleConfirmReg');
         var emailError = document.getElementById('emailErrorReg');
         var confirmError = document.getElementById('confirmErrorReg');
-        var form = document.querySelector('form');
+        var form = document.getElementById('formRegistro');
 
-        // Validar email en tiempo real
-        function validateEmail(email) {
-            var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
-        }
+        ['nombreRegistro', 'segundoNombreRegistro', 'apellidoRegistro', 'segundoApellidoRegistro']
+            .forEach(function (id) {
+                OwlValidacion.aplicarLimiteNombre(document.getElementById(id));
+            });
 
         emailInput.addEventListener('blur', function () {
-            if (this.value && !validateEmail(this.value)) {
+            var mensaje = OwlValidacion.validarEmail(this.value);
+            if (mensaje) {
+                document.getElementById('emailErrorMsgReg').textContent = mensaje;
                 emailError.classList.remove('hidden');
             } else {
                 emailError.classList.add('hidden');
             }
         });
 
-        // Validar coincidencia de contraseñas en tiempo real
         function validatePasswords() {
             if (confirmInput.value && passwordInput.value !== confirmInput.value) {
                 confirmError.classList.remove('hidden');
@@ -275,17 +282,44 @@
 
         // Validar al enviar
         form.addEventListener('submit', function (e) {
-            if (emailInput.value && !validateEmail(emailInput.value)) {
+            var campos = [
+                { id: 'nombreRegistro', etiqueta: 'primer nombre', obligatorio: true, errorId: 'nombreErrorReg' },
+                { id: 'segundoNombreRegistro', etiqueta: 'segundo nombre', obligatorio: false, errorId: 'segundoNombreErrorReg' },
+                { id: 'apellidoRegistro', etiqueta: 'primer apellido', obligatorio: true, errorId: 'apellidoErrorReg' },
+                { id: 'segundoApellidoRegistro', etiqueta: 'segundo apellido', obligatorio: false, errorId: 'segundoApellidoErrorReg' }
+            ];
+
+            var mensaje = OwlValidacion.validarEmail(emailInput.value)
+                || OwlValidacion.validarPassword(passwordInput.value);
+
+            if (!mensaje) {
+                for (var i = 0; i < campos.length; i++) {
+                    var campo = campos[i];
+                    mensaje = OwlValidacion.validarNombre(
+                        document.getElementById(campo.id).value, campo.etiqueta, campo.obligatorio);
+                    if (mensaje) {
+                        document.getElementById(campo.errorId).textContent = mensaje;
+                        document.getElementById(campo.errorId).classList.remove('hidden');
+                        document.getElementById(campo.id).focus();
+                        break;
+                    }
+                    document.getElementById(campo.errorId).classList.add('hidden');
+                }
+            }
+
+            if (mensaje) {
                 e.preventDefault();
-                emailError.classList.remove('hidden');
-                emailInput.focus();
+                if (mensaje.indexOf('correo') >= 0) {
+                    document.getElementById('emailErrorMsgReg').textContent = mensaje;
+                    emailError.classList.remove('hidden');
+                    emailInput.focus();
+                }
                 return;
             }
-            if (passwordInput.value !== confirmInput.value) {
+
+            if (!validatePasswords()) {
                 e.preventDefault();
-                confirmError.classList.remove('hidden');
                 confirmInput.focus();
-                return;
             }
         });
     })();
@@ -303,7 +337,7 @@
         var rangeSemestres   = document.getElementById('rangeSemestres');
         var materiasVacias   = document.getElementById('materiasVacias');
         var contadorMaterias = document.getElementById('contadorMaterias');
-        var form             = document.querySelector('form');
+        var form             = document.getElementById('formRegistro');
         var materiasPorCarrera = JSON.parse(document.getElementById('materiasPorCarreraJsonReg').textContent);
 
         var SEMESTRE_MIN_TUTOR = 2;

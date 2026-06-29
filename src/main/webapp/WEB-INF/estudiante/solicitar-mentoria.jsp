@@ -100,10 +100,13 @@
 
                     <div>
                         <label for="comentario" class="block text-sm font-bold text-indigo-900 mb-2">Tu duda o motivo *</label>
-                        <textarea id="comentario" name="comentario" rows="5" required
+                        <textarea id="comentario" name="comentario" rows="5" required maxlength="300"
                                   placeholder="Describe brevemente qué necesitas repasar o en qué tema necesitas ayuda..."
                                   class="w-full rounded-xl border border-slate-200 p-3 focus:ring-2 focus:ring-primary text-sm resize-none"></textarea>
-                        <p id="errorMotivo" class="hidden text-xs text-red-600 mt-1">Describe tu motivo o duda.</p>
+                        <div class="flex justify-between items-center mt-1">
+                            <p id="errorMotivo" class="hidden text-xs text-red-600">Describe tu motivo o duda.</p>
+                            <p id="contadorComentario" class="text-xs text-slate-500 ml-auto">0 / 300</p>
+                        </div>
                     </div>
 
                     <button type="submit" id="btnEnviar"
@@ -160,10 +163,17 @@
     © 2025 OwlShare · Plataforma Educativa Colaborativa
 </footer>
 
+<script src="${pageContext.request.contextPath}/js/validacion-campos.js"></script>
 <script>
     const contextPath = '${pageContext.request.contextPath}';
 
     document.getElementById('fecha').min = new Date().toISOString().split('T')[0];
+
+    OwlValidacion.inicializarContadorTextarea(
+        document.getElementById('comentario'),
+        document.getElementById('contadorComentario'),
+        OwlValidacion.LIMITES.comentarioMentoriaMax
+    );
 
     document.getElementById('formSolicitud').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -228,8 +238,11 @@
             document.getElementById('errorHorario').classList.remove('hidden');
             valido = false;
         }
-        if (!comentario) {
-            document.getElementById('errorMotivo').classList.remove('hidden');
+        const errorComentario = OwlValidacion.validarComentarioMentoria(comentario);
+        if (errorComentario) {
+            const errorMotivo = document.getElementById('errorMotivo');
+            errorMotivo.textContent = errorComentario;
+            errorMotivo.classList.remove('hidden');
             valido = false;
         }
 
@@ -238,7 +251,11 @@
 
     function ocultarErrores() {
         ['errorMateria', 'errorFecha', 'errorHorario', 'errorMotivo'].forEach(id => {
-            document.getElementById(id).classList.add('hidden');
+            const el = document.getElementById(id);
+            el.classList.add('hidden');
+            if (id === 'errorMotivo') {
+                el.textContent = 'Describe tu motivo o duda.';
+            }
         });
     }
 
