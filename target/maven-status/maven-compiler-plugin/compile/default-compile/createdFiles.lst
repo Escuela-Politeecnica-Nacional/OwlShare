@@ -9,6 +9,7 @@ ec\edu\epn\controlador\PerfilTutorServlet$1.class
 ec\edu\epn\controlador\HorariosTutorServlet.class
 ec\edu\epn\controlador\EstudianteInicioServlet$1.class
 ec\edu\epn\controlador\LoginServlet$1.class
+ec\edu\epn\util\SesionUtil.class
 ec\edu\epn\controlador\BuscarTutoresServlet.class
 ec\edu\epn\modelo\Horario.class
 ec\edu\epn\dao\SolicitudTutoriaDAO.class
