@@ -3,12 +3,12 @@ package ec.edu.epn.controlador;
 import ec.edu.epn.dao.UsuarioDAO;
 import ec.edu.epn.modelo.Rol;
 import ec.edu.epn.modelo.Usuario;
+import ec.edu.epn.util.SesionUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -43,8 +43,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        HttpSession session = request.getSession();
-        session.setAttribute("usuarioLogueado", usuario);
+        SesionUtil.iniciarSesion(request, usuario);
 
         response.sendRedirect(request.getContextPath() + destinoPorRol(usuario.getRol()));
     }

@@ -43,7 +43,8 @@ class LoginServletTest {
 
     @BeforeEach
     void setUp() {
-        when(request.getSession()).thenReturn(session);
+        when(request.getSession(false)).thenReturn(null);
+        when(request.getSession(true)).thenReturn(session);
         when(request.getRequestDispatcher("/WEB-INF/auth/login.jsp")).thenReturn(dispatcher);
     }
 
@@ -63,6 +64,7 @@ class LoginServletTest {
         servlet.service(request, response);
 
         verify(session).setAttribute("usuarioLogueado", estudiante);
+        verify(session).setAttribute("usuarioId", estudiante.getId());
         verify(response).sendRedirect(contains("/estudiante/inicio"));
     }
 
@@ -82,6 +84,7 @@ class LoginServletTest {
         servlet.service(request, response);
 
         verify(session).setAttribute("usuarioLogueado", tutor);
+        verify(session).setAttribute("usuarioId", tutor.getId());
         verify(response).sendRedirect(contains("/tutor/inicio"));
     }
 
@@ -101,6 +104,7 @@ class LoginServletTest {
         servlet.service(request, response);
 
         verify(session).setAttribute("usuarioLogueado", admin);
+        verify(session).setAttribute("usuarioId", admin.getId());
         verify(response).sendRedirect(contains("/admin/inicio"));
     }
 
