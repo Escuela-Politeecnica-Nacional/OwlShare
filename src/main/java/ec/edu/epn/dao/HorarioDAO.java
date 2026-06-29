@@ -38,11 +38,9 @@ public class HorarioDAO {
         }
     }
 
-    public Horario crear(Usuario tutor, MateriaCatalogo materia, String fecha,
-                         String horaInicio, String horaFin) {
+    public Horario crear(Usuario tutor, String fecha, String horaInicio, String horaFin) {
         Horario horario = new Horario();
         horario.setTutor(tutor);
-        horario.setMateria(materia);
         horario.setFecha(fecha);
         horario.setHoraInicio(horaInicio);
         horario.setHoraFin(horaFin);
@@ -60,6 +58,12 @@ public class HorarioDAO {
             }
             throw e;
         }
+    }
+
+    /** Compatibilidad con código legado; la materia ya no se asocia al bloque horario. */
+    public Horario crear(Usuario tutor, MateriaCatalogo materia, String fecha,
+                         String horaInicio, String horaFin) {
+        return crear(tutor, fecha, horaInicio, horaFin);
     }
 
     /** Devuelve todos los horarios de un tutor, ordenados por fecha y hora de inicio. */

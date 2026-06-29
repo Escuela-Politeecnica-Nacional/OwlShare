@@ -19,6 +19,7 @@
           GET      /tutor/inicio       → TutorInicioServlet  → dashboard-tutor.jsp
           GET      /tutor/perfil       → PerfilTutorServlet  → perfil-tutor.jsp
           GET      /tutor/horarios     → HorariosTutorServlet    → gestion-horarios-tutor.jsp
+          POST     /tutor/horarios/disponibilidad → GestionDisponibilidadServlet
           GET      /tutor/solicitudes  → SolicitudesTutorServlet → bandeja-solicitudes-tutor.jsp
           POST     /tutor/solicitudes/responder → GestionSolicitudServlet → redirect bandeja
           GET      /api/tutores/buscar  → BuscarTutoresServlet   → JSON
@@ -133,6 +134,16 @@
     <servlet-mapping>
         <servlet-name>HorariosTutorServlet</servlet-name>
         <url-pattern>/tutor/horarios</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GestionDisponibilidadServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.GestionDisponibilidadServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GestionDisponibilidadServlet</servlet-name>
+        <url-pattern>/tutor/horarios/disponibilidad</url-pattern>
     </servlet-mapping>
 
     <servlet>

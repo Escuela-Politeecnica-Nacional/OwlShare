@@ -28,6 +28,10 @@ public final class HorarioUtil {
         return a1 < b2 && a2 < b1;
     }
 
+    public static boolean estaContenidoEn(String inicio, String fin, String franjaInicio, String franjaFin) {
+        return aMinutos(inicio) >= aMinutos(franjaInicio) && aMinutos(fin) <= aMinutos(franjaFin);
+    }
+
     static int aMinutos(String hora) {
         String[] partes = hora.trim().split(":");
         return Integer.parseInt(partes[0]) * 60 + Integer.parseInt(partes[1]);
