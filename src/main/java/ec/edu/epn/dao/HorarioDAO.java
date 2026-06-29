@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public class HorarioDAO {
@@ -53,6 +54,47 @@ public class HorarioDAO {
             session.persist(horario);
             transaction.commit();
             return horario;
+        } catch (RuntimeException e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw e;
+        }
+    }
+
+    /** Devuelve todos los horarios de un tutor, ordenados por fecha y hora de inicio. */
+    public List<Horario> listarPorTutor(Long tutorId) {
+        if (tutorId == null) {
+            return List.of();
+        }
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                    "from Horario h where h.tutor.id = :tutorId order by h.fecha asc, h.horaInicio asc",
+                    Horario.class
+            ).setParameter("tutorId", tutorId).list();
+        }
+    }
+
+    /**
+     * Elimina un horario solo si pertenece al tutor indicado.
+     *
+     * @return true si se eliminó, false si no existe o no pertenece al tutor.
+     */
+    public boolean eliminarSiEsPropietario(Long horarioId, Long tutorId) {
+        if (horarioId == null || tutorId == null) {
+            return false;
+        }
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            Horario horario = session.get(Horario.class, horarioId);
+            if (horario == null || !horario.getTutor().getId().equals(tutorId)) {
+                transaction.rollback();
+                return false;
+            }
+            session.remove(horario);
+            transaction.commit();
+            return true;
         } catch (RuntimeException e) {
             if (transaction != null) {
                 transaction.rollback();
