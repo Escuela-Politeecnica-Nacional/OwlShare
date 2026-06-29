@@ -34,24 +34,37 @@ public final class SesionUtil {
             return null;
         }
 
+        Long usuarioId = parseId(session.getAttribute(ATTR_USUARIO_ID));
+        if (usuarioId != null) {
+            Optional<Usuario> usuarioOpt = USUARIO_DAO.buscarPorId(usuarioId);
+            if (usuarioOpt.isPresent()) {
+                Usuario usuario = usuarioOpt.get();
+                session.setAttribute(ATTR_USUARIO, usuario);
+                session.setAttribute(ATTR_USUARIO_ID, usuario.getId());
+                return usuario;
+            }
+            return null;
+        }
+
         Object usuarioAttr = session.getAttribute(ATTR_USUARIO);
         if (usuarioAttr instanceof Usuario usuario) {
+            if (usuario.getId() != null) {
+                session.setAttribute(ATTR_USUARIO_ID, usuario.getId());
+            }
             return usuario;
         }
 
-        Object idAttr = session.getAttribute(ATTR_USUARIO_ID);
-        if (!(idAttr instanceof Long usuarioId)) {
-            return null;
-        }
+        return null;
+    }
 
-        Optional<Usuario> usuarioOpt = USUARIO_DAO.buscarPorId(usuarioId);
-        if (usuarioOpt.isEmpty()) {
-            return null;
+    private static Long parseId(Object idAttr) {
+        if (idAttr instanceof Long id) {
+            return id;
         }
-
-        Usuario usuario = usuarioOpt.get();
-        session.setAttribute(ATTR_USUARIO, usuario);
-        return usuario;
+        if (idAttr instanceof Number number) {
+            return number.longValue();
+        }
+        return null;
     }
 
     public static void cerrarSesion(HttpServletRequest request) {

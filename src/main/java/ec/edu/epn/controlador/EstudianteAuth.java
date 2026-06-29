@@ -6,6 +6,7 @@ import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.util.SesionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -26,7 +27,17 @@ final class EstudianteAuth {
             return null;
         }
         request.setAttribute("estudiantePerfil", EstudiantePerfilVista.desde(usuario));
+        sincronizarSesion(request, usuario);
         return usuario;
+    }
+
+    private static void sincronizarSesion(HttpServletRequest request, Usuario usuario) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return;
+        }
+        session.setAttribute(SesionUtil.ATTR_USUARIO, usuario);
+        session.setAttribute(SesionUtil.ATTR_USUARIO_ID, usuario.getId());
     }
 
     private static String destinoPorRol(Rol rol) {
