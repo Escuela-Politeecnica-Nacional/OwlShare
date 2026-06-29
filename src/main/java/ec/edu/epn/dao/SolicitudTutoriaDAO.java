@@ -1,6 +1,7 @@
 package ec.edu.epn.dao;
 
 import ec.edu.epn.modelo.EstadoSolicitud;
+import ec.edu.epn.modelo.Horario;
 import ec.edu.epn.modelo.SolicitudTutoria;
 import ec.edu.epn.util.HibernateUtil;
 import ec.edu.epn.util.HorarioUtil;
@@ -9,8 +10,30 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SolicitudTutoriaDAO {
+
+    public Optional<SolicitudTutoria> buscarPorId(Long id) {
+        if (id == null) return Optional.empty();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return Optional.ofNullable(session.get(SolicitudTutoria.class, id));
+        }
+    }
+
+    /**
+     * Lista todas las solicitudes recibidas por un tutor (a través de sus horarios),
+     * ordenadas de más reciente a más antigua.
+     */
+    public List<SolicitudTutoria> listarPorTutor(Long tutorId) {
+        if (tutorId == null) return List.of();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                    "from SolicitudTutoria s where s.horario.tutor.id = :tutorId order by s.id desc",
+                    SolicitudTutoria.class
+            ).setParameter("tutorId", tutorId).list();
+        }
+    }
 
     public boolean existeConflictoHorarioTutor(Long tutorId, String fecha,
                                                String horaInicio, String horaFin) {
@@ -52,9 +75,28 @@ public class SolicitudTutoriaDAO {
             session.persist(solicitud);
             transaction.commit();
         } catch (RuntimeException e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
+            if (transaction != null) transaction.rollback();
+            throw e;
+        }
+    }
+
+    /**
+     * Actualiza el estado (y comentario opcional) de una solicitud existente.
+     * También marca el horario como no disponible si se acepta,
+     * o lo libera si se rechaza.
+     */
+    public void actualizarEstado(SolicitudTutoria solicitud) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.merge(solicitud);
+            // Sincronizar disponibilidad del horario
+            Horario horario = solicitud.getHorario();
+            horario.setDisponible(solicitud.getEstado() != EstadoSolicitud.ACEPTADA);
+            session.merge(horario);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction != null) transaction.rollback();
             throw e;
         }
     }
