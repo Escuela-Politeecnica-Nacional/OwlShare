@@ -119,6 +119,34 @@
                         </c:otherwise>
                     </c:choose>
                 </div>
+
+                <div class="bg-white rounded-xl shadow p-8">
+                    <h3 class="text-2xl font-bold text-primary mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined">schedule</span>
+                        Horario de trabajo
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-4">Disponibilidad semanal para recibir solicitudes de mentoría.</p>
+                    <c:choose>
+                        <c:when test="${not empty disponibilidades}">
+                            <div class="space-y-3">
+                                <c:forEach var="franja" items="${disponibilidades}">
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div>
+                                            <p class="font-semibold text-on-surface"><c:out value="${franja.diaEtiqueta}"/></p>
+                                            <p class="text-sm text-slate-600">
+                                                <c:out value="${franja.horaInicio}"/> - <c:out value="${franja.horaFin}"/>
+                                            </p>
+                                        </div>
+                                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-green-100 text-green-800">Disponible</span>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <p class="text-slate-600">Este tutor aún no ha publicado su horario de trabajo.</p>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
             </div>
 
             <div class="space-y-6">

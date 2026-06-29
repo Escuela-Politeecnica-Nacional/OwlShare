@@ -1,6 +1,8 @@
 package ec.edu.epn.controlador;
 
+import ec.edu.epn.dao.DisponibilidadTutorDAO;
 import ec.edu.epn.dao.UsuarioDAO;
+import ec.edu.epn.modelo.DisponibilidadTutorVista;
 import ec.edu.epn.modelo.TutorPerfilDetalle;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -13,6 +15,7 @@ import java.util.Optional;
 public class DetalleTutorEstudianteServlet extends HttpServlet {
 
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
+    private final DisponibilidadTutorDAO disponibilidadDAO = new DisponibilidadTutorDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -49,6 +52,13 @@ public class DetalleTutorEstudianteServlet extends HttpServlet {
         }
 
         request.setAttribute("tutorPerfil", perfil.get());
+        try {
+            request.setAttribute("disponibilidades", disponibilidadDAO.listarPorTutor(id).stream()
+                    .map(DisponibilidadTutorVista::desde)
+                    .toList());
+        } catch (RuntimeException e) {
+            request.setAttribute("disponibilidades", java.util.List.of());
+        }
         request.getRequestDispatcher("/WEB-INF/estudiante/detalle-tutor.jsp").forward(request, response);
     }
 

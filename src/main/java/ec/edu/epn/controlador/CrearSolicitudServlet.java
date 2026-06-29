@@ -6,10 +6,9 @@ import ec.edu.epn.dao.MateriaCatalogoDAO;
 import ec.edu.epn.dao.SolicitudTutoriaDAO;
 import ec.edu.epn.dao.UsuarioDAO;
 import ec.edu.epn.modelo.EstadoSolicitud;
+import ec.edu.epn.modelo.Rol;
 import ec.edu.epn.modelo.Horario;
 import ec.edu.epn.modelo.MateriaCatalogo;
-import ec.edu.epn.modelo.Rol;
-import ec.edu.epn.modelo.SolicitudTutoria;
 import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.catalogo.MateriasCatalogo;
 import ec.edu.epn.util.HorarioUtil;
@@ -41,6 +40,16 @@ public class CrearSolicitudServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        try {
+            procesarSolicitud(request, response);
+        } catch (RuntimeException e) {
+            responderError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "No se pudo procesar la solicitud.");
+        }
+    }
+
+    private void procesarSolicitud(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         request.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         String estudianteIdParam = trim(request.getParameter("estudianteId"));
@@ -60,6 +69,8 @@ public class CrearSolicitudServlet extends HttpServlet {
         }
 
         comentario = comentario.trim();
+        horaInicio = HorarioUtil.normalizarHora(horaInicio);
+        horaFin = HorarioUtil.normalizarHora(horaFin);
 
         long estudianteId = Long.parseLong(estudianteIdParam);
         long tutorId = Long.parseLong(tutorIdParam);
@@ -168,17 +179,16 @@ public class CrearSolicitudServlet extends HttpServlet {
             }
 
             horario = horarioDAO.buscarPorTutorFechaYHoras(tutorId, fecha, horaInicio, horaFin)
-                    .orElseGet(() -> horarioDAO.crear(tutor, fecha, horaInicio, horaFin));
+                    .orElseGet(() -> horarioDAO.crear(tutorId, fecha, horaInicio, horaFin));
         }
 
-        SolicitudTutoria solicitud = new SolicitudTutoria();
-        solicitud.setEstudiante(estudianteOpt.get());
-        solicitud.setHorario(horario);
-        solicitud.setMateria(materia);
-        solicitud.setComentario(comentario);
-
+        Long solicitudId;
         try {
-            solicitudTutoriaDAO.guardar(solicitud);
+            solicitudId = solicitudTutoriaDAO.crearSolicitud(
+                    estudianteId, horario.getId(), materia.getCodigo(), comentario);
+        } catch (IllegalArgumentException e) {
+            responderError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            return;
         } catch (RuntimeException e) {
             responderError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "No se pudo guardar la solicitud.");
@@ -190,7 +200,7 @@ public class CrearSolicitudServlet extends HttpServlet {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         try (PrintWriter writer = response.getWriter()) {
             writer.write("{");
-            writer.write("\"id\":" + solicitud.getId() + ",");
+            writer.write("\"id\":" + solicitudId + ",");
             writer.write("\"horarioId\":" + horario.getId() + ",");
             writer.write("\"codigoMateria\":\"" + JsonUtil.escape(materia.getCodigo()) + "\",");
             writer.write("\"mensaje\":\"Solicitud creada exitosamente.\",");

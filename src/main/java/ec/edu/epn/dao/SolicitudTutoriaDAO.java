@@ -1,7 +1,10 @@
 package ec.edu.epn.dao;
 
 import ec.edu.epn.modelo.EstadoSolicitud;
+import ec.edu.epn.modelo.Horario;
+import ec.edu.epn.modelo.MateriaCatalogo;
 import ec.edu.epn.modelo.SolicitudTutoria;
+import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.util.HibernateUtil;
 import ec.edu.epn.util.HorarioUtil;
 import org.hibernate.Session;
@@ -87,7 +90,8 @@ public class SolicitudTutoriaDAO {
 
             return query.list().stream()
                     .anyMatch(s -> HorarioUtil.haySolapamiento(
-                            horaInicio, horaFin,
+                            HorarioUtil.normalizarHora(horaInicio),
+                            HorarioUtil.normalizarHora(horaFin),
                             s.getHorario().getHoraInicio(), s.getHorario().getHoraFin()));
         }
     }
@@ -103,6 +107,44 @@ public class SolicitudTutoriaDAO {
             query.setParameter("estados", List.of(EstadoSolicitud.PENDIENTE, EstadoSolicitud.ACEPTADA));
             Long count = query.uniqueResult();
             return count != null && count > 0;
+        }
+    }
+
+    public Long crearSolicitud(Long estudianteId, Long horarioId, String codigoMateria, String comentario) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            Usuario estudiante = session.get(Usuario.class, estudianteId);
+            if (estudiante == null) {
+                throw new IllegalArgumentException("Estudiante no encontrado.");
+            }
+
+            Horario horario = session.get(Horario.class, horarioId);
+            if (horario == null) {
+                throw new IllegalArgumentException("Horario no encontrado.");
+            }
+
+            MateriaCatalogo materia = session.get(MateriaCatalogo.class, codigoMateria);
+            if (materia == null) {
+                throw new IllegalArgumentException("Materia no encontrada.");
+            }
+
+            SolicitudTutoria solicitud = new SolicitudTutoria();
+            solicitud.setEstudiante(estudiante);
+            solicitud.setHorario(horario);
+            solicitud.setMateria(materia);
+            solicitud.setComentario(comentario);
+            solicitud.setEstado(EstadoSolicitud.PENDIENTE);
+
+            session.persist(solicitud);
+            transaction.commit();
+            return solicitud.getId();
+        } catch (RuntimeException e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw e;
         }
     }
 
