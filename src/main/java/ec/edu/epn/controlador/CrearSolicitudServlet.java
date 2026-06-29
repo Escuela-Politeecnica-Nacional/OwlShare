@@ -1,5 +1,6 @@
 package ec.edu.epn.controlador;
 
+import ec.edu.epn.dao.DisponibilidadTutorDAO;
 import ec.edu.epn.dao.HorarioDAO;
 import ec.edu.epn.dao.MateriaCatalogoDAO;
 import ec.edu.epn.dao.SolicitudTutoriaDAO;
@@ -33,6 +34,7 @@ public class CrearSolicitudServlet extends HttpServlet {
 
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
     private final MateriaCatalogoDAO materiaCatalogoDAO = new MateriaCatalogoDAO();
+    private final DisponibilidadTutorDAO disponibilidadDAO = new DisponibilidadTutorDAO();
     private final HorarioDAO horarioDAO = new HorarioDAO();
     private final SolicitudTutoriaDAO solicitudTutoriaDAO = new SolicitudTutoriaDAO();
 
@@ -131,11 +133,6 @@ public class CrearSolicitudServlet extends HttpServlet {
                         "El horario no pertenece al tutor indicado.");
                 return;
             }
-            if (!horario.getMateria().getCodigo().equalsIgnoreCase(codigoMateria)) {
-                responderError(response, HttpServletResponse.SC_BAD_REQUEST,
-                        "El horario no corresponde a la materia indicada.");
-                return;
-            }
             if (!horario.isDisponible()) {
                 responderError(response, HttpServletResponse.SC_CONFLICT,
                         "El horario ya no está disponible.");
@@ -154,9 +151,14 @@ public class CrearSolicitudServlet extends HttpServlet {
             }
         } else {
             try {
+                if (!disponibilidadDAO.cubreHorario(tutorId, fecha, horaInicio, horaFin)) {
+                    responderError(response, HttpServletResponse.SC_CONFLICT,
+                            "El horario solicitado no está dentro de la disponibilidad del tutor.");
+                    return;
+                }
                 if (solicitudTutoriaDAO.existeConflictoHorarioTutor(tutorId, fecha, horaInicio, horaFin)) {
                     responderError(response, HttpServletResponse.SC_CONFLICT,
-                            "El tutor no tiene disponibilidad en el horario solicitado.");
+                            "El tutor ya tiene una tutoría agendada en ese horario.");
                     return;
                 }
             } catch (RuntimeException e) {
@@ -166,7 +168,7 @@ public class CrearSolicitudServlet extends HttpServlet {
             }
 
             horario = horarioDAO.buscarPorTutorFechaYHoras(tutorId, fecha, horaInicio, horaFin)
-                    .orElseGet(() -> horarioDAO.crear(tutor, materia, fecha, horaInicio, horaFin));
+                    .orElseGet(() -> horarioDAO.crear(tutor, fecha, horaInicio, horaFin));
         }
 
         SolicitudTutoria solicitud = new SolicitudTutoria();

@@ -21,11 +21,6 @@
 </head>
 <body class="bg-surface text-on-surface min-h-screen flex flex-col">
 
-<c:if test="${empty sessionScope.usuarioLogueado}">
-    <c:redirect url="/login"/>
-</c:if>
-
-<%-- Header --%>
 <header class="bg-white shadow-sm h-16 flex justify-between items-center px-8 sticky top-0 z-40">
     <div class="flex items-center gap-3">
         <h1 class="text-2xl font-extrabold text-indigo-900">OwlShare</h1>
@@ -41,130 +36,223 @@
     </div>
 </header>
 
-<%-- Main Content --%>
 <main class="flex-1 p-10">
     <div class="max-w-5xl mx-auto">
-        <div class="flex justify-between items-start mb-8">
-            <div>
-                <h2 class="text-4xl font-extrabold text-on-surface">Mis Horarios Disponibles</h2>
-                <p class="text-slate-600 mt-2">Define cuándo estás disponible para recibir solicitudes de mentoría.</p>
+        <div class="mb-8">
+            <h2 class="text-4xl font-extrabold text-on-surface">Mis Horarios</h2>
+            <p class="text-slate-600 mt-2">Configura tu horario de trabajo semanal y revisa las tutorías que tienes agendadas.</p>
+        </div>
+
+        <c:if test="${not empty exito}">
+            <div class="mb-6 bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm">
+                <c:out value="${exito}"/>
             </div>
-            <button onclick="abrirModalCrearHorario()" class="flex items-center gap-2 bg-primary text-white font-bold py-3 px-6 rounded-xl hover:opacity-90">
-                <span class="material-symbols-outlined">add_circle</span>
-                Nuevo Horario
+        </c:if>
+        <c:if test="${not empty error}">
+            <div class="mb-6 bg-red-50 border border-red-200 text-red-800 rounded-lg px-4 py-3 text-sm">
+                <c:out value="${error}"/>
+            </div>
+        </c:if>
+
+        <div class="flex gap-3 mb-8 border-b border-slate-200">
+            <button type="button" id="tabTrabajo" onclick="mostrarTab('trabajo')"
+                    class="tab-btn px-4 py-3 font-bold text-sm border-b-2 border-primary text-primary">
+                Horario de trabajo
+            </button>
+            <button type="button" id="tabAgenda" onclick="mostrarTab('agenda')"
+                    class="tab-btn px-4 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-primary">
+                Mi agenda personal
             </button>
         </div>
 
-        <%-- Lista de horarios --%>
-        <div class="bg-white rounded-xl shadow overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-slate-50 border-b">
-                        <tr>
-                            <th class="px-6 py-4 text-left text-sm font-bold text-on-surface">Materia</th>
-                            <th class="px-6 py-4 text-left text-sm font-bold text-on-surface">Fecha</th>
-                            <th class="px-6 py-4 text-left text-sm font-bold text-on-surface">Hora</th>
-                            <th class="px-6 py-4 text-left text-sm font-bold text-on-surface">Estado</th>
-                            <th class="px-6 py-4 text-left text-sm font-bold text-on-surface">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="listaHorarios" class="divide-y">
-                        <tr class="hover:bg-slate-50">
-                            <td class="px-6 py-4 text-sm">Cálculo Diferencial</td>
-                            <td class="px-6 py-4 text-sm">24 Jun 2026</td>
-                            <td class="px-6 py-4 text-sm">10:00 - 11:30</td>
-                            <td class="px-6 py-4 text-sm"><span class="badge-disponible px-3 py-1 rounded-full text-xs font-semibold">Disponible</span></td>
-                            <td class="px-6 py-4 text-sm space-x-2">
-                                <button class="text-primary hover:text-indigo-700 font-semibold text-xs">Editar</button>
-                                <button class="text-red-600 hover:text-red-700 font-semibold text-xs">Desactivar</button>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-slate-50">
-                            <td class="px-6 py-4 text-sm">Cálculo Diferencial</td>
-                            <td class="px-6 py-4 text-sm">24 Jun 2026</td>
-                            <td class="px-6 py-4 text-sm">14:00 - 15:30</td>
-                            <td class="px-6 py-4 text-sm"><span class="badge-reservado px-3 py-1 rounded-full text-xs font-semibold">Reservado</span></td>
-                            <td class="px-6 py-4 text-sm space-x-2">
-                                <button class="text-primary hover:text-indigo-700 font-semibold text-xs">Ver Solicitud</button>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-slate-50">
-                            <td class="px-6 py-4 text-sm">Álgebra Lineal</td>
-                            <td class="px-6 py-4 text-sm">23 Jun 2026</td>
-                            <td class="px-6 py-4 text-sm">09:00 - 10:00</td>
-                            <td class="px-6 py-4 text-sm"><span class="badge-cancelado px-3 py-1 rounded-full text-xs font-semibold">Cancelado</span></td>
-                            <td class="px-6 py-4 text-sm space-x-2">
-                                <button class="text-primary hover:text-indigo-700 font-semibold text-xs">Reactivar</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <%-- Horario de trabajo (disponibilidad semanal pública) --%>
+        <section id="seccionTrabajo">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold text-on-surface">Disponibilidad semanal</h3>
+                    <p class="text-sm text-slate-600 mt-1">Indica en qué días y horas puedes recibir solicitudes de mentoría.</p>
+                </div>
+                <button type="button" onclick="abrirModalFranja()"
+                        class="flex items-center gap-2 bg-primary text-white font-bold py-3 px-6 rounded-xl hover:opacity-90">
+                    <span class="material-symbols-outlined">add_circle</span>
+                    Agregar franja
+                </button>
             </div>
-            <div id="sinHorarios" class="hidden text-center py-12 text-slate-600">
-                <span class="material-symbols-outlined text-4xl text-slate-300 block mb-4">schedule</span>
-                <p>No has creado horarios aún. ¡Crea uno para empezar!</p>
+
+            <div class="bg-white rounded-xl shadow overflow-hidden">
+                <c:choose>
+                    <c:when test="${not empty disponibilidades}">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-sm font-bold">Día</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold">Horario</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold">Estado</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    <c:forEach var="franja" items="${disponibilidades}">
+                                        <tr class="hover:bg-slate-50">
+                                            <td class="px-6 py-4 text-sm font-semibold"><c:out value="${franja.diaEtiqueta}"/></td>
+                                            <td class="px-6 py-4 text-sm">
+                                                <c:out value="${franja.horaInicio}"/> - <c:out value="${franja.horaFin}"/>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm">
+                                                <c:choose>
+                                                    <c:when test="${franja.activo}">
+                                                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Activo</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">Inactivo</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm">
+                                                <form method="post" action="${pageContext.request.contextPath}/tutor/horarios/disponibilidad"
+                                                      class="inline"
+                                                      onsubmit="return confirm('¿Eliminar esta franja de disponibilidad?');">
+                                                    <input type="hidden" name="accion" value="eliminar"/>
+                                                    <input type="hidden" name="idFranja" value="${franja.id}"/>
+                                                    <button type="submit" class="text-red-600 hover:text-red-700 font-semibold text-xs">
+                                                        Eliminar
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="text-center py-12 text-slate-600">
+                            <span class="material-symbols-outlined text-4xl text-slate-300 block mb-4">schedule</span>
+                            <p>Aún no has definido tu horario de trabajo.</p>
+                            <p class="text-sm text-slate-500 mt-2">Agrega franjas como "Lunes 09:00–11:00" o "Martes 14:00–18:00".</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
-        </div>
+        </section>
+
+        <%-- Agenda personal (tutorías agendadas) --%>
+        <section id="seccionAgenda" class="hidden">
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-on-surface">Tutorías agendadas</h3>
+                <p class="text-sm text-slate-600 mt-1">Sesiones pendientes o confirmadas con estudiantes.</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow overflow-hidden">
+                <c:choose>
+                    <c:when test="${not empty sesionesAgendadas}">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-sm font-bold">Estudiante</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold">Materia</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold">Fecha</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold">Hora</th>
+                                        <th class="px-6 py-4 text-left text-sm font-bold">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    <c:forEach var="sesion" items="${sesionesAgendadas}">
+                                        <tr class="hover:bg-slate-50">
+                                            <td class="px-6 py-4 text-sm font-semibold"><c:out value="${sesion.estudiante}"/></td>
+                                            <td class="px-6 py-4 text-sm">
+                                                <c:out value="${sesion.materiaNombre}"/>
+                                                <span class="text-xs text-slate-500">(<c:out value="${sesion.materiaCodigo}"/>)</span>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm"><c:out value="${sesion.fecha}"/></td>
+                                            <td class="px-6 py-4 text-sm">
+                                                <c:out value="${sesion.horaInicio}"/> - <c:out value="${sesion.horaFin}"/>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm">
+                                                <c:choose>
+                                                    <c:when test="${sesion.estado == 'aceptada'}">
+                                                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                                            <c:out value="${sesion.estadoEtiqueta}"/>
+                                                        </span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+                                                            <c:out value="${sesion.estadoEtiqueta}"/>
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="text-center py-12 text-slate-600">
+                            <span class="material-symbols-outlined text-4xl text-slate-300 block mb-4">event_busy</span>
+                            <p>No tienes tutorías agendadas por ahora.</p>
+                            <a href="${pageContext.request.contextPath}/tutor/solicitudes"
+                               class="inline-block mt-4 text-primary font-semibold text-sm hover:underline">
+                                Revisar solicitudes pendientes
+                            </a>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </section>
     </div>
 </main>
 
-<%-- Modal: Crear/Editar Horario --%>
-<div id="modalHorario" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl shadow-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-8 space-y-6">
+<div id="modalFranja" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-lg max-w-md w-full">
+        <form method="post" action="${pageContext.request.contextPath}/tutor/horarios/disponibilidad" class="p-8 space-y-6">
+            <input type="hidden" name="accion" value="crear"/>
             <div class="flex justify-between items-center">
-                <h3 class="text-2xl font-bold text-on-surface">Nuevo Horario</h3>
-                <button onclick="cerrarModalHorario()" class="text-slate-500 hover:text-slate-700">
+                <h3 class="text-2xl font-bold text-on-surface">Nueva franja</h3>
+                <button type="button" onclick="cerrarModalFranja()" class="text-slate-500 hover:text-slate-700">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
 
-            <div class="space-y-4">
-                <%-- Materia --%>
-                <div>
-                    <label class="block text-sm font-bold text-on-surface mb-2">Materia *</label>
-                    <select id="materiasSelect" class="w-full rounded-lg border border-slate-200 p-3 focus:ring-2 focus:ring-primary">
-                        <option value="">Selecciona una materia</option>
-                        <option value="calculo">Cálculo Diferencial</option>
-                        <option value="algebra">Álgebra Lineal</option>
-                        <option value="fisica">Física I</option>
-                    </select>
-                    <p id="errorMateria" class="hidden text-xs text-red-600 mt-1">Selecciona una materia</p>
-                </div>
-
-                <%-- Fecha --%>
-                <div>
-                    <label class="block text-sm font-bold text-on-surface mb-2">Fecha *</label>
-                    <input type="date" id="fechaInput" class="w-full rounded-lg border border-slate-200 p-3 focus:ring-2 focus:ring-primary">
-                    <p id="errorFecha" class="hidden text-xs text-red-600 mt-1">Ingresa una fecha válida</p>
-                </div>
-
-                <%-- Hora Inicio --%>
-                <div>
-                    <label class="block text-sm font-bold text-on-surface mb-2">Hora de Inicio *</label>
-                    <input type="time" id="horaInicioInput" class="w-full rounded-lg border border-slate-200 p-3 focus:ring-2 focus:ring-primary">
-                    <p id="errorHoraInicio" class="hidden text-xs text-red-600 mt-1">Ingresa la hora de inicio</p>
-                </div>
-
-                <%-- Hora Fin --%>
-                <div>
-                    <label class="block text-sm font-bold text-on-surface mb-2">Hora de Fin *</label>
-                    <input type="time" id="horaFinInput" class="w-full rounded-lg border border-slate-200 p-3 focus:ring-2 focus:ring-primary">
-                    <p id="errorHoraFin" class="hidden text-xs text-red-600 mt-1">La hora de fin debe ser mayor que la de inicio</p>
-                </div>
-
-                <p class="text-xs text-slate-500">* Campos obligatorios</p>
+            <div>
+                <label for="diaSemana" class="block text-sm font-bold text-on-surface mb-2">Día de la semana *</label>
+                <select id="diaSemana" name="diaSemana" required
+                        class="w-full rounded-lg border border-slate-200 p-3 focus:ring-2 focus:ring-primary">
+                    <option value="">Selecciona un día</option>
+                    <c:forEach var="dia" items="${diasSemana}">
+                        <option value="${dia.name()}"><c:out value="${dia.etiqueta}"/></option>
+                    </c:forEach>
+                </select>
             </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="horaInicio" class="block text-sm font-bold text-on-surface mb-2">Hora inicio *</label>
+                    <input type="time" id="horaInicio" name="horaInicio" required
+                           class="w-full rounded-lg border border-slate-200 p-3 focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label for="horaFin" class="block text-sm font-bold text-on-surface mb-2">Hora fin *</label>
+                    <input type="time" id="horaFin" name="horaFin" required
+                           class="w-full rounded-lg border border-slate-200 p-3 focus:ring-2 focus:ring-primary">
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-500">Ejemplo: Lunes de 09:00 a 11:00, o Martes de 14:00 a 18:00.</p>
 
             <div class="flex gap-3">
-                <button onclick="cerrarModalHorario()" class="flex-1 py-3 border border-slate-200 rounded-lg font-bold text-on-surface hover:bg-slate-50">
+                <button type="button" onclick="cerrarModalFranja()"
+                        class="flex-1 py-3 border border-slate-200 rounded-lg font-bold hover:bg-slate-50">
                     Cancelar
                 </button>
-                <button onclick="crearHorario()" class="flex-1 py-3 bg-primary text-white rounded-lg font-bold hover:opacity-90">
-                    Crear Horario
+                <button type="submit" class="flex-1 py-3 bg-primary text-white rounded-lg font-bold hover:opacity-90">
+                    Guardar
                 </button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -173,81 +261,34 @@
 </footer>
 
 <script>
-    function abrirModalCrearHorario() {
-        document.getElementById('modalHorario').classList.remove('hidden');
-        limpiarFormulario();
+    function mostrarTab(tab) {
+        const esTrabajo = tab === 'trabajo';
+        document.getElementById('seccionTrabajo').classList.toggle('hidden', !esTrabajo);
+        document.getElementById('seccionAgenda').classList.toggle('hidden', esTrabajo);
+
+        document.getElementById('tabTrabajo').classList.toggle('border-primary', esTrabajo);
+        document.getElementById('tabTrabajo').classList.toggle('text-primary', esTrabajo);
+        document.getElementById('tabTrabajo').classList.toggle('border-transparent', !esTrabajo);
+        document.getElementById('tabTrabajo').classList.toggle('text-slate-500', !esTrabajo);
+
+        document.getElementById('tabAgenda').classList.toggle('border-primary', !esTrabajo);
+        document.getElementById('tabAgenda').classList.toggle('text-primary', !esTrabajo);
+        document.getElementById('tabAgenda').classList.toggle('border-transparent', esTrabajo);
+        document.getElementById('tabAgenda').classList.toggle('text-slate-500', esTrabajo);
     }
 
-    function cerrarModalHorario() {
-        document.getElementById('modalHorario').classList.add('hidden');
+    function abrirModalFranja() {
+        document.getElementById('modalFranja').classList.remove('hidden');
     }
 
-    function limpiarFormulario() {
-        document.getElementById('materiasSelect').value = '';
-        document.getElementById('fechaInput').value = '';
-        document.getElementById('horaInicioInput').value = '';
-        document.getElementById('horaFinInput').value = '';
-        document.querySelectorAll('[id^="error"]').forEach(el => el.classList.add('hidden'));
+    function cerrarModalFranja() {
+        document.getElementById('modalFranja').classList.add('hidden');
     }
 
-    function validarFormulario() {
-        let valido = true;
-        document.querySelectorAll('[id^="error"]').forEach(el => el.classList.add('hidden'));
-
-        if (!document.getElementById('materiasSelect').value) {
-            document.getElementById('errorMateria').classList.remove('hidden');
-            valido = false;
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            cerrarModalFranja();
         }
-        if (!document.getElementById('fechaInput').value) {
-            document.getElementById('errorFecha').classList.remove('hidden');
-            valido = false;
-        }
-        if (!document.getElementById('horaInicioInput').value) {
-            document.getElementById('errorHoraInicio').classList.remove('hidden');
-            valido = false;
-        }
-        if (!document.getElementById('horaFinInput').value) {
-            document.getElementById('errorHoraFin').classList.remove('hidden');
-            valido = false;
-        }
-
-        if (document.getElementById('horaInicioInput').value && document.getElementById('horaFinInput').value) {
-            if (document.getElementById('horaInicioInput').value >= document.getElementById('horaFinInput').value) {
-                document.getElementById('errorHoraFin').classList.remove('hidden');
-                valido = false;
-            }
-        }
-
-        return valido;
-    }
-
-    function crearHorario() {
-        if (!validarFormulario()) return;
-
-        const materia = document.getElementById('materiasSelect').options[document.getElementById('materiasSelect').selectedIndex].text;
-        const fecha = new Date(document.getElementById('fechaInput').value).toLocaleDateString('es-ES', {day: '2-digit', month: 'short', year: 'numeric'});
-        const horaInicio = document.getElementById('horaInicioInput').value;
-        const horaFin = document.getElementById('horaFinInput').value;
-
-        const nuevaFila = `
-            <tr class="hover:bg-slate-50">
-                <td class="px-6 py-4 text-sm">${materia}</td>
-                <td class="px-6 py-4 text-sm">${fecha}</td>
-                <td class="px-6 py-4 text-sm">${horaInicio} - ${horaFin}</td>
-                <td class="px-6 py-4 text-sm"><span class="badge-disponible px-3 py-1 rounded-full text-xs font-semibold">Disponible</span></td>
-                <td class="px-6 py-4 text-sm space-x-2">
-                    <button class="text-primary hover:text-indigo-700 font-semibold text-xs">Editar</button>
-                    <button class="text-red-600 hover:text-red-700 font-semibold text-xs">Desactivar</button>
-                </td>
-            </tr>
-        `;
-
-        document.getElementById('listaHorarios').insertAdjacentHTML('afterbegin', nuevaFila);
-        cerrarModalHorario();
-    }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') cerrarModalHorario();
     });
 </script>
 

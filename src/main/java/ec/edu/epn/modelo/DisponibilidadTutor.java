@@ -2,6 +2,8 @@ package ec.edu.epn.modelo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,9 +12,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+/**
+ * Franja semanal recurrente en la que el tutor está disponible para tutorías.
+ */
 @Entity
-@Table(name = "horarios")
-public class Horario {
+@Table(name = "disponibilidad_tutor")
+public class DisponibilidadTutor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,12 +27,9 @@ public class Horario {
     @JoinColumn(name = "tutor_id", nullable = false)
     private Usuario tutor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "codigo_materia")
-    private MateriaCatalogo materia;
-
-    @Column(nullable = false, length = 10)
-    private String fecha;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dia_semana", nullable = false, length = 15)
+    private DiaSemana diaSemana;
 
     @Column(name = "hora_inicio", nullable = false, length = 5)
     private String horaInicio;
@@ -36,9 +38,9 @@ public class Horario {
     private String horaFin;
 
     @Column(nullable = false)
-    private boolean disponible = true;
+    private boolean activo = true;
 
-    public Horario() {
+    public DisponibilidadTutor() {
     }
 
     public Long getId() {
@@ -57,20 +59,12 @@ public class Horario {
         this.tutor = tutor;
     }
 
-    public MateriaCatalogo getMateria() {
-        return materia;
+    public DiaSemana getDiaSemana() {
+        return diaSemana;
     }
 
-    public void setMateria(MateriaCatalogo materia) {
-        this.materia = materia;
-    }
-
-    public String getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(String fecha) {
-        this.fecha = fecha;
+    public void setDiaSemana(DiaSemana diaSemana) {
+        this.diaSemana = diaSemana;
     }
 
     public String getHoraInicio() {
@@ -89,11 +83,11 @@ public class Horario {
         this.horaFin = horaFin;
     }
 
-    public boolean isDisponible() {
-        return disponible;
+    public boolean isActivo() {
+        return activo;
     }
 
-    public void setDisponible(boolean disponible) {
-        this.disponible = disponible;
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 }

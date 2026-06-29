@@ -52,6 +52,27 @@ public class SolicitudTutoriaDAO {
         }
     }
 
+    public List<SolicitudTutoria> listarAgendadasPorTutor(Long tutorId) {
+        if (tutorId == null) {
+            return List.of();
+        }
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<SolicitudTutoria> query = session.createQuery(
+                    "select s from SolicitudTutoria s "
+                            + "join fetch s.estudiante "
+                            + "join fetch s.horario h "
+                            + "join fetch h.tutor t "
+                            + "join fetch s.materia "
+                            + "where t.id = :tutorId and s.estado in (:estados) "
+                            + "order by h.fecha asc, h.horaInicio asc",
+                    SolicitudTutoria.class
+            );
+            query.setParameter("tutorId", tutorId);
+            query.setParameter("estados", List.of(EstadoSolicitud.PENDIENTE, EstadoSolicitud.ACEPTADA));
+            return query.list();
+        }
+    }
+
     public boolean existeConflictoHorarioTutor(Long tutorId, String fecha,
                                                String horaInicio, String horaFin) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
