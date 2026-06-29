@@ -1,7 +1,6 @@
 package ec.edu.epn.dao;
 
 import ec.edu.epn.modelo.EstadoSolicitud;
-import ec.edu.epn.modelo.Horario;
 import ec.edu.epn.modelo.SolicitudTutoria;
 import ec.edu.epn.util.HibernateUtil;
 import ec.edu.epn.util.HorarioUtil;
@@ -15,23 +14,41 @@ import java.util.Optional;
 public class SolicitudTutoriaDAO {
 
     public Optional<SolicitudTutoria> buscarPorId(Long id) {
-        if (id == null) return Optional.empty();
+        if (id == null) {
+            return Optional.empty();
+        }
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return Optional.ofNullable(session.get(SolicitudTutoria.class, id));
+            Query<SolicitudTutoria> query = session.createQuery(
+                    "select s from SolicitudTutoria s "
+                            + "join fetch s.estudiante "
+                            + "join fetch s.horario h "
+                            + "join fetch h.tutor "
+                            + "join fetch s.materia "
+                            + "where s.id = :id",
+                    SolicitudTutoria.class
+            );
+            query.setParameter("id", id);
+            return query.uniqueResultOptional();
         }
     }
 
-    /**
-     * Lista todas las solicitudes recibidas por un tutor (a través de sus horarios),
-     * ordenadas de más reciente a más antigua.
-     */
     public List<SolicitudTutoria> listarPorTutor(Long tutorId) {
-        if (tutorId == null) return List.of();
+        if (tutorId == null) {
+            return List.of();
+        }
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery(
-                    "from SolicitudTutoria s where s.horario.tutor.id = :tutorId order by s.id desc",
+            Query<SolicitudTutoria> query = session.createQuery(
+                    "select s from SolicitudTutoria s "
+                            + "join fetch s.estudiante "
+                            + "join fetch s.horario h "
+                            + "join fetch h.tutor t "
+                            + "join fetch s.materia "
+                            + "where t.id = :tutorId "
+                            + "order by s.id desc",
                     SolicitudTutoria.class
-            ).setParameter("tutorId", tutorId).list();
+            );
+            query.setParameter("tutorId", tutorId);
+            return query.list();
         }
     }
 
@@ -75,28 +92,28 @@ public class SolicitudTutoriaDAO {
             session.persist(solicitud);
             transaction.commit();
         } catch (RuntimeException e) {
-            if (transaction != null) transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             throw e;
         }
     }
 
-    /**
-     * Actualiza el estado (y comentario opcional) de una solicitud existente.
-     * También marca el horario como no disponible si se acepta,
-     * o lo libera si se rechaza.
-     */
-    public void actualizarEstado(SolicitudTutoria solicitud) {
+    public void actualizarEstado(Long solicitudId, EstadoSolicitud nuevoEstado) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.merge(solicitud);
-            // Sincronizar disponibilidad del horario
-            Horario horario = solicitud.getHorario();
-            horario.setDisponible(solicitud.getEstado() != EstadoSolicitud.ACEPTADA);
-            session.merge(horario);
+            SolicitudTutoria solicitud = session.get(SolicitudTutoria.class, solicitudId);
+            if (solicitud == null) {
+                throw new IllegalArgumentException("Solicitud no encontrada.");
+            }
+            solicitud.setEstado(nuevoEstado);
+            solicitud.getHorario().setDisponible(nuevoEstado != EstadoSolicitud.ACEPTADA);
             transaction.commit();
         } catch (RuntimeException e) {
-            if (transaction != null) transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             throw e;
         }
     }
