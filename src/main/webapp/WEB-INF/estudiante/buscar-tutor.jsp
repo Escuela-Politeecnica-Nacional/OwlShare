@@ -21,10 +21,6 @@
 </head>
 <body class="bg-surface text-on-surface min-h-screen flex flex-col">
 
-<c:if test="${empty sessionScope.usuarioLogueado}">
-    <c:redirect url="${pageContext.request.contextPath}/login"/>
-</c:if>
-
 <header class="bg-white shadow-sm h-16 flex justify-between items-center px-8 sticky top-0 z-40">
     <div class="flex items-center gap-3">
         <h1 class="text-2xl font-extrabold text-indigo-900">OwlShare</h1>

@@ -7,7 +7,8 @@
 
     <!--
         Rutas MVC (controlador → vista):
-          GET|POST /login, GET /        → LoginServlet        → WEB-INF/auth/login.jsp
+          GET|POST /login             → LoginServlet        → WEB-INF/auth/login.jsp
+          GET      /                  → welcome-file login  → LoginServlet
           GET|POST /registro           → RegistroServlet     → WEB-INF/auth/registro.jsp
           GET      /logout             → LogoutServlet       → redirect /login
           GET      /estudiante/inicio  → EstudianteInicioServlet → dashboard-estudiante.jsp
@@ -33,10 +34,9 @@
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
+    <welcome-file-list>
+        <welcome-file>login</welcome-file>
+    </welcome-file-list>
 
     <servlet>
         <servlet-name>RegistroServlet</servlet-name>
