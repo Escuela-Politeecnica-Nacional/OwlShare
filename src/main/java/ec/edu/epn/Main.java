@@ -27,6 +27,7 @@ public class Main {
         verificarServlet(webapp, "ec/edu/epn/controlador/EstudianteInicioServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/BuscarTutorServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/DetalleTutorEstudianteServlet.class");
+        verificarServlet(webapp, "ec/edu/epn/controlador/SolicitarMentoriaServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/LogoutServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/TutorInicioServlet.class");
 
