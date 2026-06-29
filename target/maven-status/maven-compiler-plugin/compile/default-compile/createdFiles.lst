@@ -1,4 +1,5 @@
 ec\edu\epn\controlador\SolicitudesTutorServlet.class
+ec\edu\epn\dao\SolicitudTutoriaDAO$SolicitudCreada.class
 ec\edu\epn\util\MateriaUtil.class
 ec\edu\epn\modelo\EstudiantePerfilVista.class
 ec\edu\epn\modelo\Materia.class

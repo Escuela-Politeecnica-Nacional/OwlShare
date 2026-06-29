@@ -42,6 +42,11 @@ public class HorarioDAO {
     }
 
     public Horario crear(Long tutorId, String fecha, String horaInicio, String horaFin) {
+        return crear(tutorId, fecha, horaInicio, horaFin, null);
+    }
+
+    public Horario crear(Long tutorId, String fecha, String horaInicio, String horaFin,
+                         String codigoMateria) {
         String inicio = HorarioUtil.normalizarHora(horaInicio);
         String fin = HorarioUtil.normalizarHora(horaFin);
 
@@ -54,6 +59,9 @@ public class HorarioDAO {
             horario.setHoraInicio(inicio);
             horario.setHoraFin(fin);
             horario.setDisponible(true);
+            if (codigoMateria != null && !codigoMateria.isBlank()) {
+                horario.setMateria(session.getReference(MateriaCatalogo.class, codigoMateria.trim()));
+            }
             session.persist(horario);
             transaction.commit();
             return horario;

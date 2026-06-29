@@ -118,26 +118,13 @@ class CrearSolicitudServletTest {
         when(materiaCatalogoDAO.obtenerOCrear("ICCD144", Carrera.SOFTWARE))
                 .thenReturn(materiaCatalogo);
 
-        // Por defecto no existe horario previo → el servlet creará uno nuevo
-        when(horarioDAO.buscarPorTutorFechaYHoras(
-                anyLong(), anyString(), anyString(), anyString()))
-                .thenReturn(Optional.empty());
-
-        // Cuando el servlet crea el horario nuevo, retornamos uno con id
-        Horario horarioNuevo = new Horario();
-        horarioNuevo.setId(10L);
-        horarioNuevo.setFecha("2026-07-10");
-        horarioNuevo.setHoraInicio("09:00");
-        horarioNuevo.setHoraFin("10:00");
-        horarioNuevo.setDisponible(true);
-        when(horarioDAO.crear(anyLong(), anyString(), anyString(), anyString()))
-                .thenReturn(horarioNuevo);
-
         when(disponibilidadDAO.cubreHorario(2L, "2026-07-10", "09:00", "10:00"))
                 .thenReturn(true);
 
-        when(solicitudDAO.crearSolicitud(1L, 10L, "ICCD144", "Necesito ayuda con derivadas parciales."))
-                .thenReturn(99L);
+        when(solicitudDAO.crearSolicitudConHorario(
+                1L, 2L, "ICCD144", "2026-07-10", "09:00", "10:00",
+                "Necesito ayuda con derivadas parciales."))
+                .thenReturn(new SolicitudTutoriaDAO.SolicitudCreada(99L, 10L));
     }
 
     // ── PRUEBA 1 ───────────────────────────────────────────────
@@ -151,7 +138,9 @@ class CrearSolicitudServletTest {
         servlet.service(request, response);
 
         verify(response).setStatus(HttpServletResponse.SC_CREATED);
-        verify(solicitudDAO).crearSolicitud(1L, 10L, "ICCD144", "Necesito ayuda con derivadas parciales.");
+        verify(solicitudDAO).crearSolicitudConHorario(
+                1L, 2L, "ICCD144", "2026-07-10", "09:00", "10:00",
+                "Necesito ayuda con derivadas parciales.");
         assertTrue(responseBody.toString().contains("PENDIENTE"));
     }
 
@@ -160,19 +149,14 @@ class CrearSolicitudServletTest {
     // Debería: devolver error 409 sin guardar ninguna solicitud
     @Test
     void testHorarioYaTomadoDevuelveError409() throws Exception {
-        // El horario ya existe y tiene una solicitud activa
-        Horario horarioExistente = new Horario();
-        horarioExistente.setId(10L);
-        when(horarioDAO.buscarPorTutorFechaYHoras(
-                anyLong(), anyString(), anyString(), anyString()))
-                .thenReturn(Optional.of(horarioExistente));
-
         when(solicitudDAO.existeConflictoHorarioTutor(2L, "2026-07-10", "09:00", "10:00"))
                 .thenReturn(true);
 
         servlet.service(request, response);
 
         verify(response).setStatus(HttpServletResponse.SC_CONFLICT);
+        verify(solicitudDAO, never()).crearSolicitudConHorario(
+                anyLong(), anyLong(), anyString(), anyString(), anyString(), anyString(), anyString());
         verify(solicitudDAO, never()).crearSolicitud(anyLong(), anyLong(), anyString(), anyString());
         assertTrue(responseBody.toString().contains("\"error\""));
     }

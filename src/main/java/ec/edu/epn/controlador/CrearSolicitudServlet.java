@@ -43,6 +43,8 @@ public class CrearSolicitudServlet extends HttpServlet {
         try {
             procesarSolicitud(request, response);
         } catch (RuntimeException e) {
+            System.err.println("Error en POST /api/solicitudes: " + e.getMessage());
+            e.printStackTrace(System.err);
             responderError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "No se pudo procesar la solicitud.");
         }
@@ -132,6 +134,9 @@ public class CrearSolicitudServlet extends HttpServlet {
         }
 
         Horario horario;
+        Long solicitudId;
+        Long horarioIdRespuesta;
+
         if (!horarioIdParam.isEmpty()) {
             long horarioId = Long.parseLong(horarioIdParam);
             Optional<Horario> horarioOpt = horarioDAO.buscarPorId(horarioId);
@@ -162,6 +167,19 @@ public class CrearSolicitudServlet extends HttpServlet {
                         "No se pudo validar la disponibilidad del horario.");
                 return;
             }
+
+            try {
+                solicitudId = solicitudTutoriaDAO.crearSolicitud(
+                        estudianteId, horario.getId(), materia.getCodigo(), comentario);
+                horarioIdRespuesta = horario.getId();
+            } catch (IllegalArgumentException e) {
+                responderError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+                return;
+            } catch (RuntimeException e) {
+                responderError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "No se pudo guardar la solicitud.");
+                return;
+            }
         } else {
             try {
                 if (!disponibilidadDAO.cubreHorario(tutorId, fecha, horaInicio, horaFin)) {
@@ -180,21 +198,21 @@ public class CrearSolicitudServlet extends HttpServlet {
                 return;
             }
 
-            horario = horarioDAO.buscarPorTutorFechaYHoras(tutorId, fecha, horaInicioNorm, horaFinNorm)
-                    .orElseGet(() -> horarioDAO.crear(tutorId, fecha, horaInicioNorm, horaFinNorm));
-        }
-
-        Long solicitudId;
-        try {
-            solicitudId = solicitudTutoriaDAO.crearSolicitud(
-                    estudianteId, horario.getId(), materia.getCodigo(), comentario);
-        } catch (IllegalArgumentException e) {
-            responderError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-            return;
-        } catch (RuntimeException e) {
-            responderError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "No se pudo guardar la solicitud.");
-            return;
+            try {
+                SolicitudTutoriaDAO.SolicitudCreada resultado = solicitudTutoriaDAO.crearSolicitudConHorario(
+                        estudianteId, tutorId, codigoMateria, fecha, horaInicioNorm, horaFinNorm, comentario);
+                solicitudId = resultado.solicitudId();
+                horarioIdRespuesta = resultado.horarioId();
+            } catch (IllegalArgumentException e) {
+                responderError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+                return;
+            } catch (RuntimeException e) {
+                System.err.println("Error al crear solicitud con horario: " + e.getMessage());
+                e.printStackTrace(System.err);
+                responderError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "No se pudo guardar la solicitud.");
+                return;
+            }
         }
 
         response.setStatus(HttpServletResponse.SC_CREATED);
@@ -203,7 +221,7 @@ public class CrearSolicitudServlet extends HttpServlet {
         try (PrintWriter writer = response.getWriter()) {
             writer.write("{");
             writer.write("\"id\":" + solicitudId + ",");
-            writer.write("\"horarioId\":" + horario.getId() + ",");
+            writer.write("\"horarioId\":" + horarioIdRespuesta + ",");
             writer.write("\"codigoMateria\":\"" + JsonUtil.escape(materia.getCodigo()) + "\",");
             writer.write("\"mensaje\":\"Solicitud creada exitosamente.\",");
             writer.write("\"estado\":\"" + EstadoSolicitud.PENDIENTE.name() + "\"");
