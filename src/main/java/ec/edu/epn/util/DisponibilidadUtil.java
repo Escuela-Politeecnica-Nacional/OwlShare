@@ -16,6 +16,8 @@ public final class DisponibilidadUtil {
         if (franjas == null || franjas.isEmpty()) {
             return false;
         }
+        String inicio = HorarioUtil.normalizarHora(horaInicio);
+        String fin = HorarioUtil.normalizarHora(horaFin);
         DiaSemana dia;
         try {
             dia = DiaSemana.desdeFechaIso(fecha);
@@ -27,7 +29,8 @@ public final class DisponibilidadUtil {
                 .filter(DisponibilidadTutor::isActivo)
                 .filter(franja -> franja.getDiaSemana() == dia)
                 .anyMatch(franja -> HorarioUtil.estaContenidoEn(
-                        horaInicio, horaFin, franja.getHoraInicio(), franja.getHoraFin()));
+                        inicio, fin,
+                        franja.getHoraInicio(), franja.getHoraFin()));
     }
 
     public static boolean haySolapamientoConFranjas(DiaSemana dia, String horaInicio, String horaFin,

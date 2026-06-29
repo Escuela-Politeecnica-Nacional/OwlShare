@@ -56,8 +56,8 @@ public class DisponibilidadTutorDAO {
         DisponibilidadTutor franja = new DisponibilidadTutor();
         franja.setTutor(tutor);
         franja.setDiaSemana(diaSemana);
-        franja.setHoraInicio(horaInicio);
-        franja.setHoraFin(horaFin);
+        franja.setHoraInicio(HorarioUtil.normalizarHora(horaInicio));
+        franja.setHoraFin(HorarioUtil.normalizarHora(horaFin));
         franja.setActivo(true);
 
         Transaction transaction = null;

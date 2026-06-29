@@ -130,11 +130,14 @@ class CrearSolicitudServletTest {
         horarioNuevo.setHoraInicio("09:00");
         horarioNuevo.setHoraFin("10:00");
         horarioNuevo.setDisponible(true);
-        when(horarioDAO.crear(any(), anyString(), anyString(), anyString()))
+        when(horarioDAO.crear(anyLong(), anyString(), anyString(), anyString()))
                 .thenReturn(horarioNuevo);
 
         when(disponibilidadDAO.cubreHorario(2L, "2026-07-10", "09:00", "10:00"))
                 .thenReturn(true);
+
+        when(solicitudDAO.crearSolicitud(1L, 10L, "ICCD144", "Necesito ayuda con derivadas parciales."))
+                .thenReturn(99L);
     }
 
     // ── PRUEBA 1 ───────────────────────────────────────────────
@@ -148,7 +151,7 @@ class CrearSolicitudServletTest {
         servlet.service(request, response);
 
         verify(response).setStatus(HttpServletResponse.SC_CREATED);
-        verify(solicitudDAO).guardar(any());
+        verify(solicitudDAO).crearSolicitud(1L, 10L, "ICCD144", "Necesito ayuda con derivadas parciales.");
         assertTrue(responseBody.toString().contains("PENDIENTE"));
     }
 
@@ -170,7 +173,7 @@ class CrearSolicitudServletTest {
         servlet.service(request, response);
 
         verify(response).setStatus(HttpServletResponse.SC_CONFLICT);
-        verify(solicitudDAO, never()).guardar(any());
+        verify(solicitudDAO, never()).crearSolicitud(anyLong(), anyLong(), anyString(), anyString());
         assertTrue(responseBody.toString().contains("\"error\""));
     }
 

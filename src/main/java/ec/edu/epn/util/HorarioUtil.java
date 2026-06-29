@@ -33,7 +33,19 @@ public final class HorarioUtil {
     }
 
     static int aMinutos(String hora) {
-        String[] partes = hora.trim().split(":");
+        String[] partes = normalizarHora(hora).split(":");
         return Integer.parseInt(partes[0]) * 60 + Integer.parseInt(partes[1]);
+    }
+
+    public static String normalizarHora(String hora) {
+        if (hora == null) {
+            return "";
+        }
+        String limpia = hora.trim();
+        if (!esHoraValida(limpia)) {
+            return limpia;
+        }
+        String[] partes = limpia.split(":");
+        return String.format("%02d:%02d", Integer.parseInt(partes[0]), Integer.parseInt(partes[1]));
     }
 }
