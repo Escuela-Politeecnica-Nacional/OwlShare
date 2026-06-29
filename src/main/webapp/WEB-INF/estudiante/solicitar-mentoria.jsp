@@ -201,14 +201,20 @@
                 body: params.toString()
             });
 
-            const data = await response.json().catch(() => ({}));
+            const raw = await response.text();
+            let data = {};
+            try {
+                data = raw ? JSON.parse(raw) : {};
+            } catch (parseError) {
+                data = {};
+            }
 
             if (response.ok) {
                 document.getElementById('modalConfirmacion').classList.remove('hidden');
                 return;
             }
 
-            mostrarErrorGlobal(data.error || 'No se pudo enviar la solicitud. Intenta de nuevo.');
+            mostrarErrorGlobal(data.error || raw || 'No se pudo enviar la solicitud. Intenta de nuevo.');
         } catch (err) {
             mostrarErrorGlobal('Error de conexión. Verifica tu red e intenta de nuevo.');
         } finally {

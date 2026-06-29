@@ -24,6 +24,8 @@ public class HorarioDAO {
 
     public Optional<Horario> buscarPorTutorFechaYHoras(Long tutorId, String fecha,
                                                        String horaInicio, String horaFin) {
+        String inicio = HorarioUtil.normalizarHora(horaInicio);
+        String fin = HorarioUtil.normalizarHora(horaFin);
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<Horario> query = session.createQuery(
                     "from Horario h where h.tutor.id = :tutorId and h.fecha = :fecha "
@@ -32,23 +34,25 @@ public class HorarioDAO {
             );
             query.setParameter("tutorId", tutorId);
             query.setParameter("fecha", fecha);
-            query.setParameter("horaInicio", horaInicio);
-            query.setParameter("horaFin", horaFin);
+            query.setParameter("horaInicio", inicio);
+            query.setParameter("horaFin", fin);
             return query.uniqueResultOptional();
         }
     }
 
-    public Horario crear(Usuario tutor, String fecha, String horaInicio, String horaFin) {
-        Horario horario = new Horario();
-        horario.setTutor(tutor);
-        horario.setFecha(fecha);
-        horario.setHoraInicio(horaInicio);
-        horario.setHoraFin(horaFin);
-        horario.setDisponible(true);
+    public Horario crear(Long tutorId, String fecha, String horaInicio, String horaFin) {
+        String inicio = HorarioUtil.normalizarHora(horaInicio);
+        String fin = HorarioUtil.normalizarHora(horaFin);
 
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
+            Horario horario = new Horario();
+            horario.setTutor(session.getReference(Usuario.class, tutorId));
+            horario.setFecha(fecha);
+            horario.setHoraInicio(inicio);
+            horario.setHoraFin(fin);
+            horario.setDisponible(true);
             session.persist(horario);
             transaction.commit();
             return horario;
@@ -58,6 +62,12 @@ public class HorarioDAO {
             }
             throw e;
         }
+    }
+
+    /** @deprecated Usar {@link #crear(Long, String, String, String)}. */
+    @Deprecated
+    public Horario crear(Usuario tutor, String fecha, String horaInicio, String horaFin) {
+        return crear(tutor.getId(), fecha, horaInicio, horaFin);
     }
 
     /** Compatibilidad con código legado; la materia ya no se asocia al bloque horario. */
