@@ -3,11 +3,11 @@ package ec.edu.epn.controlador;
 import ec.edu.epn.modelo.Rol;
 import ec.edu.epn.modelo.TutorPerfilVista;
 import ec.edu.epn.modelo.Usuario;
+import ec.edu.epn.util.SesionUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,10 +17,7 @@ public class TutorInicioServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        Usuario usuario = session != null
-                ? (Usuario) session.getAttribute("usuarioLogueado")
-                : null;
+        Usuario usuario = SesionUtil.obtenerUsuario(request);
 
         if (usuario == null) {
             response.sendRedirect(request.getContextPath() + "/login");

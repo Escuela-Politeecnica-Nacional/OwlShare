@@ -22,7 +22,7 @@
 <body class="bg-surface text-on-surface min-h-screen flex flex-col">
 
 <c:if test="${empty sessionScope.usuarioLogueado}">
-    <c:redirect url="/login"/>
+    <c:redirect url="${pageContext.request.contextPath}/login"/>
 </c:if>
 
 <%-- Header --%>

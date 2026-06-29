@@ -12,6 +12,8 @@
           GET      /logout             → LogoutServlet       → redirect /login
           GET      /estudiante/inicio  → EstudianteInicioServlet → dashboard-estudiante.jsp
           GET      /estudiante/dashboard → EstudianteInicioServlet (alias)
+          GET|POST /estudiante/buscar-tutor → BuscarTutorServlet → buscar-tutor.jsp
+          GET      /estudiante/tutor/detalle → DetalleTutorEstudianteServlet → detalle-tutor.jsp
           GET      /tutor/inicio       → TutorInicioServlet  → dashboard-tutor.jsp
           GET      /tutor/perfil       → PerfilTutorServlet  → perfil-tutor.jsp
           GET      /tutor/horarios     → HorariosTutorServlet    → gestion-horarios-tutor.jsp
@@ -69,6 +71,26 @@
     <servlet-mapping>
         <servlet-name>EstudianteInicioServlet</servlet-name>
         <url-pattern>/estudiante/dashboard</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>BuscarTutorServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.BuscarTutorServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>BuscarTutorServlet</servlet-name>
+        <url-pattern>/estudiante/buscar-tutor</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DetalleTutorEstudianteServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.DetalleTutorEstudianteServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DetalleTutorEstudianteServlet</servlet-name>
+        <url-pattern>/estudiante/tutor/detalle</url-pattern>
     </servlet-mapping>
 
     <servlet>

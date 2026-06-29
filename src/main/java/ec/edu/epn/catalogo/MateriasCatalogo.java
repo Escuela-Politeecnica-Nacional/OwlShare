@@ -283,6 +283,19 @@ public final class MateriasCatalogo {
         return Carrera.values();
     }
 
+    public static List<Materia> todasLasMaterias() {
+        Set<String> vistos = new LinkedHashSet<>();
+        List<Materia> resultados = new ArrayList<>();
+        for (List<Materia> materias : POR_CARRERA.values()) {
+            for (Materia materia : materias) {
+                if (vistos.add(materia.getCodigo())) {
+                    resultados.add(materia);
+                }
+            }
+        }
+        return resultados;
+    }
+
     public static List<Materia> buscarPorNombreOCodigo(String termino) {
         if (termino == null || termino.isBlank()) {
             return List.of();

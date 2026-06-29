@@ -50,4 +50,8 @@ public final class CatalogoRegistro {
     public static String materiasPorCarreraJson() {
         return MateriasCatalogo.materiasPorCarreraJson();
     }
+
+    public static List<Materia> todasLasMaterias() {
+        return MateriasCatalogo.todasLasMaterias();
+    }
 }

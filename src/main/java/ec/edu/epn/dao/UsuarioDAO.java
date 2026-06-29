@@ -1,5 +1,6 @@
 package ec.edu.epn.dao;
 
+import ec.edu.epn.modelo.Carrera;
 import ec.edu.epn.modelo.Rol;
 import ec.edu.epn.modelo.TutorPerfilDetalle;
 import ec.edu.epn.modelo.TutorResumen;
@@ -89,14 +90,24 @@ public class UsuarioDAO {
     }
 
     public List<TutorResumen> buscarTutoresPorMateria(String termino) {
-        if (termino == null || termino.isBlank()) {
+        return buscarTutores(null, termino).stream()
+                .map(this::toTutorResumen)
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public List<Usuario> buscarTutores(Carrera carrera, String terminoMateria) {
+        boolean filtrarCarrera = carrera != null;
+        boolean filtrarMateria = terminoMateria != null && !terminoMateria.isBlank();
+        if (!filtrarCarrera && !filtrarMateria) {
             return List.of();
         }
 
-        Set<String> codigosBuscados = new LinkedHashSet<>(
-                CatalogoRegistro.codigosDeMaterias(CatalogoRegistro.buscarMateriasPorNombreOCodigo(termino))
-        );
-        codigosBuscados.add(termino.trim());
+        Set<String> codigosBuscados = new LinkedHashSet<>();
+        if (filtrarMateria) {
+            codigosBuscados.addAll(CatalogoRegistro.codigosDeMaterias(
+                    CatalogoRegistro.buscarMateriasPorNombreOCodigo(terminoMateria)));
+            codigosBuscados.add(terminoMateria.trim());
+        }
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<Usuario> query = session.createQuery(
@@ -106,9 +117,9 @@ public class UsuarioDAO {
             query.setParameter("rol", Rol.TUTOR);
 
             return query.list().stream()
-                    .filter(u -> MateriaUtil.tutorImparteAlguna(
+                    .filter(u -> !filtrarCarrera || carrera == u.getCarrera())
+                    .filter(u -> !filtrarMateria || MateriaUtil.tutorImparteAlguna(
                             MateriaUtil.parseCodigos(u.getMaterias()), codigosBuscados))
-                    .map(this::toTutorResumen)
                     .collect(Collectors.toCollection(ArrayList::new));
         }
     }
