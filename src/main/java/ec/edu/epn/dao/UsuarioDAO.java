@@ -89,6 +89,28 @@ public class UsuarioDAO {
                 .map(TutorPerfilBuilder::construir);
     }
 
+    public void actualizarMaterias(Long tutorId, String materiasCsv) {
+        if (tutorId == null) {
+            throw new IllegalArgumentException("El tutor es obligatorio.");
+        }
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            Usuario tutor = session.get(Usuario.class, tutorId);
+            if (tutor == null || tutor.getRol() != Rol.TUTOR) {
+                throw new IllegalStateException("Tutor no encontrado.");
+            }
+            tutor.setMaterias(materiasCsv);
+            session.merge(tutor);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw e;
+        }
+    }
+
     public List<TutorResumen> buscarTutoresPorMateria(String termino) {
         return buscarTutores(null, termino).stream()
                 .map(this::toTutorResumen)

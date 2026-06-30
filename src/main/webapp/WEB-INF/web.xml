@@ -17,7 +17,7 @@
           GET      /estudiante/tutor/detalle → DetalleTutorEstudianteServlet → detalle-tutor.jsp
           GET      /estudiante/solicitar-mentoria → SolicitarMentoriaServlet → solicitar-mentoria.jsp
           GET      /tutor/inicio       → TutorInicioServlet  → dashboard-tutor.jsp
-          GET      /tutor/perfil       → PerfilTutorServlet  → perfil-tutor.jsp
+          GET|POST /tutor/perfil       → PerfilTutorServlet  → perfil-tutor.jsp
           GET      /tutor/horarios     → HorariosTutorServlet    → gestion-horarios-tutor.jsp
           POST     /tutor/horarios/disponibilidad → GestionDisponibilidadServlet
           GET      /tutor/solicitudes  → SolicitudesTutorServlet → bandeja-solicitudes-tutor.jsp

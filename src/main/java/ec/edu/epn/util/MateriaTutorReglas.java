@@ -135,6 +135,50 @@ public final class MateriaTutorReglas {
         return Optional.empty();
     }
 
+    public static String materiasPermitidasJson(Carrera carrera, Semestre semestreTutor) {
+        List<Materia> permitidas = materiasPermitidas(carrera, semestreTutor);
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < permitidas.size(); i++) {
+            Materia materia = permitidas.get(i);
+            if (i > 0) {
+                json.append(',');
+            }
+            json.append("{\"codigo\":\"").append(escapeJson(materia.getCodigo()))
+                    .append("\",\"nombre\":\"").append(escapeJson(materia.getNombre()))
+                    .append("\",\"semestre\":").append(materia.getSemestre()).append('}');
+        }
+        json.append(']');
+        return json.toString();
+    }
+
+    public static String codigosSeleccionadosJson(Iterable<String> codigos) {
+        StringBuilder json = new StringBuilder("[");
+        boolean primero = true;
+        for (String codigo : codigos) {
+            if (codigo == null || codigo.isBlank()) {
+                continue;
+            }
+            if (!primero) {
+                json.append(',');
+            }
+            json.append('"').append(escapeJson(codigo.trim())).append('"');
+            primero = false;
+        }
+        json.append(']');
+        return json.toString();
+    }
+
+    private static String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r");
+    }
+
     private static boolean cumpleReglasTutoria(Materia materia, int semestreTutor) {
         return MateriasCatalogo.esMateriaTutorable(materia)
                 && materia.getSemestre() < semestreTutor;
