@@ -129,14 +129,25 @@
 
                         <%-- Materia --%>
                         <div class="flex flex-col gap-1">
-                            <label for="materia" class="text-sm font-bold text-on-surface px-1">Materia</label>
-                            <select id="materia" name="materia"
+                            <label for="materia" class="text-sm font-bold text-on-surface px-1">
+                                Materia <span class="text-red-600">*</span>
+                            </label>
+                            <select id="materia" name="materia" required
                                     class="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary focus:border-transparent text-on-surface">
                                 <option value="">-- Seleccionar materia --</option>
                                 <c:forEach var="m" items="${materiasOpciones}">
                                     <option value="${m.codigo}"><c:out value="${m.nombre}"/> (<c:out value="${m.codigo}"/>)</option>
                                 </c:forEach>
                             </select>
+                            <div id="err-materia" class="field-error items-center gap-1 text-red-600 text-xs px-1 mt-0.5">
+                                <span class="material-symbols-outlined text-sm">error</span>
+                                Debes seleccionar la materia del material.
+                            </div>
+                            <c:if test="${empty materiasOpciones}">
+                                <p class="text-xs text-amber-700 mt-1">
+                                    No tienes materias registradas en tu perfil. Actualiza tu registro como tutor para poder publicar material.
+                                </p>
+                            </c:if>
                         </div>
 
                         <%-- Precio --%>
@@ -229,6 +240,7 @@
         const fields = {
             titulo:      { el: document.getElementById('titulo'),      err: document.getElementById('err-titulo') },
             descripcion: { el: document.getElementById('descripcion'), err: document.getElementById('err-descripcion') },
+            materia:     { el: document.getElementById('materia'),     err: document.getElementById('err-materia') },
             costo:       { el: document.getElementById('costo'),       err: document.getElementById('err-costo') },
             archivo:     { el: document.getElementById('archivo'),     err: document.getElementById('err-archivo') }
         };
@@ -245,14 +257,21 @@
 
         function validateTitulo()      { return fields.titulo.el.value.trim() !== ''; }
         function validateDescripcion() { return fields.descripcion.el.value.trim() !== ''; }
+        function validateMateria()     { return fields.materia.el.value !== ''; }
         function validateCosto()       { const v = fields.costo.el.value; return v !== '' && parseFloat(v) >= 0; }
         function validateArchivo()     { return fields.archivo.el.files.length > 0; }
 
         Object.keys(fields).forEach(key => {
             const input = fields[key].el;
-            const event = (key === 'archivo') ? 'change' : 'input';
+            const event = (key === 'archivo' || key === 'materia') ? 'change' : 'input';
             input.addEventListener(event, () => {
-                const validators = { titulo: validateTitulo, descripcion: validateDescripcion, costo: validateCosto, archivo: validateArchivo };
+                const validators = {
+                    titulo: validateTitulo,
+                    descripcion: validateDescripcion,
+                    materia: validateMateria,
+                    costo: validateCosto,
+                    archivo: validateArchivo
+                };
                 showError(key, !validators[key]());
             });
         });
@@ -261,6 +280,7 @@
             const checks = {
                 titulo:      validateTitulo(),
                 descripcion: validateDescripcion(),
+                materia:     validateMateria(),
                 costo:       validateCosto(),
                 archivo:     validateArchivo()
             };
