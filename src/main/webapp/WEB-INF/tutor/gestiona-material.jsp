@@ -56,6 +56,13 @@
             </a>
         </div>
 
+        <c:if test="${not empty flashMensaje}">
+            <div class="mb-6 bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">check_circle</span>
+                <c:out value="${flashMensaje}"/>
+            </div>
+        </c:if>
+
         <%-- Estadísticas (Bento Style) --%>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white rounded-xl shadow p-6 border border-slate-200">
@@ -178,51 +185,7 @@
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 border-b border-slate-200">
-                                <tr>
-                                    <th class="px-8 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Material</th>
-                                    <th class="px-8 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Publicación</th>
-                                    <th class="px-8 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Estado</th>
-                                    <th class="px-8 py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="px-8 py-5">
-                                        <div class="flex items-center gap-4">
-                                            <div class="w-10 h-10 bg-red-100 text-red-600 flex items-center justify-center rounded-lg flex-shrink-0">
-                                                <span class="material-symbols-outlined">picture_as_pdf</span>
-                                            </div>
-                                            <div>
-                                                <p class="font-semibold text-on-surface">Guía de Macroeconomía Avanzada</p>
-                                                <p class="text-xs text-slate-500">Macroeconomía I</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="text-sm text-slate-600">12 Oct, 2023</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="badge-rechazada text-xs font-bold px-3 py-1 rounded-full inline-block">Rechazado</span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <div class="flex gap-2">
-                                            <button class="p-2 text-slate-600 hover:bg-indigo-50 hover:text-primary rounded-lg transition-colors">
-                                                <span class="material-symbols-outlined text-sm">visibility</span>
-                                            </button>
-                                            <button class="p-2 text-slate-600 hover:bg-indigo-50 hover:text-primary rounded-lg transition-colors">
-                                                <span class="material-symbols-outlined text-sm">edit</span>
-                                            </button>
-                                            <button class="p-2 text-slate-600 hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors">
-                                                <span class="material-symbols-outlined text-sm">delete</span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="px-8 py-8 border-t border-slate-200 text-center">
+                        <div class="px-8 py-16 text-center">
                             <span class="material-symbols-outlined text-5xl text-slate-300 block mb-4">folder_open</span>
                             <h3 class="text-xl font-bold text-slate-600 mb-2">No hay materiales publicados</h3>
                             <p class="text-slate-500 mb-6">Aún no has publicado ningún material académico. Comienza compartiendo tu conocimiento.</p>
