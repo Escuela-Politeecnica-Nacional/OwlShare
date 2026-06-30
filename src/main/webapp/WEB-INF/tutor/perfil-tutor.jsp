@@ -46,6 +46,19 @@
     <div class="max-w-3xl mx-auto">
         <h2 class="text-4xl font-extrabold text-on-surface mb-8">Mi Perfil</h2>
 
+        <c:if test="${not empty exito}">
+            <div class="mb-6 bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">check_circle</span>
+                <c:out value="${exito}"/>
+            </div>
+        </c:if>
+        <c:if test="${not empty error}">
+            <div class="mb-6 bg-red-50 border border-red-200 text-red-800 rounded-lg px-4 py-3 text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">error</span>
+                <c:out value="${error}"/>
+            </div>
+        </c:if>
+
         <%-- Información actual --%>
         <div class="bg-white rounded-xl shadow p-8 mb-8">
             <h3 class="text-2xl font-bold text-primary mb-6">Información Actual</h3>
@@ -90,24 +103,156 @@
 
         <%-- Materias --%>
         <div class="bg-white rounded-xl shadow p-8">
-            <h3 class="text-2xl font-bold text-primary mb-6">Materias que Ofreces</h3>
-            <c:choose>
-                <c:when test="${not empty requestScope.tutorPerfil.codigosMateriaRelacionadas}">
-                    <div class="flex flex-wrap gap-3">
-                        <c:forEach var="codigo" items="${requestScope.tutorPerfil.codigosMateriaRelacionadas}">
-                            <span class="bg-secondary-container text-secondary px-4 py-2 rounded-lg font-semibold text-sm">
-                                <c:out value="${codigo}"/>
-                            </span>
-                        </c:forEach>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <p class="text-slate-600">Aún no has registrado materias.</p>
-                </c:otherwise>
-            </c:choose>
+            <h3 class="text-2xl font-bold text-primary mb-2">Materias que Ofreces</h3>
+            <p class="text-sm text-slate-600 mb-6">
+                Indica las asignaturas de <strong><c:out value="${requestScope.tutorPerfil.carrera.nombre}"/></strong>
+                que estás capacitado para enseñar. Solo puedes elegir materias de semestres anteriores al
+                <strong><c:out value="${requestScope.tutorPerfil.semestre.nombre}"/></strong>.
+            </p>
+
+            <form id="formMateriasPerfil" method="post" action="${pageContext.request.contextPath}/tutor/perfil" class="space-y-4">
+                <div id="chipsPerfil" class="flex flex-wrap gap-2 min-h-[2rem] p-3 bg-slate-50 rounded-lg border border-slate-200"></div>
+
+                <select id="selectMateriaPerfil"
+                        class="w-full rounded-lg border border-slate-200 focus:border-primary focus:ring focus:ring-primary/20 text-sm outline-none p-3 bg-white">
+                    <option value="">— Selecciona una materia para agregar —</option>
+                </select>
+
+                <p id="materiasVaciasPerfil" class="hidden text-center py-6 text-slate-500 bg-slate-50 rounded-lg text-sm">
+                    No hay materias disponibles para tu carrera y semestre actuales.
+                </p>
+
+                <p id="contadorMateriasPerfil" class="text-xs text-slate-600 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                    <span id="contadorMateriasPerfilMsg">0 materias seleccionadas</span>
+                </p>
+
+                <p id="errorMateriasPerfil" class="hidden text-sm text-red-600 font-medium flex items-center gap-1">
+                    <span class="material-symbols-outlined text-base">error</span>
+                    <span id="errorMateriasPerfilMsg">Debes seleccionar al menos una materia.</span>
+                </p>
+
+                <button type="submit"
+                        class="inline-flex items-center gap-2 bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-primary-container transition-all">
+                    <span class="material-symbols-outlined text-sm">save</span>
+                    Guardar materias
+                </button>
+            </form>
         </div>
     </div>
 </main>
+
+<script type="application/json" id="materiasPermitidasJsonPerfil"><c:out value="${materiasPermitidasJson}" escapeXml="false"/></script>
+<script type="application/json" id="materiasSeleccionadasJsonPerfil"><c:out value="${materiasSeleccionadasJson}" escapeXml="false"/></script>
+
+<script>
+    (function () {
+        var materiasPermitidas = JSON.parse(document.getElementById('materiasPermitidasJsonPerfil').textContent || '[]');
+        var seleccionInicial = JSON.parse(document.getElementById('materiasSeleccionadasJsonPerfil').textContent || '[]');
+        var selectMateria = document.getElementById('selectMateriaPerfil');
+        var chipsContainer = document.getElementById('chipsPerfil');
+        var materiasVacias = document.getElementById('materiasVaciasPerfil');
+        var contadorMsg = document.getElementById('contadorMateriasPerfilMsg');
+        var errorMaterias = document.getElementById('errorMateriasPerfil');
+        var form = document.getElementById('formMateriasPerfil');
+
+        var materiasPorCodigo = {};
+        materiasPermitidas.forEach(function (m) {
+            materiasPorCodigo[m.codigo] = m;
+        });
+
+        var selectedCodigos = new Set(seleccionInicial);
+
+        function actualizarContador() {
+            var n = selectedCodigos.size;
+            contadorMsg.textContent = n + (n === 1 ? ' materia seleccionada' : ' materias seleccionadas');
+        }
+
+        function sincronizarHiddenInputs() {
+            Array.from(form.querySelectorAll('input[name="materias"]')).forEach(function (el) {
+                el.remove();
+            });
+            selectedCodigos.forEach(function (codigo) {
+                var hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'materias';
+                hidden.value = codigo;
+                form.appendChild(hidden);
+            });
+        }
+
+        function renderChips() {
+            chipsContainer.innerHTML = '';
+            if (selectedCodigos.size === 0) {
+                chipsContainer.innerHTML = '<span class="text-sm text-slate-400 italic">Aún no has seleccionado materias.</span>';
+            } else {
+                selectedCodigos.forEach(function (codigo) {
+                    var materia = materiasPorCodigo[codigo];
+                    var chip = document.createElement('span');
+                    chip.className = 'inline-flex items-center gap-2 bg-secondary/10 text-secondary px-3 py-1.5 rounded-lg font-semibold text-sm';
+                    chip.innerHTML = '<span>' + (materia ? materia.codigo + ' — ' + materia.nombre : codigo) + '</span>'
+                        + '<button type="button" class="hover:text-red-600" data-codigo="' + codigo + '" title="Quitar">'
+                        + '<span class="material-symbols-outlined text-sm">close</span></button>';
+                    chipsContainer.appendChild(chip);
+                });
+            }
+            sincronizarHiddenInputs();
+            actualizarContador();
+            actualizarSelect();
+        }
+
+        function actualizarSelect() {
+            selectMateria.innerHTML = '';
+            var placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = materiasPermitidas.length === 0
+                ? '— Sin materias disponibles —'
+                : '— Selecciona una materia para agregar —';
+            selectMateria.appendChild(placeholder);
+
+            materiasPermitidas.forEach(function (m) {
+                if (selectedCodigos.has(m.codigo)) {
+                    return;
+                }
+                var opt = document.createElement('option');
+                opt.value = m.codigo;
+                opt.textContent = m.codigo + ' — ' + m.nombre + ' (' + m.semestre + '.º sem.)';
+                selectMateria.appendChild(opt);
+            });
+
+            selectMateria.disabled = materiasPermitidas.length === 0;
+            materiasVacias.classList.toggle('hidden', materiasPermitidas.length > 0);
+        }
+
+        chipsContainer.addEventListener('click', function (e) {
+            var btn = e.target.closest('button[data-codigo]');
+            if (!btn) {
+                return;
+            }
+            selectedCodigos.delete(btn.getAttribute('data-codigo'));
+            renderChips();
+        });
+
+        selectMateria.addEventListener('change', function () {
+            if (!this.value) {
+                return;
+            }
+            selectedCodigos.add(this.value);
+            this.value = '';
+            renderChips();
+            errorMaterias.classList.add('hidden');
+        });
+
+        form.addEventListener('submit', function (e) {
+            if (selectedCodigos.size === 0) {
+                e.preventDefault();
+                errorMaterias.classList.remove('hidden');
+            }
+        });
+
+        renderChips();
+    })();
+</script>
 
 <footer class="p-4 text-center text-slate-400 text-xs">
     © 2025 OwlShare · Plataforma Educativa Colaborativa
