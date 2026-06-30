@@ -1,6 +1,7 @@
 package ec.edu.epn.controlador;
 
 import ec.edu.epn.dao.MaterialDAO;
+import ec.edu.epn.modelo.EstadoMaterial;
 import ec.edu.epn.modelo.Material;
 import ec.edu.epn.modelo.Materia;
 import ec.edu.epn.modelo.Usuario;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.Part;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -79,6 +81,8 @@ public class SubirMaterialServlet extends HttpServlet {
                     costo,
                     categoria.isEmpty() ? null : categoria
             );
+            material.setEstado(EstadoMaterial.APROBADO);
+            material.setFechaRevision(LocalDateTime.now());
             materialDAO.guardar(material);
         } catch (IOException e) {
             MaterialAlmacenamiento.eliminarSiExiste(rutaRelativa);
@@ -92,8 +96,8 @@ public class SubirMaterialServlet extends HttpServlet {
         }
 
         guardarMensajeFlash(request, "flashMensaje",
-                "Material subido correctamente. Quedará disponible cuando sea aprobado.");
-        response.sendRedirect(request.getContextPath() + "/tutor/subir");
+                "Material publicado correctamente. Ya está disponible en la biblioteca para estudiantes.");
+        response.sendRedirect(request.getContextPath() + "/tutor/materiales");
     }
 
     private String validarCampos(Usuario tutor, String titulo, String descripcion, String codigoMateria,

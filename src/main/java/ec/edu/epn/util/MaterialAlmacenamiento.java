@@ -54,6 +54,13 @@ public final class MaterialAlmacenamiento {
         }
     }
 
+    public static Path resolverArchivo(String rutaRelativa) {
+        if (rutaRelativa == null || rutaRelativa.isBlank()) {
+            throw new IllegalArgumentException("Ruta de archivo no válida.");
+        }
+        return directorioBase().resolve(rutaRelativa).normalize();
+    }
+
     private static void validarCabeceraPdf(Part archivo) throws IOException {
         try (InputStream input = archivo.getInputStream()) {
             byte[] cabecera = input.readNBytes(PDF_MAGIC.length);

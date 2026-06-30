@@ -1,5 +1,7 @@
 package ec.edu.epn.controlador;
 
+import ec.edu.epn.dao.MaterialDAO;
+import ec.edu.epn.modelo.EstadoMaterial;
 import ec.edu.epn.modelo.Rol;
 import ec.edu.epn.modelo.TutorPerfilVista;
 import ec.edu.epn.modelo.Usuario;
@@ -13,6 +15,8 @@ import java.io.IOException;
 import java.util.List;
 
 public class TutorInicioServlet extends HttpServlet {
+
+    private final MaterialDAO materialDAO = new MaterialDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,8 +34,10 @@ public class TutorInicioServlet extends HttpServlet {
         }
 
         request.setAttribute("tutorPerfil", TutorPerfilVista.desde(usuario));
-        request.setAttribute("materialesAprobados", 0);
-        request.setAttribute("materialesPendientes", 0);
+        request.setAttribute("materialesAprobados",
+                materialDAO.contarPorTutorYEstado(usuario.getId(), EstadoMaterial.APROBADO));
+        request.setAttribute("materialesPendientes",
+                materialDAO.contarPorTutorYEstado(usuario.getId(), EstadoMaterial.PENDIENTE));
         request.setAttribute("sesiones", List.of());
 
         request.getRequestDispatcher("/WEB-INF/tutor/dashboard-tutor.jsp").forward(request, response);

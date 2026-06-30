@@ -156,17 +156,18 @@
                                 <div class="border-t border-slate-100 pt-4 flex items-center justify-between">
                                     <span class="text-2xl font-extrabold text-primary">
                                         <c:choose>
-                                            <c:when test="${material.costo == 0}">Gratis</c:when>
+                                            <c:when test="${material.gratis}">Gratis</c:when>
                                             <c:otherwise>$<c:out value="${material.costoFormateado}"/></c:otherwise>
                                         </c:choose>
                                     </span>
 
                                     <c:choose>
                                         <c:when test="${material.adquirido}">
-                                            <span class="flex items-center gap-1 text-green-700 font-bold text-sm bg-green-50 border border-green-200 px-4 py-2 rounded-lg">
-                                                <span class="material-symbols-outlined text-sm">check_circle</span>
-                                                Adquirido
-                                            </span>
+                                            <a href="${pageContext.request.contextPath}/estudiante/biblioteca/descargar?idMaterial=${material.id}"
+                                               class="flex items-center gap-1 text-green-700 font-bold text-sm bg-green-50 border border-green-200 px-4 py-2 rounded-lg hover:bg-green-100 transition-colors">
+                                                <span class="material-symbols-outlined text-sm">download</span>
+                                                Descargar
+                                            </a>
                                         </c:when>
                                         <c:otherwise>
                                             <form method="post" action="${pageContext.request.contextPath}/estudiante/biblioteca/adquirir"
