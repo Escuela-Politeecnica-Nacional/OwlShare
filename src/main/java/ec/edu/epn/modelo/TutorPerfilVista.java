@@ -1,5 +1,6 @@
 package ec.edu.epn.modelo;
 
+import ec.edu.epn.util.CatalogoRegistro;
 import ec.edu.epn.util.MateriaUtil;
 
 import java.util.List;
@@ -15,25 +16,30 @@ public class TutorPerfilVista {
     private final Carrera carrera;
     private final String descripcionProfesional;
     private final List<String> codigosMateriaRelacionadas;
+    private final List<Materia> materiasRelacionadas;
 
     public TutorPerfilVista(String nombre, String apellido, Semestre semestre, Carrera carrera,
-                             String descripcionProfesional, List<String> codigosMateriaRelacionadas) {
+                             String descripcionProfesional, List<String> codigosMateriaRelacionadas,
+                             List<Materia> materiasRelacionadas) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.semestre = semestre;
         this.carrera = carrera;
         this.descripcionProfesional = descripcionProfesional;
         this.codigosMateriaRelacionadas = codigosMateriaRelacionadas;
+        this.materiasRelacionadas = materiasRelacionadas;
     }
 
     public static TutorPerfilVista desde(Usuario usuario) {
+        List<String> codigos = MateriaUtil.toList(usuario.getMaterias());
         return new TutorPerfilVista(
                 usuario.getNombre(),
                 usuario.getApellido(),
                 usuario.getSemestre(),
                 usuario.getCarrera(),
                 null,
-                MateriaUtil.toList(usuario.getMaterias())
+                codigos,
+                CatalogoRegistro.materiasPorCodigos(codigos)
         );
     }
 
@@ -59,5 +65,9 @@ public class TutorPerfilVista {
 
     public List<String> getCodigosMateriaRelacionadas() {
         return codigosMateriaRelacionadas;
+    }
+
+    public List<Materia> getMateriasRelacionadas() {
+        return materiasRelacionadas;
     }
 }
