@@ -69,3 +69,11 @@ CREATE TABLE IF NOT EXISTS material (
     fecha_registro       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion  TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS material_adquisicion (
+    id                 BIGSERIAL PRIMARY KEY,
+    id_material        BIGINT NOT NULL REFERENCES material (id),
+    id_estudiante      BIGINT NOT NULL REFERENCES usuarios (id),
+    fecha_adquisicion  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (id_material, id_estudiante)
+);
