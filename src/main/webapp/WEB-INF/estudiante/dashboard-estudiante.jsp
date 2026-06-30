@@ -38,16 +38,30 @@
         <h2 class="text-4xl font-extrabold text-on-surface mb-2">Hola, <c:out value="${requestScope.estudiantePerfil.nombre}"/></h2>
         <p class="text-slate-600 mb-8">Bienvenido a tu espacio de aprendizaje.</p>
 
-        <div class="bg-white rounded-xl shadow p-8">
-            <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
-                <span class="material-symbols-outlined">person_search</span>
-                Buscar Tutor
-            </h3>
-            <p class="text-slate-600 mb-6">Encuentra al tutor ideal para resolver tus dudas.</p>
-            <a href="${pageContext.request.contextPath}/estudiante/buscar-tutor"
-               class="inline-block bg-primary text-white font-bold py-3 px-6 rounded-xl hover:opacity-90">
-                Explorar Tutores
-            </a>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow p-8">
+                <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined">person_search</span>
+                    Buscar Tutor
+                </h3>
+                <p class="text-slate-600 mb-6">Encuentra al tutor ideal para resolver tus dudas.</p>
+                <a href="${pageContext.request.contextPath}/estudiante/buscar-tutor"
+                   class="inline-block bg-primary text-white font-bold py-3 px-6 rounded-xl hover:opacity-90">
+                    Explorar Tutores
+                </a>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-8">
+                <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined">menu_book</span>
+                    Biblioteca de Materiales
+                </h3>
+                <p class="text-slate-600 mb-6">Explora y adquiere materiales académicos publicados por tutores.</p>
+                <a href="${pageContext.request.contextPath}/estudiante/biblioteca"
+                   class="inline-block bg-primary text-white font-bold py-3 px-6 rounded-xl hover:opacity-90">
+                    Ver Biblioteca
+                </a>
+            </div>
         </div>
     </div>
 </main>

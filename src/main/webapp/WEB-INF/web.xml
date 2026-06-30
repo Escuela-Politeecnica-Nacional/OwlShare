@@ -26,6 +26,10 @@
           GET      /api/tutores/detalle → DetalleTutorServlet    → JSON
           POST     /api/solicitudes     → CrearSolicitudServlet  → JSON
           GET|POST /tutor/subir         → SubirMaterialServlet   → subir-material.jsp
+          GET      /tutor/materiales   → MaterialesTutorServlet → gestiona-material.jsp
+          GET      /estudiante/biblioteca → BibliotecaEstudianteServlet → biblioteca-estudiante.jsp
+          POST     /estudiante/biblioteca/adquirir → AdquirirMaterialServlet
+          GET      /estudiante/biblioteca/descargar → DescargarMaterialServlet
     -->
 
     <servlet>
@@ -210,6 +214,46 @@
     <servlet-mapping>
         <servlet-name>SubirMaterialServlet</servlet-name>
         <url-pattern>/tutor/subir</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MaterialesTutorServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.MaterialesTutorServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>MaterialesTutorServlet</servlet-name>
+        <url-pattern>/tutor/materiales</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>BibliotecaEstudianteServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.BibliotecaEstudianteServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>BibliotecaEstudianteServlet</servlet-name>
+        <url-pattern>/estudiante/biblioteca</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AdquirirMaterialServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.AdquirirMaterialServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AdquirirMaterialServlet</servlet-name>
+        <url-pattern>/estudiante/biblioteca/adquirir</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DescargarMaterialServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.DescargarMaterialServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DescargarMaterialServlet</servlet-name>
+        <url-pattern>/estudiante/biblioteca/descargar</url-pattern>
     </servlet-mapping>
 
 </web-app>
