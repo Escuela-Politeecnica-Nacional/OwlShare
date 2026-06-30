@@ -16,6 +16,9 @@ import java.util.Optional;
 
 public class SolicitudTutoriaDAO {
 
+    public record SolicitudCreada(Long solicitudId, Long horarioId) {
+    }
+
     public Optional<SolicitudTutoria> buscarPorId(Long id) {
         if (id == null) {
             return Optional.empty();
@@ -110,30 +113,88 @@ public class SolicitudTutoriaDAO {
         }
     }
 
+    public SolicitudCreada crearSolicitudConHorario(Long estudianteId, Long tutorId, String codigoMateria,
+                                                    String fecha, String horaInicio, String horaFin,
+                                                    String comentario) {
+        String inicio = HorarioUtil.normalizarHora(horaInicio);
+        String fin = HorarioUtil.normalizarHora(horaFin);
+
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            if (session.get(Usuario.class, estudianteId) == null) {
+                throw new IllegalArgumentException("Estudiante no encontrado.");
+            }
+            if (session.get(Usuario.class, tutorId) == null) {
+                throw new IllegalArgumentException("Tutor no encontrado.");
+            }
+            if (session.get(MateriaCatalogo.class, codigoMateria) == null) {
+                throw new IllegalArgumentException("Materia no encontrada.");
+            }
+
+            Horario horario = session.createQuery(
+                    "from Horario h where h.tutor.id = :tutorId and h.fecha = :fecha "
+                            + "and h.horaInicio = :horaInicio and h.horaFin = :horaFin",
+                    Horario.class
+            )
+                    .setParameter("tutorId", tutorId)
+                    .setParameter("fecha", fecha)
+                    .setParameter("horaInicio", inicio)
+                    .setParameter("horaFin", fin)
+                    .uniqueResult();
+
+            if (horario == null) {
+                horario = new Horario();
+                horario.setTutor(session.getReference(Usuario.class, tutorId));
+                horario.setFecha(fecha);
+                horario.setHoraInicio(inicio);
+                horario.setHoraFin(fin);
+                horario.setMateria(session.getReference(MateriaCatalogo.class, codigoMateria));
+                horario.setDisponible(true);
+                session.persist(horario);
+            }
+
+            SolicitudTutoria solicitud = new SolicitudTutoria();
+            solicitud.setEstudiante(session.getReference(Usuario.class, estudianteId));
+            solicitud.setHorario(horario);
+            solicitud.setMateria(session.getReference(MateriaCatalogo.class, codigoMateria));
+            solicitud.setComentario(comentario);
+            solicitud.setEstado(EstadoSolicitud.PENDIENTE);
+            session.persist(solicitud);
+            session.flush();
+
+            Long solicitudId = solicitud.getId();
+            Long horarioId = horario.getId();
+            transaction.commit();
+            return new SolicitudCreada(solicitudId, horarioId);
+        } catch (RuntimeException e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw e;
+        }
+    }
+
     public Long crearSolicitud(Long estudianteId, Long horarioId, String codigoMateria, String comentario) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
-            Usuario estudiante = session.get(Usuario.class, estudianteId);
-            if (estudiante == null) {
+            if (session.get(Usuario.class, estudianteId) == null) {
                 throw new IllegalArgumentException("Estudiante no encontrado.");
             }
-
-            Horario horario = session.get(Horario.class, horarioId);
-            if (horario == null) {
+            if (session.get(Horario.class, horarioId) == null) {
                 throw new IllegalArgumentException("Horario no encontrado.");
             }
-
-            MateriaCatalogo materia = session.get(MateriaCatalogo.class, codigoMateria);
-            if (materia == null) {
+            if (session.get(MateriaCatalogo.class, codigoMateria) == null) {
                 throw new IllegalArgumentException("Materia no encontrada.");
             }
 
             SolicitudTutoria solicitud = new SolicitudTutoria();
-            solicitud.setEstudiante(estudiante);
-            solicitud.setHorario(horario);
-            solicitud.setMateria(materia);
+            solicitud.setEstudiante(session.getReference(Usuario.class, estudianteId));
+            solicitud.setHorario(session.getReference(Horario.class, horarioId));
+            solicitud.setMateria(session.getReference(MateriaCatalogo.class, codigoMateria));
             solicitud.setComentario(comentario);
             solicitud.setEstado(EstadoSolicitud.PENDIENTE);
 

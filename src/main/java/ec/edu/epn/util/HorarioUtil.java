@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public final class HorarioUtil {
 
-    private static final Pattern HORA_PATTERN = Pattern.compile("^([01]?\\d|2[0-3]):[0-5]\\d$");
+    private static final Pattern HORA_PATTERN = Pattern.compile("^([01]?\\d|2[0-3]):[0-5]\\d(:[0-5]\\d)?$");
 
     private HorarioUtil() {
     }
@@ -46,6 +46,9 @@ public final class HorarioUtil {
             return limpia;
         }
         String[] partes = limpia.split(":");
+        if (partes.length < 2) {
+            return limpia;
+        }
         return String.format("%02d:%02d", Integer.parseInt(partes[0]), Integer.parseInt(partes[1]));
     }
 }
