@@ -1,5 +1,6 @@
 ec\edu\epn\controlador\SolicitudesTutorServlet.class
 ec\edu\epn\dao\SolicitudTutoriaDAO$SolicitudCreada.class
+ec\edu\epn\util\MaterialValidacion.class
 ec\edu\epn\util\MateriaUtil.class
 ec\edu\epn\modelo\EstudiantePerfilVista.class
 ec\edu\epn\modelo\Materia.class
@@ -29,6 +30,7 @@ ec\edu\epn\util\PasswordUtil.class
 ec\edu\epn\modelo\EstadoSolicitud.class
 ec\edu\epn\controlador\CrearSolicitudServlet.class
 ec\edu\epn\util\MateriaTutorReglas.class
+ec\edu\epn\util\MaterialAlmacenamiento.class
 ec\edu\epn\modelo\Semestre.class
 ec\edu\epn\modelo\SesionAgendadaVista$1.class
 ec\edu\epn\controlador\BuscarTutoresServlet.class
@@ -55,6 +57,7 @@ ec\edu\epn\dao\MateriaCatalogoDAO.class
 ec\edu\epn\controlador\HorarioServlet.class
 ec\edu\epn\controlador\GestionSolicitudServlet.class
 ec\edu\epn\modelo\EstadoHorario.class
+ec\edu\epn\controlador\SubirMaterialServlet.class
 ec\edu\epn\util\JsonUtil.class
 ec\edu\epn\controlador\LoginServlet.class
 ec\edu\epn\util\CatalogoRegistro.class
@@ -64,6 +67,7 @@ ec\edu\epn\modelo\TutorBusquedaVista.class
 ec\edu\epn\modelo\TutorPerfilDetalle.class
 ec\edu\epn\dao\UsuarioDAO.class
 ec\edu\epn\controlador\EstudianteInicioServlet.class
+ec\edu\epn\dao\MaterialDAO.class
 ec\edu\epn\controlador\EstudianteAuth.class
 ec\edu\epn\util\HibernateUtil$DbConfig.class
 ec\edu\epn\modelo\Rol.class

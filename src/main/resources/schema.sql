@@ -51,3 +51,21 @@ CREATE TABLE IF NOT EXISTS solicitudes_tutoria (
     estado         VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
     comentario     VARCHAR(500)
 );
+
+CREATE TABLE IF NOT EXISTS material (
+    id                   BIGSERIAL PRIMARY KEY,
+    titulo               VARCHAR(200) NOT NULL,
+    codigo_materia       VARCHAR(20) NOT NULL,
+    id_tutor             BIGINT NOT NULL REFERENCES usuarios (id),
+    nombre_archivo       VARCHAR(260) NOT NULL,
+    ruta_almacenamiento  VARCHAR(512) NOT NULL,
+    descripcion          VARCHAR(500),
+    costo                DECIMAL(10, 2) NOT NULL,
+    categoria_academica  VARCHAR(100),
+    estado               VARCHAR(15) NOT NULL DEFAULT 'PENDIENTE',
+    comentario_admin     VARCHAR(1000),
+    id_admin_revisor     BIGINT,
+    fecha_revision       TIMESTAMP,
+    fecha_registro       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion  TIMESTAMP
+);

@@ -25,6 +25,7 @@
           GET      /api/tutores/buscar  → BuscarTutoresServlet   → JSON
           GET      /api/tutores/detalle → DetalleTutorServlet    → JSON
           POST     /api/solicitudes     → CrearSolicitudServlet  → JSON
+          GET|POST /tutor/subir         → SubirMaterialServlet   → subir-material.jsp
     -->
 
     <servlet>
@@ -194,6 +195,21 @@
     <servlet-mapping>
         <servlet-name>CrearSolicitudServlet</servlet-name>
         <url-pattern>/api/solicitudes</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SubirMaterialServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.SubirMaterialServlet</servlet-class>
+        <multipart-config>
+            <max-file-size>26214400</max-file-size>
+            <max-request-size>27262976</max-request-size>
+            <file-size-threshold>1048576</file-size-threshold>
+        </multipart-config>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SubirMaterialServlet</servlet-name>
+        <url-pattern>/tutor/subir</url-pattern>
     </servlet-mapping>
 
 </web-app>

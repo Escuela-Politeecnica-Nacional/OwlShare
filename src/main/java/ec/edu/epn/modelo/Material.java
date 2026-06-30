@@ -1,6 +1,7 @@
 package ec.edu.epn.modelo;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,6 +12,9 @@ public class Material {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(name = "titulo", nullable = false, length = 200)
+    private String titulo;
 
     @Column(name = "codigo_materia", nullable = false, length = 20)
     private String codigoMateria;
@@ -26,6 +30,12 @@ public class Material {
 
     @Column(name = "descripcion", length = 500)
     private String descripcion;
+
+    @Column(name = "costo", nullable = false, precision = 10, scale = 2)
+    private BigDecimal costo;
+
+    @Column(name = "categoria_academica", length = 100)
+    private String categoriaAcademica;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false, length = 15)
@@ -64,22 +74,29 @@ public class Material {
     protected Material() {
     }
 
-    public Material(String codigoMateria, Long idTutor, String nombreArchivo,
-                    String rutaAlmacenamiento, String descripcion) {
+    public Material(String titulo, String codigoMateria, Long idTutor, String nombreArchivo,
+                    String rutaAlmacenamiento, String descripcion, BigDecimal costo,
+                    String categoriaAcademica) {
+        this.titulo = titulo;
         this.codigoMateria = codigoMateria;
         this.idTutor = idTutor;
         this.nombreArchivo = nombreArchivo;
         this.rutaAlmacenamiento = rutaAlmacenamiento;
         this.descripcion = descripcion;
+        this.costo = costo;
+        this.categoriaAcademica = categoriaAcademica;
         this.estado = EstadoMaterial.PENDIENTE;
     }
 
     public Long getId() { return id; }
+    public String getTitulo() { return titulo; }
     public String getCodigoMateria() { return codigoMateria; }
     public Long getIdTutor() { return idTutor; }
     public String getNombreArchivo() { return nombreArchivo; }
     public String getRutaAlmacenamiento() { return rutaAlmacenamiento; }
     public String getDescripcion() { return descripcion; }
+    public BigDecimal getCosto() { return costo; }
+    public String getCategoriaAcademica() { return categoriaAcademica; }
     public EstadoMaterial getEstado() { return estado; }
     public String getComentarioAdmin() { return comentarioAdmin; }
     public Long getIdAdminRevisor() { return idAdminRevisor; }
