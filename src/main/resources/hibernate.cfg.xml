@@ -14,5 +14,6 @@
         <mapping class="ec.edu.epn.modelo.Horario"/>
         <mapping class="ec.edu.epn.modelo.DisponibilidadTutor"/>
         <mapping class="ec.edu.epn.modelo.SolicitudTutoria"/>
+        <mapping class="ec.edu.epn.modelo.Material"/>
     </session-factory>
 </hibernate-configuration>

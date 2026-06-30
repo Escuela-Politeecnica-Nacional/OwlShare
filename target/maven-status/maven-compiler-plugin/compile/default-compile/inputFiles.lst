@@ -16,11 +16,13 @@ C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\ep
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\RegistroServlet.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\SolicitarMentoriaServlet.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\SolicitudesTutorServlet.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\SubirMaterialServlet.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\TutorAuth.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\controlador\TutorInicioServlet.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\dao\DisponibilidadTutorDAO.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\dao\HorarioDAO.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\dao\MateriaCatalogoDAO.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\dao\MaterialDAO.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\dao\SolicitudTutoriaDAO.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\dao\UsuarioDAO.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\Main.java
@@ -55,6 +57,8 @@ C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\ep
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\HorarioUtil.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\InputValidacion.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\JsonUtil.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\MaterialAlmacenamiento.java
+C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\MaterialValidacion.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\MateriaTutorReglas.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\MateriaUtil.java
 C:\Users\nesda\Desktop\EPN\Metodolgías Ágiles\OwlShare\src\main\java\ec\edu\epn\util\PasswordUtil.java
