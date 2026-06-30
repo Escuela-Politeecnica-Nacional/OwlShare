@@ -47,8 +47,20 @@
         <%-- Encabezado de sección --%>
         <div class="mb-8">
             <h2 class="text-4xl font-extrabold text-on-surface tracking-tight">Publicar nuevo material</h2>
-            <p class="text-slate-600 mt-2">Comparte tus conocimientos con la comunidad académica.</p>
+            <p class="text-slate-600 mt-2">Completa los datos del recurso académico. El material quedará en revisión antes de publicarse para estudiantes.</p>
         </div>
+
+        <c:if test="${sinMateriasPerfil}">
+            <div class="flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-900 px-5 py-4 rounded-xl text-sm">
+                <span class="material-symbols-outlined">info</span>
+                <div>
+                    <p class="font-semibold">Configura tus materias primero</p>
+                    <p class="mt-1">Indica en tu perfil las materias que ofreces antes de publicar material.
+                        <a href="${pageContext.request.contextPath}/tutor/perfil" class="text-primary font-bold hover:underline">Ir a Mi Perfil</a>
+                    </p>
+                </div>
+            </div>
+        </c:if>
 
         <%-- Mensaje de error del servidor --%>
         <c:if test="${not empty error}">
@@ -145,7 +157,9 @@
                             </div>
                             <c:if test="${empty materiasOpciones}">
                                 <p class="text-xs text-amber-700 mt-1">
-                                    No tienes materias registradas en tu perfil. Actualiza tu registro como tutor para poder publicar material.
+                                    No tienes materias en tu perfil.
+                                    <a href="${pageContext.request.contextPath}/tutor/perfil" class="font-bold text-primary hover:underline">Configúralas en Mi Perfil</a>
+                                    para poder publicar material.
                                 </p>
                             </c:if>
                         </div>
