@@ -39,6 +39,19 @@ public class MaterialAdquisicionDAO {
         }
     }
 
+    public long contarAdquiridosPorEstudiante(Long estudianteId) {
+        if (estudianteId == null) {
+            return 0;
+        }
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Long total = session.createQuery(
+                    "select count(a.id) from MaterialAdquisicion a where a.idEstudiante = :estudianteId",
+                    Long.class
+            ).setParameter("estudianteId", estudianteId).uniqueResult();
+            return total != null ? total : 0;
+        }
+    }
+
     public void registrar(Long materialId, Long estudianteId) {
         if (materialId == null || estudianteId == null) {
             throw new IllegalArgumentException("Material y estudiante son obligatorios.");

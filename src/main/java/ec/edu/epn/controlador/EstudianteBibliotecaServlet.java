@@ -4,6 +4,7 @@ import ec.edu.epn.dao.MaterialAdquisicionDAO;
 import ec.edu.epn.dao.MaterialDAO;
 import ec.edu.epn.dao.UsuarioDAO;
 import ec.edu.epn.modelo.Carrera;
+import ec.edu.epn.modelo.Material;
 import ec.edu.epn.modelo.MaterialVista;
 import ec.edu.epn.modelo.Usuario;
 import jakarta.servlet.ServletException;
@@ -16,7 +17,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-public class BibliotecaEstudianteServlet extends HttpServlet {
+/**
+ * Biblioteca del estudiante: materiales aprobados filtrados automáticamente
+ * por la carrera registrada en su perfil.
+ */
+public class EstudianteBibliotecaServlet extends HttpServlet {
 
     private final MaterialDAO materialDAO = new MaterialDAO();
     private final MaterialAdquisicionDAO adquisicionDAO = new MaterialAdquisicionDAO();
@@ -30,28 +35,40 @@ public class BibliotecaEstudianteServlet extends HttpServlet {
             return;
         }
 
-        Carrera carrera = parseCarrera(request.getParameter("carrera"));
+        Carrera carrera = estudiante.getCarrera();
         String busqueda = trim(request.getParameter("busqueda"));
+        String vista = normalizarVista(request.getParameter("vista"));
 
         List<MaterialVista> materiales;
-        try {
-            Set<Long> adquiridos = adquisicionDAO.idsAdquiridosPorEstudiante(estudiante.getId());
-            materiales = materialDAO.listarAprobados(carrera, busqueda).stream()
-                    .map(m -> MaterialVista.paraBiblioteca(
-                            m,
-                            nombreTutor(m.getIdTutor()),
-                            adquiridos.contains(m.getId())))
-                    .toList();
-        } catch (RuntimeException e) {
+        if (carrera == null) {
             materiales = List.of();
-            request.setAttribute("error", "No se pudo cargar la biblioteca de materiales.");
+            request.setAttribute("sinCarrera", true);
+            request.setAttribute("error",
+                    "Tu perfil no tiene una carrera registrada. No podemos mostrarte materiales relevantes.");
+        } else {
+            try {
+                Set<Long> adquiridos = adquisicionDAO.idsAdquiridosPorEstudiante(estudiante.getId());
+                List<Material> lista = "adquiridos".equals(vista)
+                        ? materialDAO.listarAprobadosAdquiridos(estudiante.getId(), carrera, busqueda)
+                        : materialDAO.listarAprobados(carrera, busqueda);
+                materiales = lista.stream()
+                        .map(m -> MaterialVista.paraBiblioteca(
+                                m,
+                                nombreTutor(m.getIdTutor()),
+                                adquiridos.contains(m.getId())))
+                        .toList();
+            } catch (RuntimeException e) {
+                materiales = List.of();
+                request.setAttribute("error", "No se pudo cargar la biblioteca de materiales.");
+            }
+            request.setAttribute("carreraEstudiante", carrera);
+            request.setAttribute("carreraFiltrada", carrera.getNombre());
+            request.setAttribute("totalAdquiridos", adquisicionDAO.contarAdquiridosPorEstudiante(estudiante.getId()));
         }
 
         request.setAttribute("materiales", materiales);
-        request.setAttribute("carreras", Carrera.values());
-        if (carrera != null) {
-            request.setAttribute("carreraFiltrada", carrera.getNombre());
-        }
+        request.setAttribute("busquedaActiva", !busqueda.isEmpty());
+        request.setAttribute("vistaActiva", vista);
 
         transferirMensaje(request.getSession(false), request, "exito");
         transferirMensaje(request.getSession(false), request, "error");
@@ -78,17 +95,6 @@ public class BibliotecaEstudianteServlet extends HttpServlet {
         return nombre.toString().trim();
     }
 
-    private Carrera parseCarrera(String valor) {
-        if (valor == null || valor.isBlank()) {
-            return null;
-        }
-        try {
-            return Carrera.valueOf(valor.trim());
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
     private void transferirMensaje(HttpSession session, HttpServletRequest request, String clave) {
         if (session == null) {
             return;
@@ -102,5 +108,9 @@ public class BibliotecaEstudianteServlet extends HttpServlet {
 
     private String trim(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private String normalizarVista(String vista) {
+        return "adquiridos".equalsIgnoreCase(trim(vista)) ? "adquiridos" : "todos";
     }
 }

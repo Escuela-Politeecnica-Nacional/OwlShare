@@ -32,7 +32,7 @@
           GET      /admin/inicio       → AdminInicioServlet → admin/inicio.jsp
           GET      /admin/materiales   → ModeracionMaterialesServlet → moderacion-materiales.jsp
           POST     /admin/materiales/revisar → RevisarMaterialServlet
-          GET      /estudiante/biblioteca → BibliotecaEstudianteServlet → biblioteca-estudiante.jsp
+          GET      /estudiante/biblioteca → EstudianteBibliotecaServlet → biblioteca-estudiante.jsp
           POST     /estudiante/biblioteca/adquirir → AdquirirMaterialServlet
           GET      /estudiante/biblioteca/descargar → DescargarMaterialServlet
     -->
@@ -282,12 +282,12 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>BibliotecaEstudianteServlet</servlet-name>
-        <servlet-class>ec.edu.epn.controlador.BibliotecaEstudianteServlet</servlet-class>
+        <servlet-name>EstudianteBibliotecaServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.EstudianteBibliotecaServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>BibliotecaEstudianteServlet</servlet-name>
+        <servlet-name>EstudianteBibliotecaServlet</servlet-name>
         <url-pattern>/estudiante/biblioteca</url-pattern>
     </servlet-mapping>
 

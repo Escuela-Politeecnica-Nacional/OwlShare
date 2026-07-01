@@ -217,12 +217,65 @@ public class MaterialDAO {
     }
 
     public List<Material> listarAprobados(Carrera carrera, String busqueda) {
+        return listarAprobadosConsulta(carrera, busqueda, null);
+    }
+
+    public List<Material> listarAprobadosAdquiridos(Long estudianteId, Carrera carrera, String busqueda) {
+        if (estudianteId == null) {
+            return List.of();
+        }
+        return listarAprobadosConsulta(carrera, busqueda, estudianteId);
+    }
+
+    public Optional<Material> buscarAprobadoPorIdYCarrera(Long id, Carrera carrera) {
+        if (id == null || carrera == null) {
+            return Optional.empty();
+        }
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Material material = session.createQuery(
+                    "select m from Material m, MateriaCatalogo mc "
+                            + "where m.id = :id and m.codigoMateria = mc.codigo "
+                            + "and m.estado = :estado and mc.carrera = :carrera",
+                    Material.class
+            )
+                    .setParameter("id", id)
+                    .setParameter("estado", EstadoMaterial.APROBADO)
+                    .setParameter("carrera", carrera)
+                    .uniqueResult();
+            return Optional.ofNullable(material);
+        }
+    }
+
+    public long contarAprobadosPorCarrera(Carrera carrera) {
+        if (carrera == null) {
+            return 0;
+        }
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Long total = session.createQuery(
+                    "select count(m.id) from Material m, MateriaCatalogo mc "
+                            + "where m.codigoMateria = mc.codigo and m.estado = :estado and mc.carrera = :carrera",
+                    Long.class
+            )
+                    .setParameter("estado", EstadoMaterial.APROBADO)
+                    .setParameter("carrera", carrera)
+                    .uniqueResult();
+            return total != null ? total : 0;
+        }
+    }
+
+    private List<Material> listarAprobadosConsulta(Carrera carrera, String busqueda, Long estudianteId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             StringBuilder hql = new StringBuilder(
-                    "select m from Material m, MateriaCatalogo mc "
-                            + "where m.codigoMateria = mc.codigo and m.estado = :estado");
+                    "select m from Material m, MateriaCatalogo mc");
+            if (estudianteId != null) {
+                hql.append(", MaterialAdquisicion a");
+            }
+            hql.append(" where m.codigoMateria = mc.codigo and m.estado = :estado");
             if (carrera != null) {
                 hql.append(" and mc.carrera = :carrera");
+            }
+            if (estudianteId != null) {
+                hql.append(" and a.idMaterial = m.id and a.idEstudiante = :estudianteId");
             }
             if (busqueda != null && !busqueda.isBlank()) {
                 hql.append(" and lower(m.titulo) like lower(:busqueda)");
@@ -233,6 +286,9 @@ public class MaterialDAO {
             query.setParameter("estado", EstadoMaterial.APROBADO);
             if (carrera != null) {
                 query.setParameter("carrera", carrera);
+            }
+            if (estudianteId != null) {
+                query.setParameter("estudianteId", estudianteId);
             }
             if (busqueda != null && !busqueda.isBlank()) {
                 query.setParameter("busqueda", "%" + busqueda.trim() + "%");
