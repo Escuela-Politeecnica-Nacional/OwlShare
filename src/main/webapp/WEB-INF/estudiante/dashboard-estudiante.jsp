@@ -56,7 +56,22 @@
                     <span class="material-symbols-outlined">menu_book</span>
                     Biblioteca de Materiales
                 </h3>
-                <p class="text-slate-600 mb-6">Explora y adquiere materiales académicos publicados por tutores.</p>
+                <p class="text-slate-600 mb-4">
+                    Explora y adquiere materiales académicos publicados por tutores
+                    <c:if test="${not empty carreraNombre}">
+                        de <strong><c:out value="${carreraNombre}"/></strong>
+                    </c:if>.
+                </p>
+                <c:if test="${not empty carreraNombre}">
+                    <div class="flex flex-wrap gap-4 mb-6 text-sm">
+                        <span class="bg-indigo-50 text-indigo-800 px-3 py-1 rounded-full font-semibold">
+                            <c:out value="${materialesDisponibles}"/> disponible(s)
+                        </span>
+                        <span class="bg-green-50 text-green-800 px-3 py-1 rounded-full font-semibold">
+                            <c:out value="${materialesAdquiridos}"/> adquirido(s)
+                        </span>
+                    </div>
+                </c:if>
                 <a href="${pageContext.request.contextPath}/estudiante/biblioteca"
                    class="inline-block bg-primary text-white font-bold py-3 px-6 rounded-xl hover:opacity-90">
                     Ver Biblioteca

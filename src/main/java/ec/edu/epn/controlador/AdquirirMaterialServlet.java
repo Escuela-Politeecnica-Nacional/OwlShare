@@ -2,7 +2,7 @@ package ec.edu.epn.controlador;
 
 import ec.edu.epn.dao.MaterialAdquisicionDAO;
 import ec.edu.epn.dao.MaterialDAO;
-import ec.edu.epn.modelo.EstadoMaterial;
+import ec.edu.epn.modelo.Carrera;
 import ec.edu.epn.modelo.Material;
 import ec.edu.epn.modelo.Usuario;
 import jakarta.servlet.ServletException;
@@ -27,15 +27,22 @@ public class AdquirirMaterialServlet extends HttpServlet {
             return;
         }
 
+        Carrera carrera = estudiante.getCarrera();
+        if (carrera == null) {
+            redirigirConError(request, response,
+                    "Tu perfil no tiene una carrera registrada. No puedes adquirir materiales.");
+            return;
+        }
+
         Long idMaterial = parseId(request.getParameter("idMaterial"));
         if (idMaterial == null) {
             redirigirConError(request, response, "Material no válido.");
             return;
         }
 
-        Optional<Material> materialOpt = materialDAO.buscarPorId(idMaterial);
-        if (materialOpt.isEmpty() || materialOpt.get().getEstado() != EstadoMaterial.APROBADO) {
-            redirigirConError(request, response, "El material no está disponible.");
+        Optional<Material> materialOpt = materialDAO.buscarAprobadoPorIdYCarrera(idMaterial, carrera);
+        if (materialOpt.isEmpty()) {
+            redirigirConError(request, response, "El material no está disponible para tu carrera.");
             return;
         }
 
@@ -48,6 +55,10 @@ public class AdquirirMaterialServlet extends HttpServlet {
         try {
             adquisicionDAO.registrar(material.getId(), estudiante.getId());
         } catch (RuntimeException e) {
+            if (adquisicionDAO.yaAdquirido(material.getId(), estudiante.getId())) {
+                redirigirConExito(request, response, "Ya adquiriste este material.");
+                return;
+            }
             redirigirConError(request, response, "No se pudo completar la adquisición. Intenta de nuevo.");
             return;
         }

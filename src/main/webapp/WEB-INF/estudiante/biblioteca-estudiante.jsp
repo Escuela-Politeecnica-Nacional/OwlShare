@@ -63,6 +63,22 @@
 
         <%-- Búsqueda por título (dentro de la carrera del estudiante) --%>
         <c:if test="${not sinCarrera}">
+            <div class="flex flex-wrap gap-2 mb-6">
+                <a href="${pageContext.request.contextPath}/estudiante/biblioteca?vista=todos<c:if test='${busquedaActiva}'>&amp;busqueda=${fn:escapeXml(param.busqueda)}</c:if>"
+                   class="px-4 py-2 rounded-lg text-sm font-bold transition-colors
+                   ${vistaActiva == 'todos' ? 'bg-primary text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-primary'}">
+                    Todos los materiales
+                </a>
+                <a href="${pageContext.request.contextPath}/estudiante/biblioteca?vista=adquiridos<c:if test='${busquedaActiva}'>&amp;busqueda=${fn:escapeXml(param.busqueda)}</c:if>"
+                   class="px-4 py-2 rounded-lg text-sm font-bold transition-colors
+                   ${vistaActiva == 'adquiridos' ? 'bg-primary text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-primary'}">
+                    Mis adquiridos
+                    <c:if test="${totalAdquiridos > 0}">
+                        (<c:out value="${totalAdquiridos}"/>)
+                    </c:if>
+                </a>
+            </div>
+
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
                 <div class="flex items-center gap-2 mb-4 text-sm text-slate-600">
                     <span class="material-symbols-outlined text-primary text-base">school</span>
@@ -70,6 +86,7 @@
                 </div>
                 <form method="get" action="${pageContext.request.contextPath}/estudiante/biblioteca"
                       class="flex flex-wrap items-end gap-4">
+                    <input type="hidden" name="vista" value="<c:out value='${vistaActiva}'/>"/>
                     <div class="flex-1 min-w-[220px]">
                         <label for="busqueda" class="block text-sm font-bold text-on-surface mb-2">Buscar por título</label>
                         <input id="busqueda" name="busqueda" type="text"
@@ -82,11 +99,11 @@
                         <span class="material-symbols-outlined text-sm">search</span>
                         Buscar
                     </button>
-                    <c:if test="${busquedaActiva}">
+                    <c:if test="${busquedaActiva or vistaActiva == 'adquiridos'}">
                         <a href="${pageContext.request.contextPath}/estudiante/biblioteca"
                            class="flex items-center gap-1 text-slate-500 font-semibold text-sm hover:text-primary py-3 px-2">
                             <span class="material-symbols-outlined text-sm">close</span>
-                            Limpiar búsqueda
+                            Limpiar filtros
                         </a>
                     </c:if>
                 </form>
@@ -113,6 +130,9 @@
                         <c:choose>
                             <c:when test="${sinCarrera}">
                                 Actualiza tu perfil o contacta al administrador para registrar tu carrera.
+                            </c:when>
+                            <c:when test="${vistaActiva == 'adquiridos'}">
+                                Aún no has adquirido materiales de <c:out value="${carreraFiltrada}"/>.
                             </c:when>
                             <c:when test="${busquedaActiva}">
                                 No hay materiales que coincidan con tu búsqueda en <c:out value="${carreraFiltrada}"/>.
