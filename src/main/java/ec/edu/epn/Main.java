@@ -42,7 +42,7 @@ public class Main {
         verificarServlet(webapp, "ec/edu/epn/controlador/ModeracionMaterialesServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/RevisarMaterialServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/PerfilTutorServlet.class");
-        verificarServlet(webapp, "ec/edu/epn/controlador/BibliotecaEstudianteServlet.class");
+        verificarServlet(webapp, "ec/edu/epn/controlador/EstudianteBibliotecaServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/AdquirirMaterialServlet.class");
         verificarServlet(webapp, "ec/edu/epn/controlador/DescargarMaterialServlet.class");
 
