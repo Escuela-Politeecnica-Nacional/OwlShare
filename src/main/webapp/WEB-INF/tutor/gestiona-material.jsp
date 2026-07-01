@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -62,18 +63,23 @@
                 <c:out value="${flashMensaje}"/>
             </div>
         </c:if>
+        <c:if test="${not empty error}">
+            <div class="mb-6 bg-red-50 border border-red-200 text-red-800 rounded-lg px-4 py-3 text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">error</span>
+                <c:out value="${error}"/>
+            </div>
+        </c:if>
 
-        <%-- Estadísticas (Bento Style) --%>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <%-- Resumen por estado --%>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="bg-white rounded-xl shadow p-6 border border-slate-200">
                 <div class="flex justify-between items-start mb-4">
                     <span class="material-symbols-outlined text-primary">description</span>
-                    <span class="text-xs bg-secondary/20 text-secondary font-bold px-3 py-1 rounded-full">+4 este mes</span>
                 </div>
                 <p class="text-4xl font-bold text-on-surface mb-1">
-                    <c:out value="${totalMateriales != null ? totalMateriales : 0}"/>
+                    <c:out value="${resumenMateriales != null ? resumenMateriales.total : 0}"/>
                 </p>
-                <p class="text-sm text-slate-500 font-medium">Total de Materiales</p>
+                <p class="text-sm text-slate-500 font-medium">Total</p>
             </div>
 
             <div class="bg-white rounded-xl shadow p-6 border border-slate-200">
@@ -81,7 +87,7 @@
                     <span class="material-symbols-outlined text-green-600">verified_user</span>
                 </div>
                 <p class="text-4xl font-bold text-on-surface mb-1">
-                    <c:out value="${materialesAprobados != null ? materialesAprobados : 0}"/>
+                    <c:out value="${resumenMateriales != null ? resumenMateriales.aprobados : 0}"/>
                 </p>
                 <p class="text-sm text-slate-500 font-medium">Aprobados</p>
             </div>
@@ -91,17 +97,54 @@
                     <span class="material-symbols-outlined text-amber-600">schedule</span>
                 </div>
                 <p class="text-4xl font-bold text-on-surface mb-1">
-                    <c:out value="${materialesEnRevision != null ? materialesEnRevision : 0}"/>
+                    <c:out value="${resumenMateriales != null ? resumenMateriales.pendientes : 0}"/>
                 </p>
-                <p class="text-sm text-slate-500 font-medium">En Revisión</p>
+                <p class="text-sm text-slate-500 font-medium">En revisión</p>
             </div>
+
+            <div class="bg-white rounded-xl shadow p-6 border border-slate-200">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="material-symbols-outlined text-red-600">cancel</span>
+                </div>
+                <p class="text-4xl font-bold text-on-surface mb-1">
+                    <c:out value="${resumenMateriales != null ? resumenMateriales.rechazados : 0}"/>
+                </p>
+                <p class="text-sm text-slate-500 font-medium">Rechazados</p>
+            </div>
+        </div>
+
+        <%-- Filtro por estado --%>
+        <div class="flex flex-wrap gap-2">
+            <a href="${pageContext.request.contextPath}/tutor/materiales"
+               class="px-4 py-2 rounded-lg text-sm font-bold transition-colors ${estadoFiltro == 'todos' ? 'bg-primary text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-primary'}">
+                Todos
+            </a>
+            <a href="${pageContext.request.contextPath}/tutor/materiales?estado=pendiente"
+               class="px-4 py-2 rounded-lg text-sm font-bold transition-colors ${estadoFiltro == 'pendiente' ? 'bg-primary text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-primary'}">
+                En revisión
+            </a>
+            <a href="${pageContext.request.contextPath}/tutor/materiales?estado=aprobado"
+               class="px-4 py-2 rounded-lg text-sm font-bold transition-colors ${estadoFiltro == 'aprobado' ? 'bg-primary text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-primary'}">
+                Aprobados
+            </a>
+            <a href="${pageContext.request.contextPath}/tutor/materiales?estado=rechazado"
+               class="px-4 py-2 rounded-lg text-sm font-bold transition-colors ${estadoFiltro == 'rechazado' ? 'bg-primary text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-primary'}">
+                Rechazados
+            </a>
         </div>
 
         <%-- Tabla de Materiales --%>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="px-8 py-6 border-b border-slate-200">
-                <h3 class="text-xl font-bold text-on-surface mb-1">Gestión de Archivos</h3>
-                <p class="text-sm text-slate-600">Revisa y administra tus materiales publicados.</p>
+            <div class="px-8 py-6 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h3 class="text-xl font-bold text-on-surface mb-1">Listado de materiales</h3>
+                    <p class="text-sm text-slate-600">Consulta el estado de revisión de cada material que has subido.</p>
+                </div>
+                <c:if test="${not empty materiales}">
+                    <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                        <c:out value="${fn:length(materiales)}"/> resultado(s)
+                    </span>
+                </c:if>
             </div>
 
             <div class="overflow-x-auto">
@@ -137,30 +180,57 @@
                                         <td class="px-8 py-5">
                                             <c:choose>
                                                 <c:when test="${material.estado == 'aprobado'}">
-                                                    <span class="badge-aceptada text-xs font-bold px-3 py-1 rounded-full inline-block">Aprobado</span>
+                                                    <span class="badge-aceptada text-xs font-bold px-3 py-1 rounded-full inline-block">
+                                                        <c:out value="${material.estadoEtiqueta}"/>
+                                                    </span>
                                                 </c:when>
                                                 <c:when test="${material.estado == 'pendiente'}">
-                                                    <span class="badge-pendiente text-xs font-bold px-3 py-1 rounded-full inline-block">En Revisión</span>
+                                                    <span class="badge-pendiente text-xs font-bold px-3 py-1 rounded-full inline-block">
+                                                        <c:out value="${material.estadoEtiqueta}"/>
+                                                    </span>
                                                 </c:when>
                                                 <c:when test="${material.estado == 'rechazado'}">
-                                                    <span class="badge-rechazada text-xs font-bold px-3 py-1 rounded-full inline-block">Rechazado</span>
+                                                    <div class="space-y-1">
+                                                        <span class="badge-rechazada text-xs font-bold px-3 py-1 rounded-full inline-block">
+                                                            <c:out value="${material.estadoEtiqueta}"/>
+                                                        </span>
+                                                        <c:if test="${not empty material.comentarioRevision}">
+                                                            <p class="text-xs text-slate-500 max-w-xs">
+                                                                <c:out value="${material.comentarioRevision}"/>
+                                                            </p>
+                                                        </c:if>
+                                                    </div>
                                                 </c:when>
                                             </c:choose>
                                         </td>
                                         <td class="px-8 py-5">
-                                            <span class="text-sm font-semibold text-on-surface">$<c:out value="${material.costo}"/></span>
+                                            <span class="text-sm font-semibold text-on-surface">
+                                                <c:choose>
+                                                    <c:when test="${material.gratis}">Gratis</c:when>
+                                                    <c:otherwise>$<c:out value="${material.costoFormateado}"/></c:otherwise>
+                                                </c:choose>
+                                            </span>
                                         </td>
                                         <td class="px-8 py-5">
                                             <div class="flex gap-2">
-                                                <button class="p-2 text-slate-600 hover:bg-indigo-50 hover:text-primary rounded-lg transition-colors" title="Ver detalles">
+                                                <a href="${pageContext.request.contextPath}/tutor/materiales/detalle?id=${material.id}"
+                                                   class="p-2 text-slate-600 hover:bg-indigo-50 hover:text-primary rounded-lg transition-colors"
+                                                   title="Ver detalles">
                                                     <span class="material-symbols-outlined text-sm">visibility</span>
-                                                </button>
-                                                <button class="p-2 text-slate-600 hover:bg-indigo-50 hover:text-primary rounded-lg transition-colors" title="Editar">
-                                                    <span class="material-symbols-outlined text-sm">edit</span>
-                                                </button>
-                                                <button class="p-2 text-slate-600 hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors" title="Eliminar">
-                                                    <span class="material-symbols-outlined text-sm">delete</span>
-                                                </button>
+                                                </a>
+                                                <c:if test="${material.eliminable}">
+                                                    <form method="post"
+                                                          action="${pageContext.request.contextPath}/tutor/materiales/eliminar"
+                                                          onsubmit="return confirm('¿Eliminar este material?');"
+                                                          class="inline">
+                                                        <input type="hidden" name="idMaterial" value="${material.id}"/>
+                                                        <button type="submit"
+                                                                class="p-2 text-slate-600 hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors"
+                                                                title="Eliminar">
+                                                            <span class="material-symbols-outlined text-sm">delete</span>
+                                                        </button>
+                                                    </form>
+                                                </c:if>
                                             </div>
                                         </td>
                                     </tr>
@@ -168,31 +238,35 @@
                             </tbody>
                         </table>
 
-                        <%-- Paginación --%>
-                        <div class="px-8 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50">
+                        <div class="px-8 py-4 border-t border-slate-200 bg-slate-50">
                             <p class="text-xs text-slate-600 font-medium">
-                                Mostrando materiales de <strong><c:out value="${requestScope.tutorPerfil.nombre}"/></strong>
+                                Materiales de <strong><c:out value="${requestScope.tutorPerfil.nombre}"/></strong>
                             </p>
-                            <div class="flex gap-2">
-                                <button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-slate-600 hover:bg-white transition-all">
-                                    <span class="material-symbols-outlined text-sm">chevron_left</span>
-                                </button>
-                                <button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white font-bold text-xs">1</button>
-                                <button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-slate-600 hover:bg-white transition-all">
-                                    <span class="material-symbols-outlined text-sm">chevron_right</span>
-                                </button>
-                            </div>
                         </div>
                     </c:when>
                     <c:otherwise>
                         <div class="px-8 py-16 text-center">
                             <span class="material-symbols-outlined text-5xl text-slate-300 block mb-4">folder_open</span>
-                            <h3 class="text-xl font-bold text-slate-600 mb-2">No hay materiales publicados</h3>
-                            <p class="text-slate-500 mb-6">Aún no has publicado ningún material académico. Comienza compartiendo tu conocimiento.</p>
+                            <h3 class="text-xl font-bold text-slate-600 mb-2">
+                                <c:choose>
+                                    <c:when test="${estadoFiltro != 'todos'}">No hay materiales con este estado</c:when>
+                                    <c:otherwise>No hay materiales publicados</c:otherwise>
+                                </c:choose>
+                            </h3>
+                            <p class="text-slate-500 mb-6">
+                                <c:choose>
+                                    <c:when test="${estadoFiltro != 'todos'}">
+                                        Prueba otro filtro o sube un nuevo material académico.
+                                    </c:when>
+                                    <c:otherwise>
+                                        Aún no has publicado ningún material académico. Comienza compartiendo tu conocimiento.
+                                    </c:otherwise>
+                                </c:choose>
+                            </p>
                             <a href="${pageContext.request.contextPath}/tutor/subir"
                                class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary-container transition-all">
                                 <span class="material-symbols-outlined">add</span>
-                                Publicar mi primer material
+                                Publicar material
                             </a>
                         </div>
                     </c:otherwise>

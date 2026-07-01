@@ -46,7 +46,7 @@
         <p class="text-slate-600 mb-8">Bienvenido, <c:out value="${requestScope.tutorPerfil.nombre}"/>. Gestiona tus sesiones y materiales aquí.</p>
 
         <%-- Estadísticas --%>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div class="bg-white rounded-xl shadow p-6">
                 <span class="text-xs font-bold uppercase text-slate-500">Materiales Aprobados</span>
                 <p class="text-3xl font-bold text-primary mt-2">
@@ -54,9 +54,15 @@
                 </p>
             </div>
             <div class="bg-white rounded-xl shadow p-6">
-                <span class="text-xs font-bold uppercase text-slate-500">Materiales Pendientes</span>
-                <p class="text-3xl font-bold text-primary mt-2">
+                <span class="text-xs font-bold uppercase text-slate-500">En Revisión</span>
+                <p class="text-3xl font-bold text-amber-600 mt-2">
                     <c:out value="${materialesPendientes != null ? materialesPendientes : 0}"/>
+                </p>
+            </div>
+            <div class="bg-white rounded-xl shadow p-6">
+                <span class="text-xs font-bold uppercase text-slate-500">Rechazados</span>
+                <p class="text-3xl font-bold text-red-600 mt-2">
+                    <c:out value="${materialesRechazados != null ? materialesRechazados : 0}"/>
                 </p>
             </div>
         </div>

@@ -22,13 +22,20 @@ public class MaterialVista {
     private final String nombreTutor;
     private final String fechaEnvio;
     private final String estado;
+    private final String estadoEtiqueta;
+    private final String comentarioRevision;
+    private final String categoriaAcademica;
+    private final String nombreArchivo;
+    private final String fechaRevision;
+    private final boolean eliminable;
     private final BigDecimal costo;
     private final String costoFormateado;
     private final boolean adquirido;
 
     private MaterialVista(Long id, String titulo, String descripcion, String nombreMateria,
-                          String nombreTutor, String fechaEnvio, String estado, BigDecimal costo,
-                          boolean adquirido) {
+                          String nombreTutor, String fechaEnvio, String estado, String estadoEtiqueta,
+                          String comentarioRevision, String categoriaAcademica, String nombreArchivo,
+                          String fechaRevision, boolean eliminable, BigDecimal costo, boolean adquirido) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -36,25 +43,39 @@ public class MaterialVista {
         this.nombreTutor = nombreTutor;
         this.fechaEnvio = fechaEnvio;
         this.estado = estado;
+        this.estadoEtiqueta = estadoEtiqueta;
+        this.comentarioRevision = comentarioRevision;
+        this.categoriaAcademica = categoriaAcademica;
+        this.nombreArchivo = nombreArchivo;
+        this.fechaRevision = fechaRevision;
+        this.eliminable = eliminable;
         this.costo = costo;
         this.costoFormateado = costo.setScale(2, RoundingMode.HALF_UP).toPlainString();
         this.adquirido = adquirido;
     }
 
     public static MaterialVista paraTutor(Material material) {
-        return desde(material, null, false);
+        return desde(material, null, false, true);
     }
 
     public static MaterialVista paraBiblioteca(Material material, String nombreTutor, boolean adquirido) {
-        return desde(material, nombreTutor, adquirido);
+        return desde(material, nombreTutor, adquirido, false);
     }
 
-    private static MaterialVista desde(Material material, String nombreTutor, boolean adquirido) {
+    private static MaterialVista desde(Material material, String nombreTutor, boolean adquirido,
+                                       boolean incluirDetalleTutor) {
         Materia materia = CatalogoRegistro.buscarMateriaPorCodigo(material.getCodigoMateria());
         String nombreMateria = materia != null ? materia.getNombre() : material.getCodigoMateria();
         String fecha = material.getFechaRegistro() != null
                 ? material.getFechaRegistro().format(FECHA)
                 : "—";
+
+        String fechaRevision = material.getFechaRevision() != null
+                ? material.getFechaRevision().format(FECHA)
+                : null;
+        boolean eliminable = incluirDetalleTutor
+                && (material.getEstado() == EstadoMaterial.PENDIENTE
+                || material.getEstado() == EstadoMaterial.RECHAZADO);
 
         return new MaterialVista(
                 material.getId(),
@@ -64,9 +85,31 @@ public class MaterialVista {
                 nombreTutor,
                 fecha,
                 material.getEstado().name().toLowerCase(),
+                etiquetaEstado(material.getEstado()),
+                comentarioRevision(material),
+                material.getCategoriaAcademica(),
+                material.getNombreArchivo(),
+                fechaRevision,
+                eliminable,
                 material.getCosto(),
                 adquirido
         );
+    }
+
+    private static String etiquetaEstado(EstadoMaterial estado) {
+        return switch (estado) {
+            case PENDIENTE -> "En revisión";
+            case APROBADO -> "Aprobado";
+            case RECHAZADO -> "Rechazado";
+        };
+    }
+
+    private static String comentarioRevision(Material material) {
+        if (material.getEstado() != EstadoMaterial.RECHAZADO) {
+            return null;
+        }
+        String comentario = material.getComentarioAdmin();
+        return comentario != null && !comentario.isBlank() ? comentario.trim() : null;
     }
 
     public Long getId() {
@@ -95,6 +138,34 @@ public class MaterialVista {
 
     public String getEstado() {
         return estado;
+    }
+
+    public String getEstadoEtiqueta() {
+        return estadoEtiqueta;
+    }
+
+    public String getComentarioRevision() {
+        return comentarioRevision;
+    }
+
+    public boolean isRechazado() {
+        return "rechazado".equals(estado);
+    }
+
+    public String getCategoriaAcademica() {
+        return categoriaAcademica;
+    }
+
+    public String getNombreArchivo() {
+        return nombreArchivo;
+    }
+
+    public String getFechaRevision() {
+        return fechaRevision;
+    }
+
+    public boolean isEliminable() {
+        return eliminable;
     }
 
     public BigDecimal getCosto() {
