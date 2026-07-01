@@ -40,7 +40,12 @@
 
         <div class="mb-8">
             <h2 class="text-4xl font-extrabold text-on-surface">Biblioteca de Materiales</h2>
-            <p class="text-slate-600 mt-2">Explora y adquiere materiales académicos aprobados por la plataforma.</p>
+            <p class="text-slate-600 mt-2">
+                Materiales aprobados de tu carrera
+                <c:if test="${not empty carreraFiltrada}">
+                    — <strong><c:out value="${carreraFiltrada}"/></strong>
+                </c:if>
+            </p>
         </div>
 
         <c:if test="${not empty exito}">
@@ -56,42 +61,37 @@
             </div>
         </c:if>
 
-        <%-- Filtro por carrera y búsqueda --%>
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
-            <form method="get" action="${pageContext.request.contextPath}/estudiante/biblioteca" class="flex flex-wrap items-end gap-4">
-                <div class="flex-1 min-w-[220px]">
-                    <label for="carrera" class="block text-sm font-bold text-on-surface mb-2">Filtrar por carrera</label>
-                    <select id="carrera" name="carrera"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary focus:border-transparent text-on-surface">
-                        <option value="">Todas las carreras</option>
-                        <c:forEach var="c" items="${carreras}">
-                            <option value="${c.name()}" ${param.carrera == c.name() ? 'selected' : ''}>
-                                <c:out value="${c.nombre}"/>
-                            </option>
-                        </c:forEach>
-                    </select>
+        <%-- Búsqueda por título (dentro de la carrera del estudiante) --%>
+        <c:if test="${not sinCarrera}">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+                <div class="flex items-center gap-2 mb-4 text-sm text-slate-600">
+                    <span class="material-symbols-outlined text-primary text-base">school</span>
+                    <span>Filtrado automáticamente por tu carrera: <strong><c:out value="${carreraFiltrada}"/></strong></span>
                 </div>
-                <div class="flex-1 min-w-[220px]">
-                    <label for="busqueda" class="block text-sm font-bold text-on-surface mb-2">Buscar por título</label>
-                    <input id="busqueda" name="busqueda" type="text"
-                           value="<c:out value="${param.busqueda}"/>"
-                           placeholder="Ej. Cálculo, Programación..."
-                           class="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary focus:border-transparent text-on-surface placeholder:text-slate-400"/>
-                </div>
-                <button type="submit"
-                        class="flex items-center gap-2 bg-primary text-white font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity">
-                    <span class="material-symbols-outlined text-sm">search</span>
-                    Buscar
-                </button>
-                <c:if test="${not empty param.carrera or not empty param.busqueda}">
-                    <a href="${pageContext.request.contextPath}/estudiante/biblioteca"
-                       class="flex items-center gap-1 text-slate-500 font-semibold text-sm hover:text-primary py-3 px-2">
-                        <span class="material-symbols-outlined text-sm">close</span>
-                        Limpiar
-                    </a>
-                </c:if>
-            </form>
-        </div>
+                <form method="get" action="${pageContext.request.contextPath}/estudiante/biblioteca"
+                      class="flex flex-wrap items-end gap-4">
+                    <div class="flex-1 min-w-[220px]">
+                        <label for="busqueda" class="block text-sm font-bold text-on-surface mb-2">Buscar por título</label>
+                        <input id="busqueda" name="busqueda" type="text"
+                               value="<c:out value="${param.busqueda}"/>"
+                               placeholder="Ej. Cálculo, Programación..."
+                               class="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary focus:border-transparent text-on-surface placeholder:text-slate-400"/>
+                    </div>
+                    <button type="submit"
+                            class="flex items-center gap-2 bg-primary text-white font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity">
+                        <span class="material-symbols-outlined text-sm">search</span>
+                        Buscar
+                    </button>
+                    <c:if test="${busquedaActiva}">
+                        <a href="${pageContext.request.contextPath}/estudiante/biblioteca"
+                           class="flex items-center gap-1 text-slate-500 font-semibold text-sm hover:text-primary py-3 px-2">
+                            <span class="material-symbols-outlined text-sm">close</span>
+                            Limpiar búsqueda
+                        </a>
+                    </c:if>
+                </form>
+            </div>
+        </c:if>
 
         <%-- Contador de resultados --%>
         <c:if test="${not empty materiales}">
@@ -111,11 +111,14 @@
                     <p class="text-slate-600 font-semibold text-lg">No hay materiales disponibles</p>
                     <p class="text-sm text-slate-400 mt-2">
                         <c:choose>
-                            <c:when test="${not empty param.carrera or not empty param.busqueda}">
-                                Intenta con otros filtros o elimina la búsqueda actual.
+                            <c:when test="${sinCarrera}">
+                                Actualiza tu perfil o contacta al administrador para registrar tu carrera.
+                            </c:when>
+                            <c:when test="${busquedaActiva}">
+                                No hay materiales que coincidan con tu búsqueda en <c:out value="${carreraFiltrada}"/>.
                             </c:when>
                             <c:otherwise>
-                                Aún no hay materiales aprobados disponibles. ¡Vuelve pronto!
+                                Aún no hay materiales aprobados para tu carrera. ¡Vuelve pronto!
                             </c:otherwise>
                         </c:choose>
                     </p>

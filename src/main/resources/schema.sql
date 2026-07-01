@@ -77,3 +77,6 @@ CREATE TABLE IF NOT EXISTS material_adquisicion (
     fecha_adquisicion  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (id_material, id_estudiante)
 );
+
+-- Usuario administrador (crear manualmente en BD con rol ADMIN).
+-- La contraseña debe almacenarse con el hash generado por PasswordUtil.hash().

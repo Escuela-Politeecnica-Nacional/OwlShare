@@ -16,7 +16,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-public class BibliotecaEstudianteServlet extends HttpServlet {
+/**
+ * Biblioteca del estudiante: materiales aprobados filtrados automáticamente
+ * por la carrera registrada en su perfil.
+ */
+public class EstudianteBibliotecaServlet extends HttpServlet {
 
     private final MaterialDAO materialDAO = new MaterialDAO();
     private final MaterialAdquisicionDAO adquisicionDAO = new MaterialAdquisicionDAO();
@@ -30,28 +34,34 @@ public class BibliotecaEstudianteServlet extends HttpServlet {
             return;
         }
 
-        Carrera carrera = parseCarrera(request.getParameter("carrera"));
+        Carrera carrera = estudiante.getCarrera();
         String busqueda = trim(request.getParameter("busqueda"));
 
         List<MaterialVista> materiales;
-        try {
-            Set<Long> adquiridos = adquisicionDAO.idsAdquiridosPorEstudiante(estudiante.getId());
-            materiales = materialDAO.listarAprobados(carrera, busqueda).stream()
-                    .map(m -> MaterialVista.paraBiblioteca(
-                            m,
-                            nombreTutor(m.getIdTutor()),
-                            adquiridos.contains(m.getId())))
-                    .toList();
-        } catch (RuntimeException e) {
+        if (carrera == null) {
             materiales = List.of();
-            request.setAttribute("error", "No se pudo cargar la biblioteca de materiales.");
+            request.setAttribute("sinCarrera", true);
+            request.setAttribute("error",
+                    "Tu perfil no tiene una carrera registrada. No podemos mostrarte materiales relevantes.");
+        } else {
+            try {
+                Set<Long> adquiridos = adquisicionDAO.idsAdquiridosPorEstudiante(estudiante.getId());
+                materiales = materialDAO.listarAprobados(carrera, busqueda).stream()
+                        .map(m -> MaterialVista.paraBiblioteca(
+                                m,
+                                nombreTutor(m.getIdTutor()),
+                                adquiridos.contains(m.getId())))
+                        .toList();
+            } catch (RuntimeException e) {
+                materiales = List.of();
+                request.setAttribute("error", "No se pudo cargar la biblioteca de materiales.");
+            }
+            request.setAttribute("carreraEstudiante", carrera);
+            request.setAttribute("carreraFiltrada", carrera.getNombre());
         }
 
         request.setAttribute("materiales", materiales);
-        request.setAttribute("carreras", Carrera.values());
-        if (carrera != null) {
-            request.setAttribute("carreraFiltrada", carrera.getNombre());
-        }
+        request.setAttribute("busquedaActiva", !busqueda.isEmpty());
 
         transferirMensaje(request.getSession(false), request, "exito");
         transferirMensaje(request.getSession(false), request, "error");
@@ -76,17 +86,6 @@ public class BibliotecaEstudianteServlet extends HttpServlet {
             nombre.append(' ').append(usuario.getSegundoApellido());
         }
         return nombre.toString().trim();
-    }
-
-    private Carrera parseCarrera(String valor) {
-        if (valor == null || valor.isBlank()) {
-            return null;
-        }
-        try {
-            return Carrera.valueOf(valor.trim());
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
     }
 
     private void transferirMensaje(HttpSession session, HttpServletRequest request, String clave) {

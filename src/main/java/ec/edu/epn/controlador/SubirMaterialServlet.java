@@ -100,7 +100,7 @@ public class SubirMaterialServlet extends HttpServlet {
 
         guardarMensajeFlash(request, "flashMensaje",
                 "Material subido correctamente. Quedará disponible para estudiantes cuando sea aprobado.");
-        response.sendRedirect(request.getContextPath() + "/tutor/subir");
+        response.sendRedirect(request.getContextPath() + "/tutor/materiales?estado=pendiente");
     }
 
     private String validarCampos(Usuario tutor, String titulo, String descripcion, String codigoMateria,

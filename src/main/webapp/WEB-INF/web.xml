@@ -27,7 +27,12 @@
           POST     /api/solicitudes     → CrearSolicitudServlet  → JSON
           GET|POST /tutor/subir         → SubirMaterialServlet   → subir-material.jsp
           GET      /tutor/materiales   → MaterialesTutorServlet → gestiona-material.jsp
-          GET      /estudiante/biblioteca → BibliotecaEstudianteServlet → biblioteca-estudiante.jsp
+          GET      /tutor/materiales/detalle → DetalleMaterialTutorServlet → detalle-material.jsp
+          POST     /tutor/materiales/eliminar → EliminarMaterialTutorServlet
+          GET      /admin/inicio       → AdminInicioServlet → admin/inicio.jsp
+          GET      /admin/materiales   → ModeracionMaterialesServlet → moderacion-materiales.jsp
+          POST     /admin/materiales/revisar → RevisarMaterialServlet
+          GET      /estudiante/biblioteca → EstudianteBibliotecaServlet → biblioteca-estudiante.jsp
           POST     /estudiante/biblioteca/adquirir → AdquirirMaterialServlet
           GET      /estudiante/biblioteca/descargar → DescargarMaterialServlet
     -->
@@ -227,12 +232,62 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>BibliotecaEstudianteServlet</servlet-name>
-        <servlet-class>ec.edu.epn.controlador.BibliotecaEstudianteServlet</servlet-class>
+        <servlet-name>DetalleMaterialTutorServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.DetalleMaterialTutorServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>BibliotecaEstudianteServlet</servlet-name>
+        <servlet-name>DetalleMaterialTutorServlet</servlet-name>
+        <url-pattern>/tutor/materiales/detalle</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>EliminarMaterialTutorServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.EliminarMaterialTutorServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>EliminarMaterialTutorServlet</servlet-name>
+        <url-pattern>/tutor/materiales/eliminar</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AdminInicioServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.AdminInicioServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AdminInicioServlet</servlet-name>
+        <url-pattern>/admin/inicio</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ModeracionMaterialesServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.ModeracionMaterialesServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ModeracionMaterialesServlet</servlet-name>
+        <url-pattern>/admin/materiales</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>RevisarMaterialServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.RevisarMaterialServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RevisarMaterialServlet</servlet-name>
+        <url-pattern>/admin/materiales/revisar</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>EstudianteBibliotecaServlet</servlet-name>
+        <servlet-class>ec.edu.epn.controlador.EstudianteBibliotecaServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>EstudianteBibliotecaServlet</servlet-name>
         <url-pattern>/estudiante/biblioteca</url-pattern>
     </servlet-mapping>
 
