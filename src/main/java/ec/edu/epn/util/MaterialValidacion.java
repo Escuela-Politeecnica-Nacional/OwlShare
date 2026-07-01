@@ -110,6 +110,17 @@ public final class MaterialValidacion {
         return Optional.empty();
     }
 
+    public static Optional<String> validarComentarioRechazo(String comentario) {
+        if (comentario == null || comentario.isBlank()) {
+            return Optional.of("Debes indicar el motivo del rechazo.");
+        }
+        String limpio = comentario.trim();
+        if (limpio.length() > 1000) {
+            return Optional.of("El comentario no puede superar 1000 caracteres.");
+        }
+        return Optional.empty();
+    }
+
     public static Optional<String> validarArchivoPdf(Part archivo) {
         if (archivo == null || archivo.getSize() == 0) {
             return Optional.of("Debes adjuntar un archivo PDF.");
