@@ -2,7 +2,7 @@ package ec.edu.epn.controlador;
 
 import ec.edu.epn.dao.MaterialAdquisicionDAO;
 import ec.edu.epn.dao.MaterialDAO;
-import ec.edu.epn.modelo.EstadoMaterial;
+import ec.edu.epn.modelo.Carrera;
 import ec.edu.epn.modelo.Material;
 import ec.edu.epn.modelo.Usuario;
 import ec.edu.epn.util.MaterialAlmacenamiento;
@@ -30,14 +30,21 @@ public class DescargarMaterialServlet extends HttpServlet {
             return;
         }
 
+        Carrera carrera = estudiante.getCarrera();
+        if (carrera == null) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "Tu perfil no tiene una carrera registrada.");
+            return;
+        }
+
         Long idMaterial = parseId(request.getParameter("idMaterial"));
         if (idMaterial == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Material no válido.");
             return;
         }
 
-        Optional<Material> materialOpt = materialDAO.buscarPorId(idMaterial);
-        if (materialOpt.isEmpty() || materialOpt.get().getEstado() != EstadoMaterial.APROBADO) {
+        Optional<Material> materialOpt = materialDAO.buscarAprobadoPorIdYCarrera(idMaterial, carrera);
+        if (materialOpt.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Material no encontrado.");
             return;
         }

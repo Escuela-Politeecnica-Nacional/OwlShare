@@ -4,6 +4,7 @@ import ec.edu.epn.dao.MaterialAdquisicionDAO;
 import ec.edu.epn.dao.MaterialDAO;
 import ec.edu.epn.dao.UsuarioDAO;
 import ec.edu.epn.modelo.Carrera;
+import ec.edu.epn.modelo.Material;
 import ec.edu.epn.modelo.MaterialVista;
 import ec.edu.epn.modelo.Usuario;
 import jakarta.servlet.ServletException;
@@ -36,6 +37,7 @@ public class EstudianteBibliotecaServlet extends HttpServlet {
 
         Carrera carrera = estudiante.getCarrera();
         String busqueda = trim(request.getParameter("busqueda"));
+        String vista = normalizarVista(request.getParameter("vista"));
 
         List<MaterialVista> materiales;
         if (carrera == null) {
@@ -46,7 +48,10 @@ public class EstudianteBibliotecaServlet extends HttpServlet {
         } else {
             try {
                 Set<Long> adquiridos = adquisicionDAO.idsAdquiridosPorEstudiante(estudiante.getId());
-                materiales = materialDAO.listarAprobados(carrera, busqueda).stream()
+                List<Material> lista = "adquiridos".equals(vista)
+                        ? materialDAO.listarAprobadosAdquiridos(estudiante.getId(), carrera, busqueda)
+                        : materialDAO.listarAprobados(carrera, busqueda);
+                materiales = lista.stream()
                         .map(m -> MaterialVista.paraBiblioteca(
                                 m,
                                 nombreTutor(m.getIdTutor()),
@@ -58,10 +63,12 @@ public class EstudianteBibliotecaServlet extends HttpServlet {
             }
             request.setAttribute("carreraEstudiante", carrera);
             request.setAttribute("carreraFiltrada", carrera.getNombre());
+            request.setAttribute("totalAdquiridos", adquisicionDAO.contarAdquiridosPorEstudiante(estudiante.getId()));
         }
 
         request.setAttribute("materiales", materiales);
         request.setAttribute("busquedaActiva", !busqueda.isEmpty());
+        request.setAttribute("vistaActiva", vista);
 
         transferirMensaje(request.getSession(false), request, "exito");
         transferirMensaje(request.getSession(false), request, "error");
@@ -101,5 +108,9 @@ public class EstudianteBibliotecaServlet extends HttpServlet {
 
     private String trim(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private String normalizarVista(String vista) {
+        return "adquiridos".equalsIgnoreCase(trim(vista)) ? "adquiridos" : "todos";
     }
 }
